@@ -9,51 +9,57 @@ use App\Models\ThongTinGiaDinh;
 use App\Models\TepTin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class NhanVienController extends Controller
 {
     public function index(Request $request)
     {
-        $query = NhanVien::with(['phongBan', 'chucVu']);
+        $query = NhanVien::query()->with(['phongBan', 'chucVu']);
 
-        // Tìm kiếm
+        // Lọc search
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('ten', 'like', "%{$search}%")
-                  ->orWhere('ho', 'like', "%{$search}%")
-                  ->orWhere('ma_nhanvien', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                $q->whereRaw("CONCAT(ho, ' ', ten) LIKE ?", ["%$search%"])
+                  ->orWhere('ma_nhanvien', 'like', "%$search%")
+                  ->orWhere('email', 'like', "%$search%")
+                  ->orWhere('so_dien_thoai', 'like', "%$search%");
             });
         }
 
-        // Lọc theo phòng ban
+        // Lọc phòng ban
         if ($request->filled('phong_ban_id')) {
             $query->where('phong_ban_id', $request->phong_ban_id);
         }
 
-        // Lọc theo chức vụ
+        // Lọc chức vụ
         if ($request->filled('chuc_vu_id')) {
             $query->where('chuc_vu_id', $request->chuc_vu_id);
         }
 
-        // Lọc theo trạng thái
+        // Lọc trạng thái
         if ($request->filled('trang_thai')) {
             $query->where('trang_thai', $request->trang_thai);
         }
 
-        $nhanViens = $query->paginate(10);
-        $phongBans = PhongBan::all();
-        $chucVus = ChucVu::all();
+        $statusOrder = ['nhan_vien_chinh_thuc', 'thu_viec', 'thai_san', 'nghi_viec', 'khac'];
+        $nhanViens = $query
+            ->orderByRaw("FIELD(trang_thai, '" . implode("','", $statusOrder) . "')")
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
-        // Check if this is an AJAX request
         if ($request->ajax()) {
             return response()->json([
                 'table' => view('nhan-vien.partials.table', compact('nhanViens'))->render(),
-                'pagination' => $nhanViens->hasPages() ? view('vendor.pagination.bootstrap-5', ['paginator' => $nhanViens])->render() : '',
                 'total' => $nhanViens->total()
             ]);
         }
+
+        $phongBans = PhongBan::all();
+        $chucVus = ChucVu::all();
 
         return view('nhan-vien.index', compact('nhanViens', 'phongBans', 'chucVus'));
     }
@@ -69,24 +75,91 @@ class NhanVienController extends Controller
     {
         $phongBans = PhongBan::all();
         $chucVus = ChucVu::all();
+        $lastId = NhanVien::max('id') ?? 0;
+        $nextCode = 'NV' . str_pad($lastId + 1, 4, '0', STR_PAD_LEFT);
 
-        return view('nhan-vien.create', compact('phongBans', 'chucVus'));
+        return view('nhan-vien.create', [
+            'nextCode' => $nextCode,
+            'phongBans' => $phongBans,
+            'chucVus'   => $chucVus
+        ]);
     }
 
     public function store(Request $request)
     {
+        try {
+            $validated = $request->validate([
+                'ma_nhanvien' => 'required|string|max:50|unique:nhanvien',
+                'ten' => 'required|string|max:100',
+                'ho' => 'required|string|max:100',
+                'ngay_sinh' => 'nullable|date',
+                'gioi_tinh' => 'nullable|in:nam,nu,khac',
+                'tinh_trang_hon_nhan' => 'nullable|in:doc_than,da_ket_hon,ly_hon',
+                'quoc_tich' => 'nullable|string|max:100',
+                'dan_toc' => 'nullable|string|max:100',
+                'ton_giao' => 'nullable|string|max:100',
+                'so_dien_thoai' => 'nullable|string|max:20',
+                'email' => 'nullable|email|max:100|unique:nhanvien,email',
+                'dia_chi' => 'nullable|string',
+                'phong_ban_id' => 'nullable|exists:phong_ban,id',
+                'chuc_vu_id' => 'nullable|exists:chuc_vu,id',
+                'ngay_vao_lam' => 'nullable|date',
+                'ngay_thu_viec' => 'nullable|date',
+                'trang_thai' => 'required|in:nhan_vien_chinh_thuc,thu_viec,thai_san,nghi_viec,khac',
+                'anh_dai_dien' => 'nullable|image|max:2048',
+                'dien_thoai_di_dong' => 'nullable|string|max:20',
+                'dien_thoai_co_quan' => 'nullable|string|max:20',
+                'dien_thoai_nha_rieng' => 'nullable|string|max:20',
+                'dien_thoai_khac' => 'nullable|string|max:20',
+                'email_co_quan' => 'nullable|email|max:100',
+                'email_ca_nhan' => 'nullable|email|max:100',
+                'dia_chi_thuong_tru' => 'nullable|string',
+                'dia_chi_hien_tai' => 'nullable|string',
+                'lien_he_khan_cap_ten' => 'nullable|string|max:100',
+                'lien_he_khan_cap_quan_he' => 'nullable|string|max:50',
+                'lien_he_khan_cap_dien_thoai' => 'nullable|string|max:20',
+                'temp_family_members' => 'nullable|string'
+            ]);
+
+            // ✅ Nếu hợp lệ mới vào đây
+            if ($request->hasFile('anh_dai_dien')) {
+                $validated['anh_dai_dien'] = $request->file('anh_dai_dien')->store('avatars', 'public');
+            }
+
+            $nhanVien = NhanVien::create($validated);
+
+            return redirect()->route('nhan-vien.index')
+                ->with('success', 'Thêm nhân viên thành công!');
+
+        } catch (ValidationException $e) {
+            // Bắt lỗi validate và trả về với các lỗi
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
+        } catch (\Exception $ex) {
+            // Bắt tất cả lỗi khác
+            Log::error('Lỗi thêm nhân viên: ' . $ex->getMessage());
+            return redirect()->back()
+                ->with('error', 'Đã có lỗi xảy ra khi thêm nhân viên. Vui lòng thử lại sau.')
+                ->withInput();
+        }
+    }
+
+    public function update(Request $request, NhanVien $nhanVien)
+    {
+        // Validate main employee data
         $validated = $request->validate([
-            'ma_nhanvien' => 'required|string|max:50|unique:nhanvien',
+            'ma_nhanvien' => 'required|string|max:50|unique:nhanvien,ma_nhanvien,' . $nhanVien->id,
             'ten' => 'required|string|max:100',
             'ho' => 'required|string|max:100',
-            'ngay_sinh' => 'nullable|date',
+            'ngay_sinh_nv' => 'nullable|date',
             'gioi_tinh' => 'nullable|in:nam,nu,khac',
             'tinh_trang_hon_nhan' => 'nullable|in:doc_than,da_ket_hon,ly_hon',
             'quoc_tich' => 'nullable|string|max:100',
             'dan_toc' => 'nullable|string|max:100',
             'ton_giao' => 'nullable|string|max:100',
             'so_dien_thoai' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:100|unique:nhanvien',
+            'email' => 'nullable|email|max:100|unique:nhanvien,email,' . $nhanVien->id,
             'dia_chi' => 'nullable|string',
             'phong_ban_id' => 'nullable|exists:phong_ban,id',
             'chuc_vu_id' => 'nullable|exists:chuc_vu,id',
@@ -105,16 +178,30 @@ class NhanVienController extends Controller
             'dia_chi_hien_tai' => 'nullable|string',
             'lien_he_khan_cap_ten' => 'nullable|string|max:100',
             'lien_he_khan_cap_quan_he' => 'nullable|string|max:50',
-            'lien_he_khan_cap_dien_thoai' => 'nullable|string|max:20'
+            'lien_he_khan_cap_dien_thoai' => 'nullable|string|max:20',
+            // Family members (optional, validated below if provided)
+            'temp_family_members' => 'nullable|string'
         ]);
 
+        // Handle avatar upload
         if ($request->hasFile('anh_dai_dien')) {
+            // Delete old avatar if exists
+            if ($nhanVien->anh_dai_dien && Storage::disk('public')->exists($nhanVien->anh_dai_dien)) {
+                Storage::disk('public')->delete($nhanVien->anh_dai_dien);
+            }
             $validated['anh_dai_dien'] = $request->file('anh_dai_dien')->store('avatars', 'public');
         }
 
-        $nhanVien = NhanVien::create($validated);
+        // Rename ngay_sinh_nv to ngay_sinh
+        if (isset($validated['ngay_sinh_nv'])) {
+            $validated['ngay_sinh'] = $validated['ngay_sinh_nv'];
+            unset($validated['ngay_sinh_nv']);
+        }
 
-        // Create contact information if provided
+        // Update employee data
+        $nhanVien->update($validated);
+
+        // Update or create contact information
         $contactData = array_filter([
             'nhan_vien_id' => $nhanVien->id,
             'dien_thoai_di_dong' => $request->dien_thoai_di_dong,
@@ -131,18 +218,58 @@ class NhanVienController extends Controller
         ]);
 
         if (!empty($contactData) && count($contactData) > 1) { // More than just nhan_vien_id
-            ThongTinLienHe::create($contactData);
+            ThongTinLienHe::updateOrCreate(
+                ['nhan_vien_id' => $nhanVien->id],
+                $contactData
+            );
+        }
+
+        // Handle family members
+        if ($request->filled('temp_family_members')) {
+            $familyMembers = json_decode($request->input('temp_family_members'), true);
+            if (is_array($familyMembers)) {
+                foreach ($familyMembers as $member) {
+                    // Validate each family member
+                    $familyData = [
+                        'nhan_vien_id' => $nhanVien->id,
+                        'quan_he' => $member['quan_he'] ?? null,
+                        'ho_ten' => $member['ho_ten'] ?? null,
+                        'ngay_sinh' => $member['ngay_sinh'] ? Carbon::parse($member['ngay_sinh'])->format('Y-m-d') : null,
+                        'nghe_nghiep' => $member['nghe_nghiep'] ?? null,
+                        'dien_thoai' => $member['dien_thoai'] ?? null,
+                        'dia_chi_lien_he' => $member['dia_chi_lien_he'] ?? null,
+                        'ghi_chu' => $member['ghi_chu'] ?? null,
+                        'la_nguoi_phu_thuoc' => $member['la_nguoi_phu_thuoc'] ?? false
+                    ];
+
+                    // Skip if required fields are missing
+                    if (empty($familyData['quan_he']) || empty($familyData['ho_ten'])) {
+                        continue;
+                    }
+
+                    // Check if member has an ID (existing record)
+                    if (!empty($member['id'])) {
+                        // Update existing record
+                        ThongTinGiaDinh::where('id', $member['id'])
+                            ->where('nhan_vien_id', $nhanVien->id) // Ensure it belongs to this employee
+                            ->update($familyData);
+                    } else {
+                        // Create new record
+                        ThongTinGiaDinh::create($familyData);
+                    }
+                }
+            }
         }
 
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Thêm nhân viên thành công!'
+                'message' => 'Cập nhật nhân viên thành công!'
             ]);
         }
 
-        return redirect()->route('nhan-vien.index')
-            ->with('success', 'Xóa nhân viên thành công!');
+        return redirect()->route('nhan-vien.show', $nhanVien->id)
+            ->with('success', 'Cập nhật nhân viên thành công!');
     }
 
     // AJAX methods for family members
@@ -306,5 +433,31 @@ class NhanVienController extends Controller
         $chucVus = ChucVu::all();
 
         return view('nhan-vien.edit', compact('nhanVien', 'phongBans', 'chucVus'));
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->ids ?? [];
+
+        if (empty($ids)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Chưa chọn nhân viên nào!'
+            ], 400);
+        }
+
+        $nhanViens = NhanVien::whereIn('id', $ids)->get();
+
+        foreach ($nhanViens as $nv) {
+            $nv->update(['trang_thai' => 'nghi_viec']);
+            if ($nv->taiKhoan) {
+                $nv->taiKhoan->update(['trang_thai' => 'khong_hoat_dong']);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã chuyển trạng thái nghỉ việc cho các nhân viên đã chọn!'
+        ]);
     }
 }

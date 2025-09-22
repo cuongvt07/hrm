@@ -43,7 +43,6 @@
                                         <div class="position-relative d-inline-block">
                                             <div id="avatarPreview" class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto shadow"
                                                  style="width: 120px; height: 120px; font-size: 2.5rem;">
-                                                U
                                             </div>
                                             <label for="anh_dai_dien" class="btn btn-sm btn-outline-primary position-absolute" style="bottom: 0; right: 0;">
                                                 <i class="fas fa-camera"></i>
@@ -55,7 +54,12 @@
                                     <!-- Basic Info Fields -->
                                     <div class="mb-3">
                                         <label for="ma_nhanvien" class="form-label">Mã nhân viên <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="ma_nhanvien" name="ma_nhanvien" required>
+                                        <input type="text" 
+                                            class="form-control" 
+                                            id="ma_nhanvien" 
+                                            name="ma_nhanvien" 
+                                            value="{{ old('ma_nhanvien', $nextCode) }}" 
+                                            required readonly>
                                     </div>
 
                                     <div class="mb-3">

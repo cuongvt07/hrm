@@ -60,7 +60,7 @@
                                         </div>
                                     @endif
                                     <h4 class="mt-3 mb-1">{{ $nhanVien->ho }} {{ $nhanVien->ten }}</h4>
-                                    <p class="text-muted mb-3">{{ $nhanVien->ma_nhanvien }}</p>
+                                    <p class="mb-3">Mã NV: {{ $nhanVien->ma_nhanvien }}</p>
                                     <div class="mb-3">
                                         @php
                                             $config = $statusConfig[$nhanVien->trang_thai] ?? $statusConfig['khac'];
@@ -97,7 +97,7 @@
                                             <div class="d-flex justify-content-between align-items-center py-1">
                                                 <small class="text-dark"><i class="fas fa-venus-mars me-1"></i>Giới tính:</small>
                                             </div>
-                                            <div class="fw-bold small">{{ ucfirst($nhanVien->gioi_tinh ?? 'không xác định') }}</div>
+                                            <div class="fw-bold small">{{ $nhanVien->gioi_tinh == 'nam' ? 'Nam' : 'Nữ' }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -126,12 +126,40 @@
                                             </div>
                                             <div class="fw-bold small">{{ $nhanVien->ngay_vao_lam ? \Carbon\Carbon::parse($nhanVien->ngay_vao_lam)->format('d/m/Y') : '-' }}</div>
                                         </div>
-                                        <div class="mb-0">
-                                            <div class="d-flex justify-content-between align-items-center py-1">
-                                                <small class="text-dark"><i class="fas fa-clock me-1"></i>Ngày thử việc:</small>
+                                        @if(in_array($nhanVien->trang_thai, ['nhan_vien_chinh_thuc', 'thai_san']))
+                                            <div class="mb-0">
+                                                <div class="d-flex justify-content-between align-items-center py-1">
+                                                    <small class="text-dark"><i class="fas fa-calendar-alt me-1"></i>Thâm niên:</small>
+                                                </div>
+                                                <div class="fw-bold small">
+                                                    @if($nhanVien->ngay_vao_lam)
+                                                        @php
+                                                            $startDate = \Carbon\Carbon::parse($nhanVien->ngay_vao_lam);
+                                                            $now = \Carbon\Carbon::now();
+                                                            $totalMonths = $startDate->diffInMonths($now);
+                                                            $years = floor($totalMonths / 12);
+                                                            $months = $totalMonths % 12;
+                                                            $seniority = match(true) {
+                                                                $years == 0 && $months > 0 => $months . ' tháng',
+                                                                $years > 0 && $months == 0 => $years . ' năm',
+                                                                $years > 0 && $months > 0 => $years . ' năm ' . $months . ' tháng',
+                                                                default => '< 1 tháng'
+                                                            };
+                                                        @endphp
+                                                        {{ $seniority }}
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </div>
                                             </div>
-                                            <div class="fw-bold small">{{ $nhanVien->ngay_thu_viec ? \Carbon\Carbon::parse($nhanVien->ngay_thu_viec)->format('d/m/Y') : '-' }}</div>
-                                        </div>
+                                        @else
+                                            <div class="mb-0">
+                                                <div class="d-flex justify-content-between align-items-center py-1">
+                                                    <small class="text-dark"><i class="fas fa-clock me-1"></i>Ngày thử việc:</small>
+                                                </div>
+                                                <div class="fw-bold small">{{ $nhanVien->ngay_thu_viec ? \Carbon\Carbon::parse($nhanVien->ngay_thu_viec)->format('d/m/Y') : '-' }}</div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -299,12 +327,16 @@
                                                                     </span>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-12">
-                                                                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                                                                    <strong class="text-dark"><i class="fas fa-file-contract me-1"></i>Loại hợp đồng:</strong>
-                                                                    <span class="fw-bold">{{ $nhanVien->loai_hop_dong ?? '-' }}</span>
+                                                            @if($nhanVien->hopDongLaoDong && $nhanVien->hopDongLaoDong->count() > 0)
+                                                                <div class="col-12">
+                                                                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                                                        <strong class="text-dark"><i class="fas fa-file-contract me-1"></i>Loại hợp đồng:</strong>
+                                                                        <span class="fw-bold">
+                                                                            {{ $nhanVien->hopDongLaoDong->last()->loai_hop_dong ?? '-' }}
+                                                                        </span>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
+                                                            @endif
                                                             <div class="col-12">
                                                                 <div class="d-flex justify-content-between align-items-center py-2">
                                                                     <strong class="text-dark"><i class="fas fa-calendar-alt me-1"></i>Thâm niên:</strong>

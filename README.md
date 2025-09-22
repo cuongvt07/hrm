@@ -505,3 +505,6 @@ hrm-system/
 - **Thao tác nhanh**: Shortcuts, bulk actions
 - **Performance**: Load nhanh, ít request
 - **Component-based**: UI nhất quán và dễ bảo trì
+
+
+// check chỗ thêm nv chưa dc

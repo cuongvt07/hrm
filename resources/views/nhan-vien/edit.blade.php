@@ -80,7 +80,7 @@
 
                                     <div class="mb-3">
                                         <label for="ngay_sinh" class="form-label">Ngày sinh</label>
-                                        <input type="date" class="form-control" id="ngay_sinh" name="ngay_sinh" value="{{ $nhanVien->ngay_sinh }}">
+                                        <input type="date" class="form-control" id="ngay_sinh" name="ngay_sinh" value="{{ $nhanVien->ngay_sinh ? \Carbon\Carbon::parse($nhanVien->ngay_sinh)->format('Y-m-d') : '' }}">
                                     </div>
 
                                     <div class="mb-3">
@@ -204,10 +204,6 @@
                                                             <option value="khac" {{ $nhanVien->trang_thai == 'khac' ? 'selected' : '' }}>Khác</option>
                                                         </select>
                                                     </div>
-                                                    <div class="mb-3">
-                                                        <label for="loai_hop_dong" class="form-label">Loại hợp đồng</label>
-                                                        <input type="text" class="form-control" id="loai_hop_dong" name="loai_hop_dong" value="{{ $nhanVien->loai_hop_dong }}">
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -281,62 +277,126 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                         <!-- Family Tab -->
-                                        <div class="tab-pane fade" id="family" role="tabpanel">
-                                            <div class="mb-4">
-                                                <h5>Thành viên gia đình</h5>
-                                                <button type="button" class="btn btn-primary btn-sm mb-3" data-bs-toggle="modal" data-bs-target="#addFamilyMemberModal">
-                                                    <i class="fas fa-plus me-1"></i>Thêm thành viên
-                                                </button>
-                                            </div>
-
-                                            @if($nhanVien->thongTinGiaDinh && $nhanVien->thongTinGiaDinh->count() > 0)
-                                                <div class="table-responsive">
-                                                    <table class="table table-striped">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Quan hệ</th>
-                                                                <th>Họ tên</th>
-                                                                <th>Ngày sinh</th>
-                                                                <th>Nghề nghiệp</th>
-                                                                <th>Điện thoại</th>
-                                                                <th>Người phụ thuộc</th>
-                                                                <th>Thao tác</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @foreach($nhanVien->thongTinGiaDinh as $member)
-                                                                <tr>
-                                                                    <td>{{ $member->quan_he }}</td>
-                                                                    <td>{{ $member->ho_ten }}</td>
-                                                                    <td>{{ $member->ngay_sinh ? $member->ngay_sinh->format('d/m/Y') : '' }}</td>
-                                                                    <td>{{ $member->nghe_nghiep }}</td>
-                                                                    <td>{{ $member->dien_thoai }}</td>
-                                                                    <td>
-                                                                        @if($member->la_nguoi_phu_thuoc)
-                                                                            <span class="badge bg-success">Có</span>
-                                                                        @else
-                                                                            <span class="badge bg-secondary">Không</span>
-                                                                        @endif
-                                                                    </td>
-                                                                    <td>
-                                                                        <button type="button" class="btn btn-sm btn-outline-primary me-1" onclick="editFamilyMember({{ $member->id }})">
-                                                                            <i class="fas fa-edit"></i>
-                                                                        </button>
-                                                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteFamilyMember({{ $member->id }})">
-                                                                            <i class="fas fa-trash"></i>
-                                                                        </button>
-                                                                    </td>
-                                                                </tr>
-                                                            @endforeach
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            @else
-                                                <p class="text-muted">Chưa có thông tin thành viên gia đình</p>
-                                            @endif
-                                        </div>
+<div class="tab-pane fade" id="family" role="tabpanel">
+    <div class="mb-4">
+        <h5>Thành viên gia đình</h5>
+        <button type="button" class="btn btn-primary btn-sm mb-3" id="showAddFamilyForm">
+            <i class="fas fa-plus me-1"></i>Thêm thành viên
+        </button>
+    </div>
+    <div id="addFamilyFormContainer" style="display:none;">
+        <div class="border rounded p-3 mb-4 bg-light">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="family_quan_he" class="form-label">Quan hệ <span class="text-danger">*</span></label>
+                        <select class="form-select" id="family_quan_he" name="quan_he">
+                            <option value="">Chọn quan hệ</option>
+                            <option value="cha">Cha</option>
+                            <option value="me">Mẹ</option>
+                            <option value="vo">Vợ</option>
+                            <option value="chong">Chồng</option>
+                            <option value="con">Con</option>
+                            <option value="anh">Anh</option>
+                            <option value="chi">Chị</option>
+                            <option value="em">Em</option>
+                            <option value="ong">Ông</option>
+                            <option value="ba">Bà</option>
+                            <option value="khac">Khác</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="family_ho_ten" class="form-label">Họ tên <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="family_ho_ten" name="ho_ten">
+                    </div>
+                    <div class="mb-3">
+                        <label for="family_ngay_sinh" class="form-label">Ngày sinh</label>
+                        <input type="date" class="form-control" id="family_ngay_sinh" name="ngay_sinh">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="family_nghe_nghiep" class="form-label">Nghề nghiệp</label>
+                        <input type="text" class="form-control" id="family_nghe_nghiep" name="nghe_nghiep">
+                    </div>
+                    <div class="mb-3">
+                        <label for="family_dien_thoai" class="form-label">Điện thoại</label>
+                        <input type="text" class="form-control" id="family_dien_thoai" name="dien_thoai">
+                    </div>
+                    <div class="mb-3">
+                        <label for="family_dia_chi" class="form-label">Địa chỉ liên hệ</label>
+                        <textarea class="form-control" id="family_dia_chi" name="dia_chi_lien_he" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="family_ghi_chu" class="form-label">Ghi chú</label>
+                <textarea class="form-control" id="family_ghi_chu" name="ghi_chu" rows="2"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="family_la_nguoi_phu_thuoc" class="form-label">Người phụ thuộc</label>
+                <input type="checkbox" class="form-check-input" id="family_la_nguoi_phu_thuoc" name="la_nguoi_phu_thuoc">
+            </div>
+            <input type="hidden" id="family_id" name="family_id">
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-secondary" id="cancelAddFamily">Hủy</button>
+                <button type="button" class="btn btn-primary" id="addFamilyMember">Lưu</button>
+            </div>
+        </div>
+    </div>
+    <div id="familyTableContainer">
+        @if($nhanVien->thongTinGiaDinh && $nhanVien->thongTinGiaDinh->count() > 0)
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Quan hệ</th>
+                            <th>Họ tên</th>
+                            <th>Ngày sinh</th>
+                            <th>Nghề nghiệp</th>
+                            <th>Điện thoại</th>
+                            <th>Địa chỉ liên hệ</th>
+                            <th>Người phụ thuộc</th>
+                            <th>Ghi chú</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="familyTableBody">
+                        @foreach($nhanVien->thongTinGiaDinh as $member)
+                            <tr data-id="{{ $member->id }}">
+                                <td>{{ $member->quan_he }}</td>
+                                <td>{{ $member->ho_ten }}</td>
+                                <td>{{ $member->ngay_sinh ? \Carbon\Carbon::parse($member->ngay_sinh)->format('d/m/Y') : '' }}</td>
+                                <td>{{ $member->nghe_nghiep }}</td>
+                                <td>{{ $member->dien_thoai }}</td>
+                                <td>{{ $member->dia_chi_lien_he }}</td>
+                                <td>
+                                    @if($member->la_nguoi_phu_thuoc)
+                                        <span class="badge bg-success">Có</span>
+                                    @else
+                                        <span class="badge bg-secondary">Không</span>
+                                    @endif
+                                </td>
+                                <td>{{ $member->ghi_chu }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-outline-primary me-1 edit-family" data-id="{{ $member->id }}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger delete-family" data-id="{{ $member->id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <p class="text-muted" id="noFamilyMessage">Chưa có thông tin thành viên gia đình</p>
+        @endif
+    </div>
+</div>
 
                                         <!-- Documents Tab -->
                                         <div class="tab-pane fade" id="documents" role="tabpanel">
@@ -346,7 +406,6 @@
                                                     <i class="fas fa-upload me-1"></i>Upload tài liệu
                                                 </button>
                                             </div>
-
                                             @if($nhanVien->tepTin && $nhanVien->tepTin->count() > 0)
                                                 <div class="table-responsive">
                                                     <table class="table table-striped">
@@ -407,156 +466,237 @@
     </div>
 </div>
 
-<!-- Add Family Member Modal -->
-<div class="modal fade" id="addFamilyMemberModal" tabindex="-1" aria-labelledby="addFamilyMemberModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addFamilyMemberModalLabel">Thêm thành viên gia đình</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="familyMemberForm">
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="family_quan_he" class="form-label">Quan hệ <span class="text-danger">*</span></label>
-                                <select class="form-select" id="family_quan_he" name="quan_he" required>
-                                    <option value="">Chọn quan hệ</option>
-                                    <option value="cha">Cha</option>
-                                    <option value="me">Mẹ</option>
-                                    <option value="vo">Vợ</option>
-                                    <option value="chong">Chồng</option>
-                                    <option value="con">Con</option>
-                                    <option value="anh">Anh</option>
-                                    <option value="chi">Chị</option>
-                                    <option value="em">Em</option>
-                                    <option value="ong">Ông</option>
-                                    <option value="ba">Bà</option>
-                                    <option value="khac">Khác</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="family_ho_ten" class="form-label">Họ tên <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="family_ho_ten" name="ho_ten" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="family_ngay_sinh" class="form-label">Ngày sinh</label>
-                                <input type="date" class="form-control" id="family_ngay_sinh" name="ngay_sinh">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="family_nghe_nghiep" class="form-label">Nghề nghiệp</label>
-                                <input type="text" class="form-control" id="family_nghe_nghiep" name="nghe_nghiep">
-                            </div>
-                            <div class="mb-3">
-                                <label for="family_dien_thoai" class="form-label">Điện thoại</label>
-                                <input type="text" class="form-control" id="family_dien_thoai" name="dien_thoai">
-                            </div>
-                            <div class="mb-3">
-                                <label for="family_dia_chi" class="form-label">Địa chỉ liên hệ</label>
-                                <textarea class="form-control" id="family_dia_chi" name="dia_chi_lien_he" rows="2"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="family_la_nguoi_phu_thuoc" name="la_nguoi_phu_thuoc" value="1">
-                                    <label class="form-check-label" for="family_la_nguoi_phu_thuoc">
-                                        Là người phụ thuộc
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="family_ghi_chu" class="form-label">Ghi chú</label>
-                        <textarea class="form-control" id="family_ghi_chu" name="ghi_chu" rows="2"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Lưu</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
-function previewAvatar(input) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const preview = document.getElementById('avatarPreview');
-            preview.innerHTML = `<img src="${e.target.result}" alt="Avatar" class="rounded-circle shadow" width="120" height="120" style="object-fit: cover;">`;
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
+$(document).ready(function() {
+    // Array to store all family members (database + temporary)
+    let familyMembers = [
+        @foreach($nhanVien->thongTinGiaDinh as $member)
+            {
+                id: {{ $member->id }},
+                quan_he: "{{ $member->quan_he }}",
+                ho_ten: "{{ $member->ho_ten }}",
+                ngay_sinh: "{{ $member->ngay_sinh ? \Carbon\Carbon::parse($member->ngay_sinh)->format('Y-m-d') : '' }}",
+                nghe_nghiep: "{{ $member->nghe_nghiep ?? '' }}",
+                dien_thoai: "{{ $member->dien_thoai ?? '' }}",
+                dia_chi_lien_he: "{{ $member->dia_chi_lien_he ?? '' }}",
+                ghi_chu: "{{ $member->ghi_chu ?? '' }}",
+                la_nguoi_phu_thuoc: {{ $member->la_nguoi_phu_thuoc ? 'true' : 'false' }},
+                is_temp: false
+            },
+        @endforeach
+    ];
 
-// Handle family member form submission
-document.getElementById('familyMemberForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+    // Function to render the family members table
+    function renderFamilyTable() {
+        const $tableBody = $('#familyTableBody');
+        const $tableContainer = $('#familyTableContainer');
+        const $noFamilyMessage = $('#noFamilyMessage');
 
-    const formData = new FormData(this);
-
-    fetch('{{ route("nhan-vien.addFamilyMember", $nhanVien->id) }}', {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Close modal and reload page
-            const modal = bootstrap.Modal.getInstance(document.getElementById('addFamilyMemberModal'));
-            modal.hide();
-            location.reload();
-        } else {
-            alert('Có lỗi xảy ra: ' + (data.message || 'Không thể lưu thành viên gia đình'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Có lỗi xảy ra khi lưu thành viên gia đình');
-    });
-});
-
-// Reset form when modal is shown
-document.getElementById('addFamilyMemberModal').addEventListener('show.bs.modal', function() {
-    document.getElementById('familyMemberForm').reset();
-});
-
-function editFamilyMember(memberId) {
-    // TODO: Implement edit functionality
-    alert('Chức năng chỉnh sửa thành viên gia đình đang được phát triển');
-}
-
-function deleteFamilyMember(memberId) {
-    if (confirm('Bạn có chắc chắn muốn xóa thành viên gia đình này?')) {
-        fetch('{{ route("nhan-vien.deleteFamilyMember", [$nhanVien->id, ":memberId"]) }}'.replace(':memberId', memberId), {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
+        if (familyMembers.length === 0) {
+            if ($noFamilyMessage.length) {
+                $noFamilyMessage.show();
             } else {
-                alert('Có lỗi xảy ra: ' + (data.message || 'Không thể xóa thành viên gia đình'));
+                $tableContainer.html('<p class="text-muted" id="noFamilyMessage">Chưa có thông tin thành viên gia đình</p>');
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra khi xóa thành viên gia đình');
+            $tableBody.closest('.table-responsive').hide();
+            return;
+        }
+
+        let html = '';
+        familyMembers.forEach(function(member, idx) {
+            html += `<tr data-id="${member.id || ''}" data-idx="${idx}">
+                <td>${member.quan_he}</td>
+                <td>${member.ho_ten}</td>
+                <td>${member.ngay_sinh ? new Date(member.ngay_sinh).toLocaleDateString('vi-VN') : ''}</td>
+                <td>${member.nghe_nghiep || ''}</td>
+                <td>${member.dien_thoai || ''}</td>
+                <td>${member.dia_chi_lien_he || ''}</td>
+                <td><span class="badge ${member.la_nguoi_phu_thuoc ? 'bg-success' : 'bg-secondary'}">${member.la_nguoi_phu_thuoc ? 'Có' : 'Không'}</span></td>
+                <td>${member.ghi_chu || ''}</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-outline-primary me-1 edit-family" data-idx="${idx}">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger delete-family" data-idx="${idx}" data-id="${member.id || ''}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>`;
         });
+
+        if ($tableBody.length) {
+            $tableBody.html(html);
+            $tableBody.closest('.table-responsive').show();
+            $noFamilyMessage.hide();
+        } else {
+            $tableContainer.html(`
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Quan hệ</th>
+                                <th>Họ tên</th>
+                                <th>Ngày sinh</th>
+                                <th>Nghề nghiệp</th>
+                                <th>Điện thoại</th>
+                                <th>Địa chỉ liên hệ</th>
+                                <th>Người phụ thuộc</th>
+                                <th>Ghi chú</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="familyTableBody">${html}</tbody>
+                    </table>
+                </div>
+            `);
+        }
     }
-}
+
+    // Show/hide add family member form
+    $('#showAddFamilyForm').click(function() {
+        $('#addFamilyFormContainer').show();
+        $('#addFamilyFormContainer').find('input, select, textarea').val('');
+        $('#family_la_nguoi_phu_thuoc').prop('checked', false);
+        $('#family_id').val('');
+        $('#addFamilyMember').text('Lưu');
+    });
+
+    $('#cancelAddFamily').click(function() {
+        $('#addFamilyFormContainer').hide();
+    });
+
+    // Handle add/edit family member button click
+    $('#addFamilyMember').click(function() {
+        const $form = $('#addFamilyFormContainer');
+        const quan_he = $form.find('[name="quan_he"]').val();
+        const ho_ten = $form.find('[name="ho_ten"]').val();
+        const family_id = $form.find('[name="family_id"]').val();
+
+        // Basic validation
+        if (!quan_he || !ho_ten) {
+            alert('Vui lòng điền đầy đủ Quan hệ và Họ tên.');
+            return;
+        }
+
+        const member = {
+            id: family_id || null,
+            quan_he: quan_he,
+            ho_ten: ho_ten,
+            ngay_sinh: $form.find('[name="ngay_sinh"]').val() || null,
+            nghe_nghiep: $form.find('[name="nghe_nghiep"]').val() || null,
+            dien_thoai: $form.find('[name="dien_thoai"]').val() || null,
+            dia_chi_lien_he: $form.find('[name="dia_chi_lien_he"]').val() || null,
+            ghi_chu: $form.find('[name="ghi_chu"]').val() || null,
+            la_nguoi_phu_thuoc: $form.find('[name="la_nguoi_phu_thuoc"]').is(':checked'),
+            is_temp: !family_id // New members are marked as temporary
+        };
+
+        if (family_id) {
+            // Update existing member in array
+            const idx = familyMembers.findIndex(m => (m.id && m.id == family_id) || (m.is_temp && m === familyMembers[parseInt($form.data('edit-idx'))]));
+            if (idx !== -1) {
+                familyMembers[idx] = member;
+            }
+        } else {
+            // Add new member
+            familyMembers.push(member);
+        }
+
+        renderFamilyTable();
+        $('#addFamilyFormContainer').hide();
+        $form.find('input, select, textarea').val('');
+        $('#family_la_nguoi_phu_thuoc').prop('checked', false);
+        $('#family_id').val('');
+    });
+
+    // Handle edit family member
+    $(document).on('click', '.edit-family', function() {
+        const idx = $(this).data('idx');
+        const member = familyMembers[idx];
+        const $form = $('#addFamilyFormContainer');
+
+        $form.find('[name="quan_he"]').val(member.quan_he);
+        $form.find('[name="ho_ten"]').val(member.ho_ten);
+        $form.find('[name="ngay_sinh"]').val(member.ngay_sinh || '');
+        $form.find('[name="nghe_nghiep"]').val(member.nghe_nghiep || '');
+        $form.find('[name="dien_thoai"]').val(member.dien_thoai || '');
+        $form.find('[name="dia_chi_lien_he"]').val(member.dia_chi_lien_he || '');
+        $form.find('[name="ghi_chu"]').val(member.ghi_chu || '');
+        $form.find('[name="la_nguoi_phu_thuoc"]').prop('checked', member.la_nguoi_phu_thuoc);
+        $form.find('[name="family_id"]').val(member.id || '');
+        $form.data('edit-idx', idx); // Store index for editing temporary members
+        $('#addFamilyMember').text('Cập nhật');
+
+        $('#addFamilyFormContainer').show();
+    });
+
+    // Handle delete family member (client-side for temporary, AJAX for database)
+    $(document).on('click', '.delete-family', function() {
+        const idx = $(this).data('idx');
+        const memberId = $(this).data('id');
+
+        if (memberId && !familyMembers[idx].is_temp) {
+            // Database member: use AJAX
+            if (confirm('Bạn có chắc chắn muốn xóa thành viên gia đình này?')) {
+                $.ajax({
+                    url: '{{ route("nhan-vien.deleteFamilyMember", [$nhanVien->id, ":memberId"]) }}'.replace(':memberId', memberId),
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    success: function(data) {
+                        if (data.success) {
+                            familyMembers.splice(idx, 1);
+                            renderFamilyTable();
+                        } else {
+                            alert('Có lỗi xảy ra: ' + (data.message || 'Không thể xóa thành viên gia đình'));
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error:', error);
+                        alert('Có lỗi xảy ra khi xóa thành viên gia đình');
+                    }
+                });
+            }
+        } else {
+            // Temporary member: remove from array
+            if (confirm('Bạn có chắc chắn muốn xóa thành viên gia đình này?')) {
+                familyMembers.splice(idx, 1);
+                renderFamilyTable();
+            }
+        }
+    });
+
+    // Append family members to main form on submit
+    $('#employeeForm').submit(function() {
+        $('#addFamilyFormContainer').hide();
+        let $input = $('#tempFamilyMembersInput');
+        if ($input.length === 0) {
+            $input = $('<input>').attr({
+                type: 'hidden',
+                name: 'temp_family_members',
+                id: 'tempFamilyMembersInput'
+            });
+            $(this).append($input);
+        }
+        $input.val(JSON.stringify(familyMembers));
+    });
+
+    // Avatar preview
+    window.previewAvatar = function(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#avatarPreview').html(`<img src="${e.target.result}" alt="Avatar" class="rounded-circle shadow" width="120" height="120" style="object-fit: cover;">`);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    };
+
+    // Initialize table on page load
+    renderFamilyTable();
+});
 </script>
 @endsection

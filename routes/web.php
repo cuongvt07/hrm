@@ -27,6 +27,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 
 // Quản lý nhân viên
 Route::resource('nhan-vien', NhanVienController::class);
+Route::post('nhan-vien/bulk-delete', [NhanVienController::class, 'bulkDelete'])->name('nhan-vien.bulk-delete');
 Route::get('nhan-vien-export', [NhanVienController::class, 'export'])->name('nhan-vien.export');
 
 // AJAX routes for family members and documents
