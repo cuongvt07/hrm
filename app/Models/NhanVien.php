@@ -30,13 +30,15 @@ class NhanVien extends Model
         'phong_ban_id',
         'chuc_vu_id',
         'ngay_vao_lam',
+        'ngay_thu_viec',
         'trang_thai',
         'anh_dai_dien'
     ];
 
     protected $casts = [
         'ngay_sinh' => 'date',
-        'ngay_vao_lam' => 'date'
+        'ngay_vao_lam' => 'date',
+        'ngay_thu_viec' => 'date'
     ];
 
     // Quan hệ với phòng ban
@@ -63,16 +65,45 @@ class NhanVien extends Model
         return $this->hasMany(HopDongLaoDong::class, 'nhan_vien_id');
     }
 
-    // Quan hệ với nghỉ phép
-    public function nghiPhep(): HasMany
+    // Quan hệ với giấy tờ tùy thân
+    public function giayToTuyThan(): HasMany
     {
-        return $this->hasMany(NghiPhep::class, 'nhan_vien_id');
+        return $this->hasMany(GiayToTuyThan::class, 'nhan_vien_id');
+    }
+
+    // Quan hệ với thông tin liên hệ
+    public function thongTinLienHe(): HasOne
+    {
+        return $this->hasOne(ThongTinLienHe::class, 'nhan_vien_id');
+    }
+
+    // Quan hệ với thông tin gia đình
+    public function thongTinGiaDinh(): HasMany
+    {
+        return $this->hasMany(ThongTinGiaDinh::class, 'nhan_vien_id');
+    }
+
+    // Quan hệ với tệp tin
+    public function tepTin(): HasMany
+    {
+        return $this->hasMany(TepTin::class, 'nhan_vien_id');
     }
 
     // Accessor cho họ tên đầy đủ
     public function getHoTenAttribute(): string
     {
         return $this->ho . ' ' . $this->ten;
+    }
+
+    // Accessor cho loại hợp đồng (từ hợp đồng lao động đang hoạt động)
+    public function getLoaiHopDongAttribute()
+    {
+        $hopDongHoatDong = $this->hopDongLaoDong()
+            ->where('trang_thai', 'hoat_dong')
+            ->latest('ngay_bat_dau')
+            ->first();
+
+        return $hopDongHoatDong ? $hopDongHoatDong->loai_hop_dong : null;
     }
 
     // Scope cho nhân viên đang làm việc

@@ -29,17 +29,18 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 Route::resource('nhan-vien', NhanVienController::class);
 Route::get('nhan-vien-export', [NhanVienController::class, 'export'])->name('nhan-vien.export');
 
+// AJAX routes for family members and documents
+Route::post('nhan-vien/{nhanVien}/add-family-member', [NhanVienController::class, 'addFamilyMember'])->name('nhan-vien.addFamilyMember');
+Route::put('nhan-vien/{nhanVien}/family-member/{familyMember}', [NhanVienController::class, 'updateFamilyMember'])->name('nhan-vien.updateFamilyMember');
+Route::delete('nhan-vien/{nhanVien}/family-member/{familyMember}', [NhanVienController::class, 'deleteFamilyMember'])->name('nhan-vien.deleteFamilyMember');
+Route::post('nhan-vien/{nhanVien}/add-document', [NhanVienController::class, 'addDocument'])->name('nhan-vien.addDocument');
+Route::delete('nhan-vien/{nhanVien}/document/{document}', [NhanVienController::class, 'deleteDocument'])->name('nhan-vien.deleteDocument');
+
 // Quản lý hợp đồng
 Route::resource('hop-dong', HopDongController::class);
 
 // Quản lý chế độ
 Route::prefix('che-do')->name('che-do.')->group(function () {
-    // Nghỉ phép
-    Route::get('/nghi-phep', [CheDoController::class, 'nghiPhepIndex'])->name('nghi-phep.index');
-    Route::get('/nghi-phep/{nghiPhep}', [CheDoController::class, 'nghiPhepShow'])->name('nghi-phep.show');
-    Route::patch('/nghi-phep/{nghiPhep}/approve', [CheDoController::class, 'nghiPhepApprove'])->name('nghi-phep.approve');
-    Route::patch('/nghi-phep/{nghiPhep}/reject', [CheDoController::class, 'nghiPhepReject'])->name('nghi-phep.reject');
-    
     // Khen thưởng kỷ luật
     Route::get('/khen-thuong-ky-luat', [CheDoController::class, 'khenThuongKyLuatIndex'])->name('khen-thuong-ky-luat.index');
     Route::get('/khen-thuong-ky-luat/create', [CheDoController::class, 'khenThuongKyLuatCreate'])->name('khen-thuong-ky-luat.create');
@@ -51,10 +52,8 @@ Route::prefix('bao-cao')->name('bao-cao.')->group(function () {
     Route::get('/', [BaoCaoController::class, 'index'])->name('index');
     Route::get('/nhan-su', [BaoCaoController::class, 'nhanSu'])->name('nhan-su');
     Route::get('/hop-dong', [BaoCaoController::class, 'hopDong'])->name('hop-dong');
-    Route::get('/nghi-phep', [BaoCaoController::class, 'nghiPhep'])->name('nghi-phep');
     
     // Export báo cáo
     Route::get('/nhan-su/export', [BaoCaoController::class, 'exportNhanSu'])->name('nhan-su.export');
     Route::get('/hop-dong/export', [BaoCaoController::class, 'exportHopDong'])->name('hop-dong.export');
-    Route::get('/nghi-phep/export', [BaoCaoController::class, 'exportNghiPhep'])->name('nghi-phep.export');
 });

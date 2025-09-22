@@ -4,72 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\KhenThuongKyLuat;
 use App\Models\KhenThuongKyLuatDoiTuong;
-use App\Models\NghiPhep;
 use App\Models\NhanVien;
 use App\Models\PhongBan;
 use Illuminate\Http\Request;
 
 class CheDoController extends Controller
 {
-    // Quản lý nghỉ phép
-    public function nghiPhepIndex(Request $request)
-    {
-        $query = NghiPhep::with('nhanVien');
-
-        // Tìm kiếm
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->whereHas('nhanVien', function($q) use ($search) {
-                $q->where('ten', 'like', "%{$search}%")
-                  ->orWhere('ho', 'like', "%{$search}%");
-            });
-        }
-
-        // Lọc theo trạng thái
-        if ($request->filled('trang_thai')) {
-            $query->where('trang_thai', $request->trang_thai);
-        }
-
-        // Lọc theo loại nghỉ
-        if ($request->filled('loai_nghi')) {
-            $query->where('loai_nghi', $request->loai_nghi);
-        }
-
-        $nghiPheps = $query->orderBy('created_at', 'desc')->paginate(20);
-
-        return view('che-do.nghi-phep.index', compact('nghiPheps'));
-    }
-
-    public function nghiPhepShow(NghiPhep $nghiPhep)
-    {
-        $nghiPhep->load('nhanVien');
-        
-        return view('che-do.nghi-phep.show', compact('nghiPhep'));
-    }
-
-    public function nghiPhepApprove(NghiPhep $nghiPhep)
-    {
-        $nghiPhep->update(['trang_thai' => 'da_duyet']);
-
-        return redirect()->back()
-            ->with('success', 'Duyệt đơn nghỉ phép thành công!');
-    }
-
-    public function nghiPhepReject(Request $request, NghiPhep $nghiPhep)
-    {
-        $request->validate([
-            'ly_do_tu_choi' => 'required|string'
-        ]);
-
-        $nghiPhep->update([
-            'trang_thai' => 'tu_choi',
-            'ghi_chu' => $request->ly_do_tu_choi
-        ]);
-
-        return redirect()->back()
-            ->with('success', 'Từ chối đơn nghỉ phép thành công!');
-    }
-
     // Quản lý khen thưởng kỷ luật
     public function khenThuongKyLuatIndex(Request $request)
     {

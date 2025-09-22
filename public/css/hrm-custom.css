@@ -1,14 +1,14 @@
 /* HRM System Custom Styles */
 
 :root {
-    --primary-color: #2c3e50;
-    --secondary-color: #34495e;
+    --primary-color: #3498db;
+    --secondary-color: #2980b9;
     --success-color: #27ae60;
     --danger-color: #e74c3c;
     --warning-color: #f39c12;
     --info-color: #3498db;
     --light-color: #ecf0f1;
-    --dark-color: #2c3e50;
+    --dark-color: #2980b9;
     --border-radius: 8px;
     --box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     --box-shadow-lg: 0 4px 8px rgba(0,0,0,0.15);
@@ -18,8 +18,36 @@
 /* Global Styles */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fa;
-    color: #2c3e50;
+    background-color: #eaf6fb;
+    color: #2980b9;
+}
+/* Table-light custom for blue theme */
+.table-light {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%) !important;
+    border: none;
+}
+.table-light th {
+    background: transparent !important;
+    border: none;
+    font-weight: 600;
+    color: #fff !important;
+    font-size: calc(0.875rem + 1px); /* tăng 1px */
+    padding: 0.75rem 0.5rem;
+    text-transform: none; /* chữ thường */
+}
+.table-light td {
+    font-size: calc(0.875rem + 1px);
+}
+/* Custom alert bottom right */
+.custom-alert {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    min-width: 300px;
+    box-shadow: 0 4px 16px rgba(52,152,219,0.15);
+    border-radius: 8px;
+    font-size: 1rem;
 }
 
 /* Card Enhancements */
@@ -496,7 +524,24 @@ body {
 
 .sidebar.collapsed .nav-link {
     justify-content: center;
-    padding: 0.75rem 0.5rem;
+    padding: 0.75rem 5px;
+}
+
+.sidebar.collapsed .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+}
+
+.sidebar.collapsed .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.sidebar.collapsed .nav-link.active:hover {
+    background-color: rgba(255, 255, 255, 0.35);
+}
+
+.sidebar.collapsed .nav-link i {
+    margin-right: 0;
 }
 
 .sidebar.collapsed .sidebar-footer {
@@ -917,6 +962,11 @@ h4 { font-size: calc(1.5rem - 2px); }
 h5 { font-size: calc(1.25rem - 2px); }
 h6 { font-size: calc(1rem - 2px); }
 
+
+h5, h6 {
+    color: #000000;
+}
+
 /* Employee Detail Overlay */
 .employee-overlay {
     position: fixed;
@@ -930,12 +980,6 @@ h6 { font-size: calc(1rem - 2px); }
     align-items: center;
     justify-content: center;
     padding: 20px;
-    pointer-events: auto;
-}
-
-.employee-overlay:not([style*="display: flex"]) {
-    display: none !important;
-    pointer-events: none;
 }
 
 .employee-detail {
@@ -1144,122 +1188,43 @@ h6 { font-size: calc(1rem - 2px); }
     font-size: calc(0.875rem - 2px);
 }
 
-/* Modern Filter Bar */
+/* Ultra Compact Filter Bar */
 .filter-bar {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    background: #f8f9fa;
     border: 1px solid #dee2e6;
-    border-radius: 0.75rem;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    position: relative;
-    overflow: hidden;
-}
-
-.filter-bar::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 0.375rem;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .filter-form {
     display: flex;
-    gap: 1rem;
-    align-items: end;
+    gap: 0.5rem;
+    align-items: center;
     flex-wrap: wrap;
 }
 
 .filter-group {
     flex: 1;
-    min-width: 180px;
-    position: relative;
+    min-width: 150px;
 }
 
 .filter-group .form-control,
 .filter-group .form-select {
-    padding: 0.75rem 1rem;
+    padding: 0.375rem 0.5rem;
     font-size: calc(0.875rem - 2px);
-    border: 2px solid #e9ecef;
-    border-radius: 0.5rem;
-    background: #fff;
-    transition: all 0.3s ease;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
-}
-
-.filter-group .form-control:focus,
-.filter-group .form-select:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-    transform: translateY(-1px);
-}
-
-.filter-group label {
-    position: absolute;
-    top: -0.5rem;
-    left: 0.75rem;
-    background: #fff;
-    padding: 0 0.5rem;
-    font-size: calc(0.75rem - 2px);
-    color: #6c757d;
-    font-weight: 500;
-    z-index: 1;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
 }
 
 .filter-actions {
     display: flex;
-    gap: 0.5rem;
-    align-items: center;
+    gap: 0.25rem;
 }
 
 .filter-actions .btn {
-    padding: 0.75rem 1.25rem;
+    padding: 0.375rem 0.75rem;
     font-size: calc(0.875rem - 2px);
-    border-radius: 0.5rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-}
-
-.filter-actions .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
-}
-
-.filter-actions .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-}
-
-.filter-actions .btn-outline-secondary {
-    border-color: #6c757d;
-    color: #6c757d;
-}
-
-.filter-actions .btn-outline-secondary:hover {
-    background: #6c757d;
-    border-color: #6c757d;
-    color: #fff;
-}
-
-.filter-actions .btn-outline-danger {
-    border-color: #dc3545;
-    color: #dc3545;
-}
-
-.filter-actions .btn-outline-danger:hover {
-    background: #dc3545;
-    border-color: #dc3545;
-    color: #fff;
-}
-
-.filter-actions .btn:disabled {
-    opacity: 0.5;
-    transform: none;
-    box-shadow: none;
 }
 
 /* Employee Header */
@@ -1368,33 +1333,6 @@ h6 { font-size: calc(1rem - 2px); }
 
 .table-hover tbody tr:hover {
     background-color: #f8f9fa;
-    transform: none;
-}
-
-/* Remove all transform effects on hover */
-.btn:hover,
-.card:hover,
-.nav-link:hover,
-.page-link:hover {
-    transform: none !important;
-}
-
-/* Smooth transitions without movement */
-.btn {
-    transition: all 0.2s ease-in-out;
-}
-
-.btn:hover {
-    transform: translateY(0) !important;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-}
-
-.nav-link {
-    transition: all 0.2s ease-in-out;
-}
-
-.nav-link:hover {
-    transform: translateX(0) !important;
 }
 
 /* Compact Pagination */

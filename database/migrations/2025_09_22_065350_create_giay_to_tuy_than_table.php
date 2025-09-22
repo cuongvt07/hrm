@@ -11,16 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('nghi_phep', function (Blueprint $table) {
+        Schema::create('giay_to_tuy_than', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('nhan_vien_id');
-            $table->enum('loai_nghi', ['nghi_phep_nam', 'nghi_benh', 'nghi_khong_luong', 'nghi_thai_san', 'khac'])->default('khac');
-            $table->date('ngay_bat_dau');
-            $table->date('ngay_ket_thuc');
-            $table->text('ly_do')->nullable();
-            $table->enum('trang_thai', ['cho_duyet', 'da_duyet', 'tu_choi'])->default('cho_duyet');
+            $table->enum('loai_giay_to', ['CMND', 'CCCD', 'Ho_chieu', 'Ma_so_thue', 'Khac'])->default('CCCD');
+            $table->string('so_giay_to', 50);
+            $table->date('ngay_cap')->nullable();
+            $table->string('noi_cap', 255)->nullable();
+            $table->date('ngay_het_han')->nullable();
+            $table->text('ghi_chu')->nullable();
             $table->timestamps();
-            
+
             $table->foreign('nhan_vien_id')->references('id')->on('nhanvien')->onDelete('cascade');
         });
     }
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('nghi_phep');
+        Schema::dropIfExists('giay_to_tuy_than');
     }
 };

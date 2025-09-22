@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\NhanVien;
 use App\Models\PhongBan;
 use App\Models\HopDongLaoDong;
-use App\Models\NghiPhep;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -83,41 +82,6 @@ class BaoCaoController extends Controller
         ));
     }
 
-    public function nghiPhep()
-    {
-        // Thống kê nghỉ phép theo loại
-        $leaveTypeStats = NghiPhep::selectRaw('loai_nghi, COUNT(*) as count')
-            ->groupBy('loai_nghi')
-            ->get();
-
-        // Thống kê nghỉ phép theo trạng thái
-        $leaveStatusStats = NghiPhep::selectRaw('trang_thai, COUNT(*) as count')
-            ->groupBy('trang_thai')
-            ->get();
-
-        // Thống kê nghỉ phép theo tháng
-        $monthlyLeaveStats = NghiPhep::selectRaw('MONTH(ngay_bat_dau) as month, COUNT(*) as count')
-            ->whereYear('ngay_bat_dau', now()->year)
-            ->groupBy('month')
-            ->orderBy('month')
-            ->get();
-
-        // Top nhân viên nghỉ nhiều nhất
-        $topLeaveEmployees = NghiPhep::selectRaw('nhan_vien_id, COUNT(*) as total_leaves')
-            ->with('nhanVien')
-            ->groupBy('nhan_vien_id')
-            ->orderBy('total_leaves', 'desc')
-            ->limit(10)
-            ->get();
-
-        return view('bao-cao.nghi-phep', compact(
-            'leaveTypeStats',
-            'leaveStatusStats',
-            'monthlyLeaveStats',
-            'topLeaveEmployees'
-        ));
-    }
-
     public function exportNhanSu()
     {
         // Logic xuất báo cáo nhân sự
@@ -127,12 +91,6 @@ class BaoCaoController extends Controller
     public function exportHopDong()
     {
         // Logic xuất báo cáo hợp đồng
-        return response()->download(/* file path */);
-    }
-
-    public function exportNghiPhep()
-    {
-        // Logic xuất báo cáo nghỉ phép
         return response()->download(/* file path */);
     }
 }

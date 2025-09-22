@@ -52,14 +52,6 @@
             <li class="nav-item">
                 <div class="sidebar-heading">Chế độ</div>
             </li>
-            
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('che-do.nghi-phep.*') ? 'active' : '' }}" 
-                   href="{{ route('che-do.nghi-phep.index') }}" title="Quản lý nghỉ phép">
-                    <i class="fas fa-calendar-times"></i>
-                    <span class="nav-text">Nghỉ phép</span>
-                </a>
-            </li>
 
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('che-do.khen-thuong-ky-luat.*') ? 'active' : '' }}" 
