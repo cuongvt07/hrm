@@ -181,10 +181,10 @@
                                         <a class="nav-link" id="family-tab" data-bs-toggle="tab" href="#family" role="tab" aria-controls="family" aria-selected="false">Gia đình</a>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <a class="nav-link" id="documents-tab" data-bs-toggle="tab" href="#documents" role="tab" aria-controls="documents" aria-selected="false">Tài liệu</a>
+                                        <a class="nav-link" id="giayto-tab" data-bs-toggle="tab" href="#giayto" role="tab" aria-controls="giayto" aria-selected="false">Giấy tờ tùy thân</a>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="giayto-tab" data-bs-toggle="tab" data-bs-target="#giayto" type="button" role="tab">Giấy tờ tùy thân</button>
+                                        <a class="nav-link" id="documents-tab" data-bs-toggle="tab" href="#documents" role="tab" aria-controls="documents" aria-selected="false">Tài liệu</a>
                                     </li>
                                 </ul>
 
@@ -298,6 +298,32 @@
                                                             </div>
                                                             <div class="col-12">
                                                                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                                                    <strong class="text-dark"><i class="fas fa-user me-1"></i>Quản lý trực tiếp:</strong>
+                                                                    <span class="fw-bold">
+                                                                        @if($nhanVien->quanLyTrucTiep)
+                                                                            {{ $nhanVien->quanLyTrucTiep->ho }} {{ $nhanVien->quanLyTrucTiep->ten }}
+                                                                        @else
+                                                                            <span class="text-muted">Không có</span>
+                                                                        @endif
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                                                    <strong class="text-dark"><i class="fas fa-users me-1"></i>Nhân viên cấp dưới:</strong>
+                                                                    <span class="fw-bold">
+                                                                        @if($nhanVien->capDuoi && $nhanVien->capDuoi->count() > 0)
+                                                                            {!! $nhanVien->capDuoi->map(function($nv){
+                                                                                return $nv->ho . ' ' . $nv->ten . ' - ' . $nv->ma_nhanvien;
+                                                                            })->implode('<br>') !!}
+                                                                        @else
+                                                                            <span class="text-muted">Không có</span>
+                                                                        @endif
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                                                                     <strong class="text-dark"><i class="fas fa-calendar-plus me-1"></i>Ngày vào làm:</strong>
                                                                     <span class="fw-bold">{{ $nhanVien->ngay_vao_lam ? \Carbon\Carbon::parse($nhanVien->ngay_vao_lam)->format('d/m/Y') : '-' }}</span>
                                                                 </div>
@@ -370,6 +396,8 @@
                                                     </div>
                                                 </div>
                                             </div>
+
+
                                         </div>
 
                                         <!-- Contract Information -->
@@ -429,6 +457,52 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                        @endif
+
+                                        <!-- Thông tin lương -->
+                                        @if($nhanVien->thongTinLuong)
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="card border-0 bg-light mb-4">
+                                                    <div class="card-header bg-warning text-dark">
+                                                        <h5 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i>Thông tin lương</h5>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Lương cơ bản</label>
+                                                                    <div class="fw-bold">{{ number_format($nhanVien->thongTinLuong->luong_co_ban, 0, ',', '.') }} VNĐ</div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Số tài khoản ngân hàng</label>
+                                                                    <div class="fw-bold">{{ $nhanVien->thongTinLuong->so_tai_khoan ?? '-' }}</div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Tên ngân hàng</label>
+                                                                    <div class="fw-bold">{{ $nhanVien->thongTinLuong->ten_ngan_hang ?? '-' }}</div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Chi nhánh ngân hàng</label>
+                                                                    <div class="fw-bold">{{ $nhanVien->thongTinLuong->chi_nhanh_ngan_hang ?? '-' }}</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @else
+                                        <div class="text-center py-4">
+                                            <i class="fas fa-money-bill-wave fa-2x text-muted mb-2"></i>
+                                            <p class="text-muted">Chưa có thông tin lương</p>
+                                        </div>
                                         @endif
                                     </div>
                                     <!-- Contact Tab -->
@@ -688,8 +762,45 @@
                                         @endif
                                     </div>
                                     <!-- Giấy tờ tùy thân Tab -->
-                                    <div class="tab-pane fade" id="giayto" role="tabpanel">
-                                        @include('nhan-vien.partials.giay-to-tuy-than', ['nhanVien' => $nhanVien])
+                                    <div class="tab-pane fade" id="giayto" role="tabpanel" aria-labelledby="giayto-tab">
+                                        @if($nhanVien->thongTinGiayTo && $nhanVien->thongTinGiayTo->count() > 0)
+                                            <div class="card border-0 shadow-sm">
+                                                <div class="card-header bg-success text-white">
+                                                    <h5 class="mb-0"><i class="fas fa-id-card me-2"></i>Giấy tờ tùy thân</h5>
+                                                </div>
+                                                <div class="card-body p-0">
+                                                    <table class="table table-bordered mb-0">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th>Loại giấy tờ</th>
+                                                                <th>Số giấy tờ</th>
+                                                                <th>Ngày cấp</th>
+                                                                <th>Nơi cấp</th>
+                                                                <th>Ngày hết hạn</th>
+                                                                <th>Ghi chú</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($nhanVien->thongTinGiayTo as $giayTo)
+                                                                <tr>
+                                                                    <td>{{ $giayTo->loai_giay_to }}</td>
+                                                                    <td>{{ $giayTo->so_giay_to }}</td>
+                                                                    <td>{{ $giayTo->ngay_cap ? \Carbon\Carbon::parse($giayTo->ngay_cap)->format('d/m/Y') : '-' }}</td>
+                                                                    <td>{{ $giayTo->noi_cap ?? '-' }}</td>
+                                                                    <td>{{ $giayTo->ngay_het_han ? \Carbon\Carbon::parse($giayTo->ngay_het_han)->format('d/m/Y') : '-' }}</td>
+                                                                    <td>{{ $giayTo->ghi_chu ?? '-' }}</td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="text-center py-5">
+                                                <i class="fas fa-id-card fa-3x text-muted mb-3"></i>
+                                                <p class="text-muted fs-5">Chưa có thông tin giấy tờ tùy thân</p>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

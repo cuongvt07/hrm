@@ -66,7 +66,7 @@ class NhanVienController extends Controller
 
     public function show(NhanVien $nhanVien)
     {
-        $nhanVien->load(['phongBan', 'chucVu', 'taiKhoan', 'hopDongLaoDong', 'thongTinLienHe', 'thongTinGiaDinh', 'tepTin']);
+        $nhanVien->load(['phongBan', 'chucVu', 'taiKhoan', 'hopDongLaoDong', 'thongTinLienHe', 'thongTinGiaDinh', 'tepTin', 'thongTinGiayTo', 'thongTinLuong', 'quanLyTrucTiep', 'capDuoi']);
 
         return view('nhan-vien.show', compact('nhanVien'));
     }
@@ -197,7 +197,10 @@ class NhanVienController extends Controller
             'lien_he_khan_cap_quan_he' => 'nullable|string|max:50',
             'lien_he_khan_cap_dien_thoai' => 'nullable|string|max:20',
             // Family members (optional, validated below if provided)
-            'temp_family_members' => 'nullable|string'
+            'temp_family_members' => 'nullable|string',
+            // My file (giấy tờ tùy thân)
+            'temp_my_files' => 'nullable|string',
+            'quan_ly_truc_tiep_id' => 'nullable|exists:nhanvien,id'
         ]);
 
         // Handle avatar upload
@@ -278,32 +281,48 @@ class NhanVienController extends Controller
             }
         }
 
-        // Handle giấy tờ tùy thân
-        if ($request->filled('temp_giay_to_tuy_than')) {
-            $giayToArr = json_decode($request->input('temp_giay_to_tuy_than'), true);
-            if (is_array($giayToArr)) {
-                foreach ($giayToArr as $giayTo) {
-                    $giayToData = [
+        // Handle giấy tờ tùy thân (my file)
+        if ($request->filled('temp_my_files')) {
+            $myFilesArr = json_decode($request->input('temp_my_files'), true);
+            if (is_array($myFilesArr)) {
+                foreach ($myFilesArr as $file) {
+                    $fileData = [
                         'nhan_vien_id' => $nhanVien->id,
-                        'loai_giay_to' => $giayTo['loai_giay_to'] ?? null,
-                        'so_giay_to' => $giayTo['so_giay_to'] ?? null,
-                        'ngay_cap' => $giayTo['ngay_cap'] ? Carbon::parse($giayTo['ngay_cap'])->format('Y-m-d') : null,
-                        'noi_cap' => $giayTo['noi_cap'] ?? null,
-                        'ngay_het_han' => $giayTo['ngay_het_han'] ? Carbon::parse($giayTo['ngay_het_han'])->format('Y-m-d') : null,
-                        'ghi_chu' => $giayTo['ghi_chu'] ?? null
+                        'loai_giay_to' => $file['loai_giay_to'] ?? null,
+                        'so_giay_to' => $file['so_giay_to'] ?? null,
+                        'ngay_cap' => $file['ngay_cap'] ? Carbon::parse($file['ngay_cap'])->format('Y-m-d') : null,
+                        'noi_cap' => $file['noi_cap'] ?? null,
+                        'ngay_het_han' => $file['ngay_het_han'] ? Carbon::parse($file['ngay_het_han'])->format('Y-m-d') : null,
+                        'ghi_chu' => $file['ghi_chu'] ?? null
                     ];
-                    if (empty($giayToData['loai_giay_to']) || empty($giayToData['so_giay_to'])) {
+                    if (empty($fileData['loai_giay_to']) || empty($fileData['so_giay_to'])) {
                         continue;
                     }
-                    if (!empty($giayTo['id'])) {
-                        \App\Models\GiayToTuyThan::where('id', $giayTo['id'])
+                    if (!empty($file['id'])) {
+                        \App\Models\GiayToTuyThan::where('id', $file['id'])
                             ->where('nhan_vien_id', $nhanVien->id)
-                            ->update($giayToData);
+                            ->update($fileData);
                     } else {
-                        \App\Models\GiayToTuyThan::create($giayToData);
+                        \App\Models\GiayToTuyThan::create($fileData);
                     }
                 }
             }
+        }
+
+        // Update or create salary info
+        $salaryData = array_filter([
+            'nhan_vien_id' => $nhanVien->id,
+            'luong_co_ban' => $request->luong_co_ban,
+            'so_tai_khoan' => $request->so_tai_khoan,
+            'ten_ngan_hang' => $request->ten_ngan_hang,
+            'chi_nhanh_ngan_hang' => $request->chi_nhanh_ngan_hang
+        ]);
+
+        if (!empty($salaryData) && count($salaryData) > 1) { // More than just nhan_vien_id
+            \App\Models\ThongTinLuong::updateOrCreate(
+                ['nhan_vien_id' => $nhanVien->id],
+                $salaryData
+            );
         }
 
         if ($request->ajax()) {
@@ -477,7 +496,18 @@ class NhanVienController extends Controller
         $phongBans = PhongBan::all();
         $chucVus = ChucVu::all();
 
-        return view('nhan-vien.edit', compact('nhanVien', 'phongBans', 'chucVus'));
+        $managers = collect();
+        if ($nhanVien->phong_ban_id && $nhanVien->chuc_vu_id) {
+            // Lấy id chức vụ hiện tại
+            $currentChucVuId = $nhanVien->chuc_vu_id;
+            $managers = NhanVien::where('phong_ban_id', $nhanVien->phong_ban_id)->with('chucVu')
+                ->where('id', '!=', $nhanVien->id)
+                ->whereNotNull('chuc_vu_id')
+                ->where('chuc_vu_id', '!=', $currentChucVuId)
+                ->get();
+        }
+
+        return view('nhan-vien.edit', compact('nhanVien', 'phongBans', 'chucVus', 'managers'));
     }
 
     public function bulkDelete(Request $request)

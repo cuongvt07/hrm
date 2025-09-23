@@ -7,10 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\ThongTinLuong;
 
 class NhanVien extends Model
 {
     use HasFactory;
+
+    // Quan hệ thông tin lương
+    public function thongTinLuong(): HasOne
+    {
+        return $this->hasOne(ThongTinLuong::class, 'nhan_vien_id');
+    }
 
     protected $table = 'nhanvien';
     
@@ -29,11 +36,23 @@ class NhanVien extends Model
         'dia_chi',
         'phong_ban_id',
         'chuc_vu_id',
+        'quan_ly_truc_tiep_id',
         'ngay_vao_lam',
         'ngay_thu_viec',
         'trang_thai',
         'anh_dai_dien'
     ];
+    // Quan hệ quản lý trực tiếp (mentor/cấp trên)
+    public function quanLyTrucTiep(): BelongsTo
+    {
+        return $this->belongsTo(NhanVien::class, 'quan_ly_truc_tiep_id');
+    }
+
+    // Danh sách nhân viên cấp dưới (nếu là quản lý)
+    public function capDuoi(): HasMany
+    {
+        return $this->hasMany(NhanVien::class, 'quan_ly_truc_tiep_id');
+    }
 
     protected $casts = [
         'ngay_sinh' => 'date',
@@ -110,5 +129,10 @@ class NhanVien extends Model
     public function scopeDangLamViec($query)
     {
         return $query->where('trang_thai', 'nhan_vien_chinh_thuc');
+    }
+
+    public function thongTinGiayTo(): HasMany
+    {
+        return $this->hasMany(GiayToTuyThan::class, 'nhan_vien_id');
     }
 }
