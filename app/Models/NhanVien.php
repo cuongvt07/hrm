@@ -66,7 +66,7 @@ class NhanVien extends Model
     }
 
     // Quan hệ với giấy tờ tùy thân
-    public function giayToTuyThan(): HasMany
+    public function giayToTuyThan()
     {
         return $this->hasMany(GiayToTuyThan::class, 'nhan_vien_id');
     }

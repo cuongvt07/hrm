@@ -73,7 +73,7 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="ngay_sinh" class="form-label">Ngày sinh</label>
+                                        <label for="ngay_sinh" class="form-label">Ngày sinh<span class="text-danger">*</span></label>
                                         <input type="date" class="form-control" id="ngay_sinh" name="ngay_sinh">
                                     </div>
 
@@ -108,6 +108,9 @@
                                         </li>
                                         <li class="nav-item" role="presentation">
                                             <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab">Tài liệu</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="giayto-tab" data-bs-toggle="tab" data-bs-target="#giayto" type="button" role="tab">Giấy tờ tùy thân</button>
                                         </li>
                                     </ul>
 
@@ -160,7 +163,7 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="mb-3">
-                                                        <label for="phong_ban_id" class="form-label">Phòng ban</label>
+                                                        <label for="phong_ban_id" class="form-label">Phòng ban<span class="text-danger">*</span></label>
                                                         <select class="form-select" id="phong_ban_id" name="phong_ban_id">
                                                             <option value="">Chọn phòng ban</option>
                                                             @foreach($phongBans as $phongBan)
@@ -169,7 +172,7 @@
                                                         </select>
                                                     </div>
                                                     <div class="mb-3">
-                                                        <label for="chuc_vu_id" class="form-label">Chức vụ</label>
+                                                        <label for="chuc_vu_id" class="form-label">Chức vụ<span class="text-danger">*</span></label>
                                                         <select class="form-select" id="chuc_vu_id" name="chuc_vu_id">
                                                             <option value="">Chọn chức vụ</option>
                                                             @foreach($chucVus as $chucVu)
@@ -293,6 +296,15 @@
                                             </div>
                                             <p class="text-muted">Sau khi tạo nhân viên thành công, bạn có thể upload tài liệu từ trang chỉnh sửa.</p>
                                         </div>
+
+                                        <!-- Giấy tờ tùy thân Tab -->
+                                        <div class="tab-pane fade" id="giayto" role="tabpanel">
+                                            <div class="alert alert-info">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                Giấy tờ tùy thân có thể được thêm sau khi tạo nhân viên.
+                                            </div>
+                                            <p class="text-muted">Sau khi tạo nhân viên thành công, bạn có thể thêm giấy tờ tùy thân từ trang chỉnh sửa.</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -323,6 +335,77 @@ function previewAvatar(input) {
         };
         reader.readAsDataURL(input.files[0]);
     }
+}
+
+// AJAX submit for employee create form
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('employeeForm');
+    if (!form) return;
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang lưu...';
+
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            body: formData
+        })
+        .then(async response => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-save me-1"></i>Lưu nhân viên';
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.id) {
+                    window.location.href = `/nhan-vien/${data.id}`;
+                    return;
+                }
+                showAlert('Thêm nhân viên thành công!', 'success');
+                form.reset();
+                document.getElementById('avatarPreview').innerHTML = '';
+            } else if (response.status === 422) {
+                const data = await response.json();
+                let errorMsg = 'Vui lòng kiểm tra lại thông tin.';
+                if (data.errors) {
+                    errorMsg += '<ul>' + Object.values(data.errors).map(arr => `<li>${arr[0]}</li>`).join('') + '</ul>';
+                }
+                showAlert(errorMsg, 'danger');
+            } else {
+                showAlert('Đã có lỗi xảy ra. Vui lòng thử lại!', 'danger');
+            }
+        })
+        .catch(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-save me-1"></i>Lưu nhân viên';
+            showAlert('Đã có lỗi xảy ra. Vui lòng thử lại!', 'danger');
+        });
+    });
+});
+
+function showAlert(message, type = 'info') {
+    // Remove existing alerts
+    const existingAlerts = document.querySelectorAll('.custom-alert');
+    existingAlerts.forEach(alert => alert.remove());
+
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible custom-alert fade show`;
+    alertDiv.setAttribute('role', 'alert');
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    alertDiv.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 9999; max-width: 400px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);';
+    document.body.appendChild(alertDiv);
+    setTimeout(() => {
+        if (alertDiv.parentNode) alertDiv.remove();
+    }, 5000);
 }
 </script>
 @endsection

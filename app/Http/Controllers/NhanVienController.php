@@ -121,24 +121,41 @@ class NhanVienController extends Controller
                 'temp_family_members' => 'nullable|string'
             ]);
 
-            // ✅ Nếu hợp lệ mới vào đây
             if ($request->hasFile('anh_dai_dien')) {
                 $validated['anh_dai_dien'] = $request->file('anh_dai_dien')->store('avatars', 'public');
             }
 
             $nhanVien = NhanVien::create($validated);
 
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Thêm nhân viên thành công!',
+                    'id' => $nhanVien->id
+                ]);
+            }
+
             return redirect()->route('nhan-vien.index')
                 ->with('success', 'Thêm nhân viên thành công!');
 
         } catch (ValidationException $e) {
-            // Bắt lỗi validate và trả về với các lỗi
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $e->validator->errors()
+                ], 422);
+            }
             return redirect()->back()
                 ->withErrors($e->validator)
                 ->withInput();
         } catch (\Exception $ex) {
-            // Bắt tất cả lỗi khác
             Log::error('Lỗi thêm nhân viên: ' . $ex->getMessage());
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Đã có lỗi xảy ra khi thêm nhân viên. Vui lòng thử lại sau.'
+                ], 500);
+            }
             return redirect()->back()
                 ->with('error', 'Đã có lỗi xảy ra khi thêm nhân viên. Vui lòng thử lại sau.')
                 ->withInput();
@@ -256,6 +273,34 @@ class NhanVienController extends Controller
                     } else {
                         // Create new record
                         ThongTinGiaDinh::create($familyData);
+                    }
+                }
+            }
+        }
+
+        // Handle giấy tờ tùy thân
+        if ($request->filled('temp_giay_to_tuy_than')) {
+            $giayToArr = json_decode($request->input('temp_giay_to_tuy_than'), true);
+            if (is_array($giayToArr)) {
+                foreach ($giayToArr as $giayTo) {
+                    $giayToData = [
+                        'nhan_vien_id' => $nhanVien->id,
+                        'loai_giay_to' => $giayTo['loai_giay_to'] ?? null,
+                        'so_giay_to' => $giayTo['so_giay_to'] ?? null,
+                        'ngay_cap' => $giayTo['ngay_cap'] ? Carbon::parse($giayTo['ngay_cap'])->format('Y-m-d') : null,
+                        'noi_cap' => $giayTo['noi_cap'] ?? null,
+                        'ngay_het_han' => $giayTo['ngay_het_han'] ? Carbon::parse($giayTo['ngay_het_han'])->format('Y-m-d') : null,
+                        'ghi_chu' => $giayTo['ghi_chu'] ?? null
+                    ];
+                    if (empty($giayToData['loai_giay_to']) || empty($giayToData['so_giay_to'])) {
+                        continue;
+                    }
+                    if (!empty($giayTo['id'])) {
+                        \App\Models\GiayToTuyThan::where('id', $giayTo['id'])
+                            ->where('nhan_vien_id', $nhanVien->id)
+                            ->update($giayToData);
+                    } else {
+                        \App\Models\GiayToTuyThan::create($giayToData);
                     }
                 }
             }

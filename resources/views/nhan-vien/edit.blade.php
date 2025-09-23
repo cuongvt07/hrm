@@ -115,6 +115,9 @@
                                         <li class="nav-item" role="presentation">
                                             <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab">Tài liệu</button>
                                         </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="giayto-tab" data-bs-toggle="tab" data-bs-target="#giayto" type="button" role="tab">Giấy tờ tùy thân</button>
+                                        </li>
                                     </ul>
 
                                     <div class="tab-content" id="employeeTabContent">
@@ -445,6 +448,11 @@
                                             @else
                                                 <p class="text-muted">Chưa có tài liệu nào được upload</p>
                                             @endif
+                                        </div>
+
+                                        <!-- Giấy tờ tùy thân Tab -->
+                                        <div class="tab-pane fade" id="giayto" role="tabpanel">
+                                            @include('nhan-vien.partials.giay-to-tuy-than', ['nhanVien' => $nhanVien])
                                         </div>
                                     </div>
                                 </div>

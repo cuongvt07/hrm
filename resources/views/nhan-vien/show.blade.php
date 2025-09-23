@@ -167,7 +167,7 @@
                         <!-- Right Column -->
                         <div class="col-md-9">
                             <div class="p-4">
-                                <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+                                <ul class="nav nav-tabs mb-4" id="employeeTabs" role="tablist">
                                     <li class="nav-item" role="presentation">
                                         <a class="nav-link active" id="basic-tab" data-bs-toggle="tab" href="#basic" role="tab" aria-controls="basic" aria-selected="true">Thông tin cơ bản</a>
                                     </li>
@@ -183,10 +183,13 @@
                                     <li class="nav-item" role="presentation">
                                         <a class="nav-link" id="documents-tab" data-bs-toggle="tab" href="#documents" role="tab" aria-controls="documents" aria-selected="false">Tài liệu</a>
                                     </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="giayto-tab" data-bs-toggle="tab" data-bs-target="#giayto" type="button" role="tab">Giấy tờ tùy thân</button>
+                                    </li>
                                 </ul>
 
                                 <!-- Tab Content -->
-                                <div class="tab-content" id="myTabContent">
+                                <div class="tab-content" id="employeeTabContent">
                                     <!-- Basic Info Tab -->
                                     <div class="tab-pane fade show active" id="basic" role="tabpanel" aria-labelledby="basic-tab">
                                         <div class="row">
@@ -683,6 +686,10 @@
                                                 <p class="text-muted fs-5">Chưa có tài liệu nào được upload</p>
                                             </div>
                                         @endif
+                                    </div>
+                                    <!-- Giấy tờ tùy thân Tab -->
+                                    <div class="tab-pane fade" id="giayto" role="tabpanel">
+                                        @include('nhan-vien.partials.giay-to-tuy-than', ['nhanVien' => $nhanVien])
                                     </div>
                                 </div>
                             </div>

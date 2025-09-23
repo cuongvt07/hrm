@@ -37,6 +37,13 @@ Route::delete('nhan-vien/{nhanVien}/family-member/{familyMember}', [NhanVienCont
 Route::post('nhan-vien/{nhanVien}/add-document', [NhanVienController::class, 'addDocument'])->name('nhan-vien.addDocument');
 Route::delete('nhan-vien/{nhanVien}/document/{document}', [NhanVienController::class, 'deleteDocument'])->name('nhan-vien.deleteDocument');
 
+// Quản lý giấy tờ tùy thân
+Route::prefix('nhan-vien/{nhanVien}')->group(function () {
+    Route::post('giay-to-tuy-than', [\App\Http\Controllers\GiayToTuyThanController::class, 'store'])->name('giay-to-tuy-than.store');
+    Route::put('giay-to-tuy-than/{giayToTuyThan}', [\App\Http\Controllers\GiayToTuyThanController::class, 'update'])->name('giay-to-tuy-than.update');
+    Route::delete('giay-to-tuy-than/{giayToTuyThan}', [\App\Http\Controllers\GiayToTuyThanController::class, 'destroy'])->name('giay-to-tuy-than.destroy');
+});
+
 // Quản lý hợp đồng
 Route::resource('hop-dong', HopDongController::class);
 
