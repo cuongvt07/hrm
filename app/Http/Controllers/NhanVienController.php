@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
+use App\Models\BaoHiem;
 
 class NhanVienController extends Controller
 {
@@ -66,7 +67,7 @@ class NhanVienController extends Controller
 
     public function show(NhanVien $nhanVien)
     {
-        $nhanVien->load(['phongBan', 'chucVu', 'taiKhoan', 'hopDongLaoDong', 'thongTinLienHe', 'thongTinGiaDinh', 'tepTin', 'thongTinGiayTo', 'thongTinLuong', 'quanLyTrucTiep', 'capDuoi']);
+        $nhanVien->load(['phongBan', 'chucVu', 'taiKhoan', 'hopDongLaoDong', 'thongTinLienHe', 'thongTinGiaDinh', 'tepTin', 'thongTinGiayTo', 'thongTinLuong', 'quanLyTrucTiep', 'capDuoi', 'baoHiem']);
 
         return view('nhan-vien.show', compact('nhanVien'));
     }
@@ -126,6 +127,23 @@ class NhanVienController extends Controller
             }
 
             $nhanVien = NhanVien::create($validated);
+
+            // Lưu thông tin bảo hiểm
+            $baoHiemData = [
+                'nhan_vien_id' => $nhanVien->id,
+                'ngay_tham_gia_bh' => $request->ngay_tham_gia_bh,
+                'ty_le_dong_bh' => $request->ty_le_dong_bh,
+                'ty_le_bhxh' => $request->ty_le_bhxh,
+                'ty_le_bhyt' => $request->ty_le_bhyt,
+                'ty_le_bhtn' => $request->ty_le_bhtn,
+                'so_so_bhxh' => $request->so_so_bhxh,
+                'ma_so_bhxh' => $request->ma_so_bhxh,
+                'tham_gia_bao_hiem' => $request->tham_gia_bao_hiem,
+                'tinh_cap' => $request->tinh_cap,
+                'ma_tinh_cap' => $request->ma_tinh_cap,
+                'so_the_bhyt' => $request->so_the_bhyt,
+            ];
+            BaoHiem::create($baoHiemData);
 
             if ($request->ajax()) {
                 return response()->json([
@@ -220,6 +238,27 @@ class NhanVienController extends Controller
 
         // Update employee data
         $nhanVien->update($validated);
+
+        // Update or create bảo hiểm
+        $baoHiemData = [
+            'nhan_vien_id' => $nhanVien->id,
+            'ngay_tham_gia_bh' => $request->ngay_tham_gia_bh,
+            'ty_le_dong_bh' => $request->ty_le_dong_bh,
+            'ty_le_bhxh' => $request->ty_le_bhxh,
+            'ty_le_bhyt' => $request->ty_le_bhyt,
+            'ty_le_bhtn' => $request->ty_le_bhtn,
+            'so_so_bhxh' => $request->so_so_bhxh,
+            'ma_so_bhxh' => $request->ma_so_bhxh,
+            'tham_gia_bao_hiem' => $request->tham_gia_bao_hiem,
+            'tinh_cap' => $request->tinh_cap,
+            'ma_tinh_cap' => $request->ma_tinh_cap,
+            'so_the_bhyt' => $request->so_the_bhyt,
+            'ghi_chu' => $request->ghi_chu_bao_hiem,
+        ];
+        BaoHiem::updateOrCreate(
+            ['nhan_vien_id' => $nhanVien->id],
+            $baoHiemData
+        );
 
         // Update or create contact information
         $contactData = array_filter([

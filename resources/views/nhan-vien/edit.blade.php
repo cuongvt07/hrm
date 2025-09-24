@@ -141,6 +141,10 @@
                                                     data-bs-target="#myFile" type="button" role="tab">Giấy tờ tùy
                                                     thân</button>   
                                             </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="insurance-tab" data-bs-toggle="tab"
+                                                        data-bs-target="#insurance" type="button" role="tab">Thông tin bảo hiểm</button>
+                                                </li>
                                         </ul>
 
                                         <div class="tab-content" id="employeeTabContent">
@@ -607,6 +611,73 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                </div>
+
+                                                <!-- Insurance Tab -->
+                                                <div class="tab-pane fade" id="insurance" role="tabpanel">
+                                                    <div class="card border-0 bg-light mb-4">
+                                                        <div class="card-header bg-info text-white">
+                                                            <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Thông tin bảo hiểm</h5>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="row">
+                                                                <div class="col-md-4">
+                                                                    <div class="mb-3">
+                                                                        <label for="ngay_tham_gia_bh" class="form-label">Ngày tham gia BH</label>
+                                                                        <input type="date" class="form-control" id="ngay_tham_gia_bh" name="ngay_tham_gia_bh" value="{{ optional($nhanVien->baoHiem)->ngay_tham_gia_bh }}">
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="ty_le_dong_bh" class="form-label">Tỷ lệ đóng BH (%)</label>
+                                                                        <input type="number" step="0.01" class="form-control" id="ty_le_dong_bh" name="ty_le_dong_bh" value="{{ optional($nhanVien->baoHiem)->ty_le_dong_bh }}">
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="ty_le_bhxh" class="form-label">Tỷ lệ đóng BHXH (%)</label>
+                                                                        <input type="number" step="0.01" class="form-control" id="ty_le_bhxh" name="ty_le_bhxh" value="{{ optional($nhanVien->baoHiem)->ty_le_bhxh }}">
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="ty_le_bhyt" class="form-label">Tỷ lệ đóng BHYT (%)</label>
+                                                                        <input type="number" step="0.01" class="form-control" id="ty_le_bhyt" name="ty_le_bhyt" value="{{ optional($nhanVien->baoHiem)->ty_le_bhyt }}">
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="ty_le_bhtn" class="form-label">Tỷ lệ đóng BHTN (%)</label>
+                                                                        <input type="number" step="0.01" class="form-control" id="ty_le_bhtn" name="ty_le_bhtn" value="{{ optional($nhanVien->baoHiem)->ty_le_bhtn }}">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="mb-3">
+                                                                        <label for="so_so_bhxh" class="form-label">Số sổ BHXH</label>
+                                                                        <input type="text" class="form-control" id="so_so_bhxh" name="so_so_bhxh" value="{{ optional($nhanVien->baoHiem)->so_so_bhxh }}">
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="ma_so_bhxh" class="form-label">Mã số BHXH</label>
+                                                                        <input type="text" class="form-control" id="ma_so_bhxh" name="ma_so_bhxh" value="{{ optional($nhanVien->baoHiem)->ma_so_bhxh }}">
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="tham_gia_bao_hiem" class="form-label">Tham gia bảo hiểm</label>
+                                                                        <select class="form-select" id="tham_gia_bao_hiem" name="tham_gia_bao_hiem">
+                                                                            <option value="1" {{ optional($nhanVien->baoHiem)->tham_gia_bao_hiem ? 'selected' : '' }}>Có</option>
+                                                                            <option value="0" {{ optional($nhanVien->baoHiem)->tham_gia_bao_hiem === 0 ? 'selected' : '' }}>Không</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="mb-3">
+                                                                        <label for="tinh_cap" class="form-label">Tỉnh cấp</label>
+                                                                        <input type="text" class="form-control" id="tinh_cap" name="tinh_cap" value="{{ optional($nhanVien->baoHiem)->tinh_cap }}">
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="ma_tinh_cap" class="form-label">Mã Tỉnh cấp</label>
+                                                                        <input type="text" class="form-control" id="ma_tinh_cap" name="ma_tinh_cap" value="{{ optional($nhanVien->baoHiem)->ma_tinh_cap }}">
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="so_the_bhyt" class="form-label">Số thẻ BHYT</label>
+                                                                        <input type="text" class="form-control" id="so_the_bhyt" name="so_the_bhyt" value="{{ optional($nhanVien->baoHiem)->so_the_bhyt }}">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div id="myFileTableContainer">
                                                     @if($nhanVien->GiayToTuyThan && $nhanVien->GiayToTuyThan->count())
                                                         <div class="table-responsive">
@@ -675,40 +746,10 @@
     <script>
         $(document).ready(function () {
             // Array to store all family members (database + temporary)
-            let familyMembers = [
-                @foreach($nhanVien->thongTinGiaDinh as $member)
-                    {
-                        id: {{ $member->id }},
-                        quan_he: "{{ $member->quan_he }}",
-                        ho_ten: "{{ $member->ho_ten }}",
-                        ngay_sinh: "{{ $member->ngay_sinh ? \Carbon\Carbon::parse($member->ngay_sinh)->format('Y-m-d') : '' }}",
-                        nghe_nghiep: "{{ $member->nghe_nghiep ?? '' }}",
-                        dien_thoai: "{{ $member->dien_thoai ?? '' }}",
-                        dia_chi_lien_he: "{{ $member->dia_chi_lien_he ?? '' }}",
-                        ghi_chu: "{{ $member->ghi_chu ?? '' }}",
-                        la_nguoi_phu_thuoc: {{ $member->la_nguoi_phu_thuoc ? 'true' : 'false' }},
-                        is_temp: false
-                    },
-                @endforeach
-        ];
+            let familyMembers = @json($nhanVien->thongTinGiaDinh ?? []);
 
             // Array to store all my files (database + temporary)
-            let myFiles = [
-                @if(isset($nhanVien->GiayToTuyThan))
-                    @foreach($nhanVien->GiayToTuyThan as $file)
-                        {
-                            id: {{ $file->id }},
-                            loai_giay_to: "{{ $file->loai_giay_to }}",
-                            so_giay_to: "{{ $file->so_giay_to }}",
-                            ngay_cap: "{{ $file->ngay_cap ? \Carbon\Carbon::parse($file->ngay_cap)->format('Y-m-d') : '' }}",
-                            ngay_het_han: "{{ $file->ngay_het_han ? \Carbon\Carbon::parse($file->ngay_het_han)->format('Y-m-d') : '' }}",
-                            noi_cap: "{{ $file->noi_cap }}",
-                            ghi_chu: "{{ $file->ghi_chu }}",
-                            is_temp: false
-                        },
-                    @endforeach
-                @endif
-            ];
+            let myFiles = @json($nhanVien->GiayToTuyThan ?? []);
 
             // Function to render the my file table
             function renderMyFileTable() {

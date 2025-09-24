@@ -135,4 +135,10 @@ class NhanVien extends Model
     {
         return $this->hasMany(GiayToTuyThan::class, 'nhan_vien_id');
     }
+
+    // Quan hệ với bảo hiểm
+    public function baoHiem()
+    {
+        return $this->hasOne(BaoHiem::class, 'nhan_vien_id');
+    }
 }

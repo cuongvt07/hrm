@@ -42,7 +42,7 @@
                                     <div class="text-center mb-4">
                                         <div class="position-relative d-inline-block">
                                             <div id="avatarPreview" class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto shadow"
-                                                 style="width: 120px; height: 120px; font-size: 2.5rem;">
+                                                style="width: 120px; height: 120px; font-size: 2.5rem;">
                                             </div>
                                             <label for="anh_dai_dien" class="btn btn-sm btn-outline-primary position-absolute" style="bottom: 0; right: 0;">
                                                 <i class="fas fa-camera"></i>
@@ -54,11 +54,11 @@
                                     <!-- Basic Info Fields -->
                                     <div class="mb-3">
                                         <label for="ma_nhanvien" class="form-label">Mã nhân viên <span class="text-danger">*</span></label>
-                                        <input type="text" 
-                                            class="form-control" 
-                                            id="ma_nhanvien" 
-                                            name="ma_nhanvien" 
-                                            value="{{ old('ma_nhanvien', $nextCode) }}" 
+                                        <input type="text"
+                                            class="form-control"
+                                            id="ma_nhanvien"
+                                            name="ma_nhanvien"
+                                            value="{{ old('ma_nhanvien', $nextCode) }}"
                                             required readonly>
                                     </div>
 
@@ -108,6 +108,9 @@
                                         </li>
                                         <li class="nav-item" role="presentation">
                                             <button class="nav-link" id="giayto-tab" data-bs-toggle="tab" data-bs-target="#giayto" type="button" role="tab">Giấy tờ tùy thân</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="insurance-tab" data-bs-toggle="tab" data-bs-target="#insurance" type="button" role="tab">Thông tin bảo hiểm</button>
                                         </li>
                                     </ul>
 
@@ -183,7 +186,7 @@
                                                                 <select class="form-select" id="phong_ban_id" name="phong_ban_id">
                                                                     <option value="">Chọn phòng ban</option>
                                                                     @foreach($phongBans as $phongBan)
-                                                                        <option value="{{ $phongBan->id }}">{{ $phongBan->ten_phong_ban }}</option>
+                                                                    <option value="{{ $phongBan->id }}">{{ $phongBan->ten_phong_ban }}</option>
                                                                     @endforeach
                                                                 </select>
                                                             </div>
@@ -192,7 +195,7 @@
                                                                 <select class="form-select" id="chuc_vu_id" name="chuc_vu_id">
                                                                     <option value="">Chọn chức vụ</option>
                                                                     @foreach($chucVus as $chucVu)
-                                                                        <option value="{{ $chucVu->id }}">{{ $chucVu->ten_chuc_vu }}</option>
+                                                                    <option value="{{ $chucVu->id }}">{{ $chucVu->ten_chuc_vu }}</option>
                                                                     @endforeach
                                                                 </select>
                                                             </div>
@@ -401,90 +404,155 @@
                 </div>
             </div>
         </div>
+        <!-- Insurance Tab -->
+        <div class="tab-pane fade" id="insurance" role="tabpanel">
+            <div class="card border-0 bg-light mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Thông tin bảo hiểm</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="ngay_tham_gia_bh" class="form-label">Ngày tham gia BH</label>
+                                <input type="date" class="form-control" id="ngay_tham_gia_bh" name="ngay_tham_gia_bh" value="{{ old('ngay_tham_gia_bh') }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="ty_le_dong_bh" class="form-label">Tỷ lệ đóng BH (%)</label>
+                                <input type="number" step="0.01" class="form-control" id="ty_le_dong_bh" name="ty_le_dong_bh" value="{{ old('ty_le_dong_bh') }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="ty_le_bhxh" class="form-label">Tỷ lệ đóng BHXH (%)</label>
+                                <input type="number" step="0.01" class="form-control" id="ty_le_bhxh" name="ty_le_bhxh" value="{{ old('ty_le_bhxh') }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="ty_le_bhyt" class="form-label">Tỷ lệ đóng BHYT (%)</label>
+                                <input type="number" step="0.01" class="form-control" id="ty_le_bhyt" name="ty_le_bhyt" value="{{ old('ty_le_bhyt') }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="ty_le_bhtn" class="form-label">Tỷ lệ đóng BHTN (%)</label>
+                                <input type="number" step="0.01" class="form-control" id="ty_le_bhtn" name="ty_le_bhtn" value="{{ old('ty_le_bhtn') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="so_so_bhxh" class="form-label">Số sổ BHXH</label>
+                                <input type="text" class="form-control" id="so_so_bhxh" name="so_so_bhxh" value="{{ old('so_so_bhxh') }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="ma_so_bhxh" class="form-label">Mã số BHXH</label>
+                                <input type="text" class="form-control" id="ma_so_bhxh" name="ma_so_bhxh" value="{{ old('ma_so_bhxh') }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="tham_gia_bao_hiem" class="form-label">Tham gia bảo hiểm</label>
+                                <select class="form-select" id="tham_gia_bao_hiem" name="tham_gia_bao_hiem">
+                                    <option value="1" {{ old('tham_gia_bao_hiem') == '1' ? 'selected' : '' }}>Có</option>
+                                    <option value="0" {{ old('tham_gia_bao_hiem') == '0' ? 'selected' : '' }}>Không</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="tinh_cap" class="form-label">Tỉnh cấp</label>
+                                <input type="text" class="form-control" id="tinh_cap" name="tinh_cap" value="{{ old('tinh_cap') }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="ma_tinh_cap" class="form-label">Mã Tỉnh cấp</label>
+                                <input type="text" class="form-control" id="ma_tinh_cap" name="ma_tinh_cap" value="{{ old('ma_tinh_cap') }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="so_the_bhyt" class="form-label">Số thẻ BHYT</label>
+                                <input type="text" class="form-control" id="so_the_bhyt" name="so_the_bhyt" value="{{ old('so_the_bhyt') }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-function previewAvatar(input) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const preview = document.getElementById('avatarPreview');
-            preview.innerHTML = `<img src="${e.target.result}" alt="Avatar" class="rounded-circle shadow" width="120" height="120" style="object-fit: cover;">`;
-        };
-        reader.readAsDataURL(input.files[0]);
+    function previewAvatar(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('avatarPreview');
+                preview.innerHTML = `<img src="${e.target.result}" alt="Avatar" class="rounded-circle shadow" width="120" height="120" style="object-fit: cover;">`;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
     }
-}
 
-// AJAX submit for employee create form
+    // AJAX submit for employee create form
 
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('employeeForm');
-    if (!form) return;
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('employeeForm');
+        if (!form) return;
 
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(form);
-        const submitBtn = form.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang lưu...';
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang lưu...';
 
-        fetch(form.action, {
-            method: 'POST',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            },
-            body: formData
-        })
-        .then(async response => {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-save me-1"></i>Lưu nhân viên';
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success && data.id) {
-                    window.location.href = `/nhan-vien/${data.id}`;
-                    return;
-                }
-                showAlert('Thêm nhân viên thành công!', 'success');
-                form.reset();
-                document.getElementById('avatarPreview').innerHTML = '';
-            } else if (response.status === 422) {
-                const data = await response.json();
-                let errorMsg = 'Vui lòng kiểm tra lại thông tin.';
-                if (data.errors) {
-                    errorMsg += '<ul>' + Object.values(data.errors).map(arr => `<li>${arr[0]}</li>`).join('') + '</ul>';
-                }
-                showAlert(errorMsg, 'danger');
-            } else {
-                showAlert('Đã có lỗi xảy ra. Vui lòng thử lại!', 'danger');
-            }
-        })
-        .catch(() => {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-save me-1"></i>Lưu nhân viên';
-            showAlert('Đã có lỗi xảy ra. Vui lòng thử lại!', 'danger');
+            fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(async response => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-save me-1"></i>Lưu nhân viên';
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success && data.id) {
+                            window.location.href = `/nhan-vien/${data.id}`;
+                            return;
+                        }
+                        showAlert('Thêm nhân viên thành công!', 'success');
+                        form.reset();
+                        document.getElementById('avatarPreview').innerHTML = '';
+                    } else if (response.status === 422) {
+                        const data = await response.json();
+                        let errorMsg = 'Vui lòng kiểm tra lại thông tin.';
+                        if (data.errors) {
+                            errorMsg += '<ul>' + Object.values(data.errors).map(arr => `<li>${arr[0]}</li>`).join('') + '</ul>';
+                        }
+                        showAlert(errorMsg, 'danger');
+                    } else {
+                        showAlert('Đã có lỗi xảy ra. Vui lòng thử lại!', 'danger');
+                    }
+                })
+                .catch(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-save me-1"></i>Lưu nhân viên';
+                    showAlert('Đã có lỗi xảy ra. Vui lòng thử lại!', 'danger');
+                });
         });
     });
-});
 
-function showAlert(message, type = 'info') {
-    // Remove existing alerts
-    const existingAlerts = document.querySelectorAll('.custom-alert');
-    existingAlerts.forEach(alert => alert.remove());
+    function showAlert(message, type = 'info') {
+        // Remove existing alerts
+        const existingAlerts = document.querySelectorAll('.custom-alert');
+        existingAlerts.forEach(alert => alert.remove());
 
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-dismissible custom-alert fade show`;
-    alertDiv.setAttribute('role', 'alert');
-    alertDiv.innerHTML = `
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible custom-alert fade show`;
+        alertDiv.setAttribute('role', 'alert');
+        alertDiv.innerHTML = `
         ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
-    alertDiv.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 9999; max-width: 400px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);';
-    document.body.appendChild(alertDiv);
-    setTimeout(() => {
-        if (alertDiv.parentNode) alertDiv.remove();
-    }, 5000);
-}
+        alertDiv.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 9999; max-width: 400px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);';
+        document.body.appendChild(alertDiv);
+        setTimeout(() => {
+            if (alertDiv.parentNode) alertDiv.remove();
+        }, 5000);
+    }
 </script>
 @endsection

@@ -183,6 +183,9 @@
                                     <li class="nav-item" role="presentation">
                                         <a class="nav-link" id="giayto-tab" data-bs-toggle="tab" href="#giayto" role="tab" aria-controls="giayto" aria-selected="false">Giấy tờ tùy thân</a>
                                     </li>
+                                        <li class="nav-item" role="presentation">
+                                            <a class="nav-link" id="insurance-tab" data-bs-toggle="tab" href="#insurance" role="tab" aria-controls="insurance" aria-selected="false">Thông tin bảo hiểm</a>
+                                        </li>
                                     <li class="nav-item" role="presentation">
                                         <a class="nav-link" id="documents-tab" data-bs-toggle="tab" href="#documents" role="tab" aria-controls="documents" aria-selected="false">Tài liệu</a>
                                     </li>
@@ -760,6 +763,68 @@
                                                 <p class="text-muted fs-5">Chưa có tài liệu nào được upload</p>
                                             </div>
                                         @endif
+                                    </div>
+                                    <!-- Insurance Tab -->
+                                    <div class="tab-pane fade" id="insurance" role="tabpanel" aria-labelledby="insurance-tab">
+                                        <div class="card border-0 bg-light mb-4">
+                                            <div class="card-header bg-info text-white">
+                                                <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Thông tin bảo hiểm</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Ngày tham gia BH</label>
+                                                            <div>{{ optional($nhanVien->baoHiem)->ngay_tham_gia_bh ? \Carbon\Carbon::parse($nhanVien->baoHiem->ngay_tham_gia_bh)->format('d/m/Y') : '-' }}</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Tỷ lệ đóng BH (%)</label>
+                                                            <div>{{ optional($nhanVien->baoHiem)->ty_le_dong_bh ?? '-' }}</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Tỷ lệ đóng BHXH (%)</label>
+                                                            <div>{{ optional($nhanVien->baoHiem)->ty_le_bhxh ?? '-' }}</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Tỷ lệ đóng BHYT (%)</label>
+                                                            <div>{{ optional($nhanVien->baoHiem)->ty_le_bhyt ?? '-' }}</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Tỷ lệ đóng BHTN (%)</label>
+                                                            <div>{{ optional($nhanVien->baoHiem)->ty_le_bhtn ?? '-' }}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Số sổ BHXH</label>
+                                                            <div>{{ optional($nhanVien->baoHiem)->so_so_bhxh ?? '-' }}</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Mã số BHXH</label>
+                                                            <div>{{ optional($nhanVien->baoHiem)->ma_so_bhxh ?? '-' }}</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Tham gia bảo hiểm</label>
+                                                            <div>{{ optional($nhanVien->baoHiem)->tham_gia_bao_hiem ? 'Có' : 'Không' }}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Tỉnh cấp</label>
+                                                            <div>{{ optional($nhanVien->baoHiem)->tinh_cap ?? '-' }}</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Mã Tỉnh cấp</label>
+                                                            <div>{{ optional($nhanVien->baoHiem)->ma_tinh_cap ?? '-' }}</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Số thẻ BHYT</label>
+                                                            <div>{{ optional($nhanVien->baoHiem)->so_the_bhyt ?? '-' }}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <!-- Giấy tờ tùy thân Tab -->
                                     <div class="tab-pane fade" id="giayto" role="tabpanel" aria-labelledby="giayto-tab">

@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     
     <!-- Custom HRM CSS -->
-    <link rel="stylesheet" href="{{ asset('css/hrm-custom.css') }}">
+    <link rel="stylesheet" href="https://f60fe4cb8c03.ngrok-free.app/css/hrm-custom.css">
     
     
     @stack('styles')
@@ -39,24 +39,22 @@
             <!-- Main Content -->
             <main class="py-4">
                 <div class="container-fluid">
-                    @if (session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="fas fa-check-circle me-2"></i>
-                            {{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
-
-                    @if (session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="fas fa-exclamation-circle me-2"></i>
-                            {{ session('error') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
-
                     @yield('content')
                 </div>
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show custom-alert" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show custom-alert" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
             </main>
         </div>
     </div>
