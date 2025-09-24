@@ -44,6 +44,13 @@
                     <span class="nav-text">Hợp đồng</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('hop-dong.saphethan') ? 'active' : '' }}" 
+                   href="{{ route('hop-dong.saphethan') }}" title="Hợp đồng sắp hết hạn">
+                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                    <span class="nav-text">HĐ sắp hết hạn</span>
+                </a>
+            </li>
 
             <!-- Divider -->
             <hr class="sidebar-divider">

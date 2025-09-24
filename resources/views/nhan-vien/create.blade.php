@@ -243,7 +243,7 @@
                                                                 <div class="col-md-3">
                                                                     <div class="mb-3">
                                                                         <label for="luong_co_ban" class="form-label">Lương cơ bản</label>
-                                                                        <input type="number" step="0.01" class="form-control" id="luong_co_ban" name="luong_co_ban" value="{{ old('luong_co_ban') }}">
+                                                                        <input type="text" class="form-control bg-light" id="luong_co_ban" name="luong_co_ban" value="{{ old('luong_co_ban') ? number_format(old('luong_co_ban'), 0, ',', '.') : '' }}" readonly>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-3">

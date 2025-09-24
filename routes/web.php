@@ -46,6 +46,10 @@ Route::prefix('nhan-vien/{nhanVien}')->group(function () {
 
 // Quản lý hợp đồng
 Route::resource('hop-dong', HopDongController::class);
+Route::get('hop-dong/{id}/view', [HopDongController::class, 'view'])->name('hop-dong.view');
+Route::get('hop-dong-sap-het-han', [HopDongController::class, 'sapHetHan'])->name('hop-dong.saphethan');
+Route::get('hop-dong/{id}/gia-han', [HopDongController::class, 'giaHanForm'])->name('hop-dong.giahan.form');
+Route::post('hop-dong/gia-han', [HopDongController::class, 'giaHanStore'])->name('hop-dong.giahan.store');
 
 // Quản lý chế độ
 Route::prefix('che-do')->name('che-do.')->group(function () {

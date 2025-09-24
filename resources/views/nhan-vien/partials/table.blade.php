@@ -17,6 +17,7 @@
                 <th>Phòng ban</th>
                 <th>Ngày thử việc</th>
                 <th>Ngày chính thức</th>
+                <th>Lương cơ bản</th>
                 <th>Trạng thái</th>
                 <th width="150">Thao tác</th>
             </tr>
@@ -118,6 +119,13 @@
                         @endif
                     </td>
                     <td>
+                        @if(optional($nhanVien->thongTinLuong)->luong_co_ban)
+                            <span class="text-success fw-bold">{{ number_format($nhanVien->thongTinLuong->luong_co_ban, 0, ',', '.') }} VNĐ</span>
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
+                    <td>
                         @php
                             $statusConfig = [
                                 'nhan_vien_chinh_thuc' => ['class' => 'success', 'text' => 'Đang làm việc'],
@@ -130,23 +138,12 @@
                         @endphp
                         <span class="badge bg-{{ $config['class'] }}">{{ $config['text'] }}</span>
                     </td>
-                    <td>
-                        <div class="btn-group" role="group">
-                            <a href="{{ route('nhan-vien.show', $nhanVien) }}" class="btn btn-sm btn-outline-primary"
-                                title="Xem chi tiết">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="{{ route('nhan-vien.edit', $nhanVien) }}" class="btn btn-sm btn-outline-secondary"
-                                title="Chỉnh sửa">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <button type="button" class="btn btn-sm btn-outline-danger delete-btn"
-                                data-id="{{ $nhanVien->id }}" data-name="{{ $nhanVien->ho }} {{ $nhanVien->ten }}"
-                                title="Xóa">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
+                    @component('components.table-action', [
+                        'showRoute' => 'nhan-vien.show',
+                        'editRoute' => 'nhan-vien.edit',
+                        'deleteRoute' => 'nhan-vien.destroy',
+                        'id' => $nhanVien->id
+                    ])@endcomponent
                 </tr>
             @empty
                 <tr>

@@ -1,0 +1,87 @@
+@extends('layouts.app')
+@section('title', 'Gia hạn hợp đồng lao động')
+@section('content')
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Gia hạn hợp đồng lao động</h5>
+    </div>
+    <form action="{{ route('hop-dong.giahan.store') }}" method="POST">
+        @csrf
+        <input type="hidden" name="hopdong_cu_id" value="{{ $hopDongCu->id }}">
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Nhân viên</label>
+                    <input type="text" class="form-control" value="{{ $hopDongCu->nhanVien->ho_ten }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label for="so_hop_dong" class="form-label">Số hợp đồng mới</label>
+                    <input type="text" name="so_hop_dong" id="so_hop_dong" class="form-control" value="{{ old('so_hop_dong', $hopDongCu->so_hop_dong) }}" required>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="loai_hop_dong" class="form-label">Loại hợp đồng</label>
+                    <input type="text" name="loai_hop_dong" id="loai_hop_dong" class="form-control" value="{{ old('loai_hop_dong', $hopDongCu->loai_hop_dong) }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="ngay_bat_dau" class="form-label">Ngày có hiệu lực</label>
+                    <input type="date" name="ngay_bat_dau" id="ngay_bat_dau" class="form-control" value="{{ old('ngay_bat_dau') }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="ngay_ket_thuc" class="form-label">Ngày hết hạn</label>
+                    <input type="date" name="ngay_ket_thuc" id="ngay_ket_thuc" class="form-control" value="{{ old('ngay_ket_thuc') }}">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="ngay_ky" class="form-label">Ngày ký</label>
+                    <input type="date" name="ngay_ky" id="ngay_ky" class="form-control" value="{{ old('ngay_ky') }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="luong_co_ban" class="form-label">Lương cơ bản</label>
+                    <input type="number" step="0.01" name="luong_co_ban" id="luong_co_ban" class="form-control" value="{{ old('luong_co_ban', $hopDongCu->luong_co_ban) }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="luong_bao_hiem" class="form-label">Lương đóng bảo hiểm</label>
+                    <input type="number" step="0.01" name="luong_bao_hiem" id="luong_bao_hiem" class="form-control" value="{{ old('luong_bao_hiem', $hopDongCu->luong_bao_hiem) }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="trang_thai" class="form-label">Trạng thái hợp đồng</label>
+                    <select name="trang_thai" id="trang_thai" class="form-select" required>
+                        <option value="hoat_dong">Hoạt động</option>
+                        <option value="het_han">Hết hạn</option>
+                        <option value="cham_dut">Chấm dứt</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="vi_tri_cong_viec" class="form-label">Vị trí công việc</label>
+                    <input type="text" name="vi_tri_cong_viec" id="vi_tri_cong_viec" class="form-control" value="{{ old('vi_tri_cong_viec', $hopDongCu->vi_tri_cong_viec) }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="don_vi_ky_hd" class="form-label">Đơn vị ký hợp đồng</label>
+                    <input type="text" name="don_vi_ky_hd" id="don_vi_ky_hd" class="form-control" value="{{ old('don_vi_ky_hd', $hopDongCu->don_vi_ky_hd) }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="trang_thai_ky" class="form-label">Trạng thái ký</label>
+                    <input type="text" name="trang_thai_ky" id="trang_thai_ky" class="form-control" value="{{ old('trang_thai_ky', $hopDongCu->trang_thai_ky) }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="thoi_han" class="form-label">Thời hạn hợp đồng (tháng)</label>
+                    <input type="number" name="thoi_han" id="thoi_han" class="form-control" value="{{ old('thoi_han', $hopDongCu->thoi_han) }}">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="ghi_chu" class="form-label">Ghi chú</label>
+                <textarea name="ghi_chu" id="ghi_chu" class="form-control" rows="2">{{ old('ghi_chu', $hopDongCu->ghi_chu) }}</textarea>
+            </div>
+        </div>
+        <div class="card-footer text-end">
+            <a href="{{ route('hop-dong.saphethan') }}" class="btn btn-secondary">Quay lại</a>
+            <button type="submit" class="btn btn-primary">Lưu hợp đồng mới</button>
+        </div>
+    </form>
+</div>
+@endsection
