@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     
     <!-- Custom HRM CSS -->
-    <link rel="stylesheet" href="https://f60fe4cb8c03.ngrok-free.app/css/hrm-custom.css">
+    <link rel="stylesheet" href="{{ asset('css/hrm-custom.css') }}">
     
     
     @stack('styles')

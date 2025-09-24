@@ -23,10 +23,10 @@
                     </div>
                     <div class="d-flex gap-2">
                         <a href="{{ route('nhan-vien.show', $nhanVien->id) }}" class="btn btn-outline-info">
-                            <i class="fas fa-eye me-1"></i>Xem chi tiết
+                            Xem chi tiết
                         </a>
                         <a href="{{ route('nhan-vien.index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-1"></i>Quay lại danh sách
+                            Quay lại danh sách
                         </a>
                     </div>
                 </div>
@@ -64,7 +64,7 @@
                                                 <label for="anh_dai_dien"
                                                     class="btn btn-sm btn-outline-primary position-absolute"
                                                     style="bottom: 0; right: 0;">
-                                                    <i class="fas fa-camera"></i>
+                                                    <!-- ...existing code... -->
                                                 </label>
                                                 <input type="file" id="anh_dai_dien" name="anh_dai_dien" class="d-none"
                                                     accept="image/*" onchange="previewAvatar(this)">
@@ -138,8 +138,7 @@
                                             </li>
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link" id="myFile-tab" data-bs-toggle="tab"
-                                                    data-bs-target="#myFile" type="button" role="tab">Giấy tờ tùy
-                                                    thân</button>   
+                                                    data-bs-target="#myFile" type="button" role="tab">Giấy tờ & chứng chỉ</button>   
                                             </li>
                                                 <li class="nav-item" role="presentation">
                                                     <button class="nav-link" id="insurance-tab" data-bs-toggle="tab"
@@ -154,7 +153,7 @@
                                                     <div class="col-md-6">
                                                         <div class="card border-0 bg-light mb-4">
                                                             <div class="card-header bg-primary text-white">
-                                                                <h5 class="mb-0"><i class="fas fa-user me-2"></i>Thông tin cơ bản</h5>
+                                                                <h5 class="mb-0">Thông tin cơ bản</h5>
                                                             </div>
                                                             <div class="card-body">
                                                                 <div class="mb-3">
@@ -180,7 +179,7 @@
                                                     <div class="col-md-6">
                                                         <div class="card border-0 bg-light mb-4">
                                                             <div class="card-header bg-info text-white">
-                                                                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Thông tin bổ sung</h5>
+                                                                <h5 class="mb-0">Thông tin bổ sung</h5>
                                                             </div>
                                                             <div class="card-body">
                                                                 <div class="mb-3">
@@ -211,7 +210,7 @@
                                                     <div class="col-md-6">
                                                         <div class="card border-0 bg-light mb-4">
                                                             <div class="card-header bg-success text-white">
-                                                                <h5 class="mb-0"><i class="fas fa-briefcase me-2"></i>Thông tin công việc</h5>
+                                                                <h5 class="mb-0">Thông tin công việc</h5>
                                                             </div>
                                                             <div class="card-body">
                                                                 <div class="mb-3">
@@ -252,7 +251,7 @@
                                                     <div class="col-md-6">
                                                         <div class="card border-0 bg-light mb-4">
                                                             <div class="card-header bg-secondary text-white">
-                                                                <h5 class="mb-0"><i class="fas fa-file-contract me-2"></i>Trạng thái &amp; Hợp đồng</h5>
+                                                                <h5 class="mb-0">Trạng thái &amp; Hợp đồng</h5>
                                                             </div>
                                                             <div class="card-body">
                                                                 <div class="mb-3">
@@ -288,7 +287,7 @@
                                                     <div class="col-md-12">
                                                         <div class="card border-0 bg-light mb-4">
                                                             <div class="card-header bg-warning text-dark">
-                                                                <h5 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i>Thông tin lương</h5>
+                                                                <h5 class="mb-0">Thông tin lương</h5>
                                                             </div>
                                                             <div class="card-body">
                                                                 <div class="row">
@@ -329,7 +328,7 @@
                                                     <div class="col-md-6">
                                                         <div class="card border-0 bg-light mb-4">
                                                             <div class="card-header bg-primary text-white">
-                                                                <h5 class="mb-0"><i class="fas fa-phone me-2"></i>Số điện thoại</h5>
+                                                                <h5 class="mb-0">Số điện thoại</h5>
                                                             </div>
                                                             <div class="card-body">
                                                                 <div class="mb-3">
@@ -354,7 +353,7 @@
                                                     <div class="col-md-6">
                                                         <div class="card border-0 bg-light mb-4">
                                                             <div class="card-header bg-info text-white">
-                                                                <h5 class="mb-0"><i class="fas fa-envelope me-2"></i>Email</h5>
+                                                                <h5 class="mb-0">Email</h5>
                                                             </div>
                                                             <div class="card-body">
                                                                 <div class="mb-3">
@@ -366,7 +365,7 @@
                                                                     <input type="email" class="form-control" id="email_ca_nhan" name="email_ca_nhan" value="{{ $nhanVien->thongTinLienHe->email_ca_nhan ?? '' }}">
                                                                 </div>
                                                                 <div class="card-header bg-secondary text-white mt-3">
-                                                                    <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ</h5>
+                                                                    <h5 class="mb-0">Địa chỉ</h5>
                                                                 </div>
                                                                 <div class="mb-3 mt-2">
                                                                     <label for="dia_chi_thuong_tru" class="form-label">Địa chỉ thường trú</label>
@@ -384,7 +383,7 @@
                                                     <div class="col-12">
                                                         <div class="card border-0 bg-light mb-4">
                                                             <div class="card-header bg-warning text-dark">
-                                                                <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Liên hệ khẩn cấp</h5>
+                                                                <h5 class="mb-0">Liên hệ khẩn cấp</h5>
                                                             </div>
                                                             <div class="card-body">
                                                                 <div class="row">
@@ -418,7 +417,7 @@
                                                     <h5>Thành viên gia đình</h5>
                                                     <button type="button" class="btn btn-primary btn-sm mb-3"
                                                         id="showAddFamilyForm">
-                                                        <i class="fas fa-plus me-1"></i>Thêm thành viên
+                                                        Thêm thành viên
                                                     </button>
                                                 </div>
                                                 <div id="addFamilyFormContainer" style="display:none;">
@@ -501,7 +500,7 @@
                                                 <div id="familyTableContainer">
                                                     @if($nhanVien->thongTinGiaDinh && $nhanVien->thongTinGiaDinh->count() > 0)
                                                         <div class="table-responsive">
-                                                            <table class="table table-striped">
+                                                            <table class="table">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Quan hệ</th>
@@ -510,9 +509,7 @@
                                                                         <th>Nghề nghiệp</th>
                                                                         <th>Điện thoại</th>
                                                                         <th>Địa chỉ liên hệ</th>
-                                                                        <th>Người phụ thuộc</th>
                                                                         <th>Ghi chú</th>
-                                                                        <th>Thao tác</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody id="familyTableBody">
@@ -525,26 +522,7 @@
                                                                             <td>{{ $member->nghe_nghiep }}</td>
                                                                             <td>{{ $member->dien_thoai }}</td>
                                                                             <td>{{ $member->dia_chi_lien_he }}</td>
-                                                                            <td>
-                                                                                @if($member->la_nguoi_phu_thuoc)
-                                                                                    <span class="badge bg-success">Có</span>
-                                                                                @else
-                                                                                    <span class="badge bg-secondary">Không</span>
-                                                                                @endif
-                                                                            </td>
                                                                             <td>{{ $member->ghi_chu }}</td>
-                                                                            <td>
-                                                                                <button type="button"
-                                                                                    class="btn btn-sm btn-outline-primary me-1 edit-family"
-                                                                                    data-id="{{ $member->id }}">
-                                                                                    <i class="fas fa-edit"></i>
-                                                                                </button>
-                                                                                <button type="button"
-                                                                                    class="btn btn-sm btn-outline-danger delete-family"
-                                                                                    data-id="{{ $member->id }}">
-                                                                                    <i class="fas fa-trash"></i>
-                                                                                </button>
-                                                                            </td>
                                                                         </tr>
                                                                     @endforeach
                                                                 </tbody>
@@ -558,66 +536,143 @@
                                             </div>
 
                                             <!-- My file Tab -->
-                                            <div class="tab-pane fade" id="myFile" role="tabpanel">
-                                                <div class="mb-4">
-                                                    <h5>Giấy tờ tùy thân</h5>
-                                                    <button type="button" class="btn btn-primary btn-sm mb-3" id="showAddMyFileForm">
-                                                        <i class="fas fa-plus me-1"></i>Thêm giấy tờ
-                                                    </button>
-                                                </div>
-                                                <div id="addMyFileFormContainer" style="display:none;">
-                                                    <div class="border rounded p-3 mb-4 bg-light">
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <div class="mb-3">
-                                                                    <label for="loai_giay_to" class="form-label">Loại giấy tờ <span class="text-danger">*</span></label>
-                                                                    <select class="form-select" id="loai_giay_to" name="loai_giay_to">
-                                                                        <option value="">Chọn loại giấy tờ</option>
-                                                                        <option value="CMND">CMND</option>
-                                                                        <option value="CCCD">CCCD</option>
-                                                                        <option value="Ho_chieu">Hộ chiếu</option>
-                                                                        <option value="Ma_so_thue">Mã số thuế</option>
-                                                                        <option value="Khac">Khác</option>
-                                                                    </select>
+                                                <div class="tab-pane fade" id="myFile" role="tabpanel">
+                                                    <div class="mb-4">
+                                                        <h5>Giấy tờ & chứng chỉ</h5>
+                                                        <button type="button" class="btn btn-primary btn-sm mb-3" id="showAddMyFileForm">
+                                                            Thêm giấy tờ
+                                                        </button>
+                                                    </div>
+
+                                                    <!-- Form thêm/sửa -->
+                                                    <div id="addMyFileFormContainer" style="display:none;">
+                                                        <div class="border rounded p-3 mb-4 bg-light">
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">Loại giấy tờ <span class="text-danger">*</span></label>
+                                                                        <select class="form-select" id="loai_giay_to">
+                                                                            <option value="">Chọn loại giấy tờ</option>
+                                                                            <option value="giay_to_tuy_than">Giấy tờ tùy thân</option>
+                                                                            <option value="chung_chi">Chứng chỉ</option>
+                                                                            <option value="khac">Khác</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">Số giấy tờ <span class="text-danger">*</span></label>
+                                                                        <input type="text" class="form-control" id="so_giay_to">
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">Ngày cấp</label>
+                                                                        <input type="date" class="form-control" id="ngay_cap">
+                                                                    </div>
                                                                 </div>
-                                                                <div class="mb-3">
-                                                                    <label for="so_giay_to" class="form-label">Số giấy tờ <span class="text-danger">*</span></label>
-                                                                    <input type="text" class="form-control" id="so_giay_to" name="so_giay_to">
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label for="ngay_cap" class="form-label">Ngày cấp</label>
-                                                                    <input type="date" class="form-control" id="ngay_cap" name="ngay_cap">
+                                                                <div class="col-md-6">
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">Ngày hết hạn</label>
+                                                                        <input type="date" class="form-control" id="ngay_het_han">
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">Nơi cấp</label>
+                                                                        <input type="text" class="form-control" id="noi_cap">
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-6">
-                                                                <div class="mb-3">
-                                                                    <label for="ngay_het_han" class="form-label">Ngày hết hạn</label>
-                                                                    <input type="date" class="form-control" id="ngay_het_han" name="ngay_het_han">
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label for="noi_cap" class="form-label">Nơi cấp</label>
-                                                                    <input type="text" class="form-control" id="noi_cap" name="noi_cap">
-                                                                </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Tệp đính kèm (PDF, ảnh)</label>
+                                                                <input type="file" class="form-control" id="tep_tin" accept=".pdf,image/*">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Ghi chú</label>
+                                                                <textarea class="form-control" id="ghi_chu" rows="2"></textarea>
+                                                            </div>
+                                                            <div class="d-flex gap-2">
+                                                                <button type="button" class="btn btn-secondary" id="cancelAddMyFile">Hủy</button>
+                                                                <button type="button" class="btn btn-primary" id="addMyFile">Lưu</button>
                                                             </div>
                                                         </div>
-                                                        <div class="mb-3">
-                                                            <label for="ghi_chu" class="form-label">Ghi chú</label>
-                                                            <textarea class="form-control" id="ghi_chu" name="ghi_chu" rows="2"></textarea>
-                                                        </div>
-                                                        <input type="hidden" id="giay_to_id" name="giay_to_id">
-                                                        <div class="d-flex gap-2">
-                                                            <button type="button" class="btn btn-secondary" id="cancelAddMyFile">Hủy</button>
-                                                            <button type="button" class="btn btn-primary" id="addMyFile">Lưu</button>
+                                                    </div>
+
+                                                    <!-- Bảng giấy tờ -->
+                                                    <div id="myFileTableContainer">
+                                                        <div class="table-responsive">
+                                                            <table class="table table-striped" id="myFileTable">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Loại giấy tờ</th>
+                                                                        <th>Số giấy tờ</th>
+                                                                        <th>Ngày cấp</th>
+                                                                        <th>Ngày hết hạn</th>
+                                                                        <th>Nơi cấp</th>
+                                                                        <th>Ghi chú</th>
+                                                                        <th>Tệp đính kèm</th>
+                                                                        <th>Thao tác</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+@foreach($nhanVien->GiayToTuyThan as $idx => $file)
+    <tr>
+        <td>{{ $file->loai_giay_to }}</td>
+        <td>{{ $file->so_giay_to }}</td>
+        <td>{{ $file->ngay_cap }}</td>
+        <td>{{ $file->ngay_het_han }}</td>
+        <td>{{ $file->noi_cap }}</td>
+        <td>{{ $file->ghi_chu }}</td>
+
+        <td>
+            {{-- Input chọn file mới --}}
+            <input type="file" 
+                   name="giay_to[{{ $idx }}][tep_tin]" 
+                   accept=".pdf,image/*" 
+                   class="form-control form-control-sm"
+                   onchange="showFileName(this, {{ $idx }})">
+
+            {{-- Nếu có file cũ thì hiển thị link --}}
+            @if(!empty($file->tepTin))
+                <div class="mt-1">
+                    <small class="text-muted">
+                        File hiện tại: 
+                        <a href="{{ asset('storage/' . $file->tepTin->duong_dan_tep) }}" 
+                           target="_blank">
+                           {{ $file->tepTin->ten_tep }}
+                        </a>
+                    </small>
+                </div>
+                {{-- Giữ lại tep_tin_id để khi không upload file mới thì còn file cũ --}}
+                <input type="hidden" name="giay_to[{{ $idx }}][tep_tin_id]" value="{{ $file->tep_tin_id }}">
+            @endif
+
+            {{-- Chỗ hiển thị preview tên file mới --}}
+            <small id="file-name-{{ $idx }}" class="text-primary"></small>
+
+            {{-- Hidden fields giữ dữ liệu cũ --}}
+            <input type="hidden" name="giay_to[{{ $idx }}][id]" value="{{ $file->id }}">
+            <input type="hidden" name="giay_to[{{ $idx }}][loai_giay_to]" value="{{ $file->loai_giay_to }}">
+            <input type="hidden" name="giay_to[{{ $idx }}][so_giay_to]" value="{{ $file->so_giay_to }}">
+            <input type="hidden" name="giay_to[{{ $idx }}][ngay_cap]" value="{{ $file->ngay_cap }}">
+            <input type="hidden" name="giay_to[{{ $idx }}][ngay_het_han]" value="{{ $file->ngay_het_han }}">
+            <input type="hidden" name="giay_to[{{ $idx }}][noi_cap]" value="{{ $file->noi_cap }}">
+            <input type="hidden" name="giay_to[{{ $idx }}][ghi_chu]" value="{{ $file->ghi_chu }}">
+        </td>
+
+        <td>
+            <button type="button" class="btn btn-sm btn-outline-danger delete-my-file">Xóa</button>
+        </td>
+    </tr>
+@endforeach
+
+                                                                </tbody>
+                                                            </table>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                </div>
+
 
                                                 <!-- Insurance Tab -->
                                                 <div class="tab-pane fade" id="insurance" role="tabpanel">
                                                     <div class="card border-0 bg-light mb-4">
                                                         <div class="card-header bg-info text-white">
-                                                            <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Thông tin bảo hiểm</h5>
+                                                            <h5 class="mb-0">Thông tin bảo hiểm</h5>
                                                         </div>
                                                         <div class="card-body">
                                                             <div class="row">
@@ -678,49 +733,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div id="myFileTableContainer">
-                                                    @if($nhanVien->GiayToTuyThan && $nhanVien->GiayToTuyThan->count())
-                                                        <div class="table-responsive">
-                                                            <table class="table table-striped">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Loại giấy tờ</th>
-                                                                        <th>Số giấy tờ</th>
-                                                                        <th>Ngày cấp</th>
-                                                                        <th>Ngày hết hạn</th>
-                                                                        <th>Nơi cấp</th>
-                                                                        <th>Ghi chú</th>
-                                                                        <th>Thao tác</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody id="myFileTableBody">
-                                                                    @foreach($nhanVien->GiayToTuyThan as $file)
-                                                                        <tr data-id="{{ $file->id }}">
-                                                                            <td>{{ $file->loai_giay_to }}</td>
-                                                                            <td>{{ $file->so_giay_to }}</td>
-                                                                            <td>{{ $file->ngay_cap ? \Carbon\Carbon::parse($file->ngay_cap)->format('d/m/Y') : '' }}</td>
-                                                                            <td>{{ $file->ngay_het_han ? \Carbon\Carbon::parse($file->ngay_het_han)->format('d/m/Y') : '' }}</td>
-                                                                            <td>{{ $file->noi_cap }}</td>
-                                                                            <td>{{ $file->ghi_chu }}</td>
-                                                                            <td>
-                                                                                <button type="button" class="btn btn-sm btn-outline-primary me-1 edit-my-file"
-                                                                                    data-id="{{ $file->id }}">
-                                                                                    <i class="fas fa-edit"></i>
-                                                                                </button>
-                                                                                <button type="button" class="btn btn-sm btn-outline-danger delete-my-file"
-                                                                                    data-id="{{ $file->id }}">
-                                                                                    <i class="fas fa-trash"></i>
-                                                                                </button>
-                                                                            </td>
-                                                                        </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    @else
-                                                        <p class="text-muted" id="noFamilyMessage">Chưa có thông tin giấy tờ tùy thân</p>
-                                                    @endif
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -729,10 +741,10 @@
 
                             <div class="d-flex justify-content-end gap-2 mt-4 px-4">
                                 <a href="{{ route('nhan-vien.show', $nhanVien->id) }}" class="btn btn-outline-secondary">
-                                    <i class="fas fa-times me-1"></i>Hủy
+                                    Hủy
                                 </a>
                                 <button type="submit" class="btn btn-success">
-                                    <i class="fas fa-save me-1"></i>Lưu thay đổi
+                                    Lưu thay đổi
                                 </button>
                             </div>
                         </form>
@@ -748,160 +760,78 @@
             // Array to store all family members (database + temporary)
             let familyMembers = @json($nhanVien->thongTinGiaDinh ?? []);
 
-            // Array to store all my files (database + temporary)
-            let myFiles = @json($nhanVien->GiayToTuyThan ?? []);
+ let idxCounter = $("#myFileTable tbody tr").length; // bắt đầu từ số row hiện có
 
-            // Function to render the my file table
-            function renderMyFileTable() {
-                const $tableBody = $('#myFileTableBody');
-                const $tableContainer = $('#myFileTableContainer');
-                const $noFileMessage = $('#noFamilyMessage');
+// Hiển thị form thêm
+$("#showAddMyFileForm").click(function () {
+    $("#addMyFileFormContainer").show();
+    $("#addMyFileFormContainer input, #addMyFileFormContainer textarea, #addMyFileFormContainer select").val("");
+});
 
-                if (myFiles.length === 0) {
-                    if ($noFileMessage.length) {
-                        $noFileMessage.show();
-                    } else {
-                        $tableContainer.html('<p class="text-muted" id="noFamilyMessage">Chưa có thông tin giấy tờ tùy thân</p>');
-                    }
-                    $tableBody.closest('.table-responsive').hide();
-                    return;
-                }
+// Ẩn form thêm
+$("#cancelAddMyFile").click(function () {
+    $("#addMyFileFormContainer").hide();
+});
 
-                let html = '';
-                myFiles.forEach(function (file, idx) {
-                    html += `<tr data-id="${file.id || ''}" data-idx="${idx}">
-                        <td>${file.loai_giay_to}</td>
-                        <td>${file.so_giay_to}</td>
-                        <td>${file.ngay_cap ? new Date(file.ngay_cap).toLocaleDateString('vi-VN') : ''}</td>
-                        <td>${file.ngay_het_han ? new Date(file.ngay_het_han).toLocaleDateString('vi-VN') : ''}</td>
-                        <td>${file.noi_cap || ''}</td>
-                        <td>${file.ghi_chu || ''}</td>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-outline-primary me-1 edit-my-file" data-idx="${idx}"><i class="fas fa-edit"></i></button>
-                            <button type="button" class="btn btn-sm btn-outline-danger delete-my-file" data-idx="${idx}" data-id="${file.id || ''}"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>`;
-                });
+// Thêm giấy tờ
+$("#addMyFile").click(function () {
+    const loai_giay_to = $("#loai_giay_to").val();
+    const so_giay_to   = $("#so_giay_to").val();
+    const ngay_cap     = $("#ngay_cap").val();
+    const ngay_het_han = $("#ngay_het_han").val();
+    const noi_cap      = $("#noi_cap").val();
+    const ghi_chu      = $("#ghi_chu").val();
+    const $fileInput   = $("#tep_tin");
 
-                if ($tableBody.length) {
-                    $tableBody.html(html);
-                    $tableBody.closest('.table-responsive').show();
-                    $noFileMessage.hide();
-                } else {
-                    $tableContainer.html(`
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Loại giấy tờ</th>
-                                        <th>Số giấy tờ</th>
-                                        <th>Ngày cấp</th>
-                                        <th>Ngày hết hạn</th>
-                                        <th>Nơi cấp</th>
-                                        <th>Ghi chú</th>
-                                        <th>Thao tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="myFileTableBody">${html}</tbody>
-                            </table>
-                        </div>
-                    `);
-                }
-            }
+    if (!loai_giay_to || !so_giay_to) {
+        alert("Vui lòng nhập Loại giấy tờ và Số giấy tờ");
+        return;
+    }
 
-            // Show/hide add my file form
-            $('#showAddMyFileForm').click(function () {
-                $('#addMyFileFormContainer').show();
-                $('#addMyFileFormContainer').find('input, select, textarea').val('');
-                $('#giay_to_id').val('');
-                $('#addMyFile').text('Lưu');
-            });
+    const currentIdx = idxCounter++;
 
-            $('#cancelAddMyFile').click(function () {
-                $('#addMyFileFormContainer').hide();
-            });
+    // Tạo 1 row mới
+    const $tr = $(`
+        <tr>
+            <td>${loai_giay_to}</td>
+            <td>${so_giay_to}</td>
+            <td>${ngay_cap}</td>
+            <td>${ngay_het_han}</td>
+            <td>${noi_cap}</td>
+            <td>${ghi_chu}</td>
+            <td class="file-cell"></td>
+            <td><button type="button" class="btn btn-sm btn-outline-danger delete-my-file">Xóa</button></td>
+        </tr>
+    `);
 
-            // Handle add/edit my file button click
-            $('#addMyFile').click(function () {
-                const $form = $('#addMyFileFormContainer');
-                const loai_giay_to = $form.find('[name="loai_giay_to"]').val();
-                const so_giay_to = $form.find('[name="so_giay_to"]').val();
-                const giay_to_id = $form.find('[name="giay_to_id"]').val();
+    // Move input file thật vào trong row
+    $fileInput.attr("name", `giay_to[${currentIdx}][tep_tin]`);
+    $tr.find(".file-cell").append($fileInput);
 
-                // Basic validation
-                if (!loai_giay_to || !so_giay_to) {
-                    alert('Vui lòng điền đầy đủ Loại giấy tờ và Số giấy tờ.');
-                    return;
-                }
+    // Thêm hidden input để submit metadata
+    $tr.append(`<input type="hidden" name="giay_to[${currentIdx}][loai_giay_to]" value="${loai_giay_to}">`);
+    $tr.append(`<input type="hidden" name="giay_to[${currentIdx}][so_giay_to]" value="${so_giay_to}">`);
+    $tr.append(`<input type="hidden" name="giay_to[${currentIdx}][ngay_cap]" value="${ngay_cap}">`);
+    $tr.append(`<input type="hidden" name="giay_to[${currentIdx}][ngay_het_han]" value="${ngay_het_han}">`);
+    $tr.append(`<input type="hidden" name="giay_to[${currentIdx}][noi_cap]" value="${noi_cap}">`);
+    $tr.append(`<input type="hidden" name="giay_to[${currentIdx}][ghi_chu]" value="${ghi_chu}">`);
 
-                const file = {
-                    id: giay_to_id || null,
-                    loai_giay_to: loai_giay_to,
-                    so_giay_to: so_giay_to,
-                    ngay_cap: $form.find('[name="ngay_cap"]').val() || null,
-                    ngay_het_han: $form.find('[name="ngay_het_han"]').val() || null,
-                    noi_cap: $form.find('[name="noi_cap"]').val() || null,
-                    ghi_chu: $form.find('[name="ghi_chu"]').val() || null,
-                    is_temp: !giay_to_id // New files are marked as temporary
-                };
+    $("#myFileTable tbody").append($tr);
 
-                if (giay_to_id) {
-                    // Update existing file in array
-                    const idx = myFiles.findIndex(f => (f.id && f.id == giay_to_id) || (f.is_temp && f === myFiles[parseInt($form.data('edit-idx'))]));
-                    if (idx !== -1) {
-                        myFiles[idx] = file;
-                    }
-                } else {
-                    // Add new file
-                    myFiles.push(file);
-                }
+    // Reset form và tạo lại input file mới
+    $("#addMyFileFormContainer input, #addMyFileFormContainer textarea, #addMyFileFormContainer select").val("");
+    $("#addMyFileFormContainer .mb-3:has(#tep_tin)").html(`
+        <label class="form-label">Tệp đính kèm (PDF, ảnh)</label>
+        <input type="file" class="form-control" id="tep_tin" accept=".pdf,image/*">
+    `);
 
-                renderMyFileTable();
-                $('#addMyFileFormContainer').hide();
-                $form.find('input, select, textarea').val('');
-                $('#giay_to_id').val('');
-            });
+    $("#addMyFileFormContainer").hide();
+});
 
-            // Handle edit my file
-            $(document).on('click', '.edit-my-file', function () {
-                const idx = $(this).data('idx');
-                const file = myFiles[idx];
-                const $form = $('#addMyFileFormContainer');
-
-                $form.find('[name="loai_giay_to"]').val(file.loai_giay_to);
-                $form.find('[name="so_giay_to"]').val(file.so_giay_to);
-                $form.find('[name="ngay_cap"]').val(file.ngay_cap || '');
-                $form.find('[name="ngay_het_han"]').val(file.ngay_het_han || '');
-                $form.find('[name="noi_cap"]').val(file.noi_cap || '');
-                $form.find('[name="ghi_chu"]').val(file.ghi_chu || '');
-                $form.find('[name="giay_to_id"]').val(file.id || '');
-                $form.data('edit-idx', idx); // Store index for editing temporary files
-                $('#addMyFile').text('Cập nhật');
-
-                $('#addMyFileFormContainer').show();
-            });
-
-            // Handle delete my file (client-side for temporary, AJAX for database)
-            $(document).on('click', '.delete-my-file', function () {
-                const idx = $(this).data('idx');
-                const fileId = $(this).data('id');
-
-                if (fileId && !myFiles[idx].is_temp) {
-                    // Database file: use AJAX (implement if needed)
-                    if (confirm('Bạn có chắc chắn muốn xóa giấy tờ này?')) {
-                        // TODO: AJAX delete logic here
-                        myFiles.splice(idx, 1);
-                        renderMyFileTable();
-                    }
-                } else {
-                    // Temporary file: remove from array
-                    if (confirm('Bạn có chắc chắn muốn xóa giấy tờ này?')) {
-                        myFiles.splice(idx, 1);
-                        renderMyFileTable();
-                    }
-                }
-            });
-
+// Xóa giấy tờ
+$(document).on("click", ".delete-my-file", function () {
+    $(this).closest("tr").remove();
+});
             // Append my files to main form on submit
             $('#employeeForm').submit(function () {
                 $('#addMyFileFormContainer').hide();
@@ -939,23 +869,15 @@
                 let html = '';
                 familyMembers.forEach(function (member, idx) {
                     html += `<tr data-id="${member.id || ''}" data-idx="${idx}">
-                    <td>${member.quan_he}</td>
-                    <td>${member.ho_ten}</td>
-                    <td>${member.ngay_sinh ? new Date(member.ngay_sinh).toLocaleDateString('vi-VN') : ''}</td>
-                    <td>${member.nghe_nghiep || ''}</td>
-                    <td>${member.dien_thoai || ''}</td>
-                    <td>${member.dia_chi_lien_he || ''}</td>
-                    <td><span class="badge ${member.la_nguoi_phu_thuoc ? 'bg-success' : 'bg-secondary'}">${member.la_nguoi_phu_thuoc ? 'Có' : 'Không'}</span></td>
-                    <td>${member.ghi_chu || ''}</td>
-                    <td>
-                        <button type="button" class="btn btn-sm btn-outline-primary me-1 edit-family" data-idx="${idx}">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-danger delete-family" data-idx="${idx}" data-id="${member.id || ''}">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>`;
+                        <td>${member.quan_he}</td>
+                        <td>${member.ho_ten}</td>
+                        <td>${member.ngay_sinh ? new Date(member.ngay_sinh).toLocaleDateString('vi-VN') : ''}</td>
+                        <td>${member.nghe_nghiep || ''}</td>
+                        <td>${member.dien_thoai || ''}</td>
+                        <td>${member.dia_chi_lien_he || ''}</td>
+                        <td><span class="badge ${member.la_nguoi_phu_thuoc ? 'bg-success' : 'bg-secondary'}">${member.la_nguoi_phu_thuoc ? 'Có' : 'Không'}</span></td>
+                        <td>${member.ghi_chu || ''}</td>
+                    </tr>`;
                 });
 
                 if ($tableBody.length) {
@@ -964,25 +886,24 @@
                     $noFamilyMessage.hide();
                 } else {
                     $tableContainer.html(`
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Quan hệ</th>
-                                    <th>Họ tên</th>
-                                    <th>Ngày sinh</th>
-                                    <th>Nghề nghiệp</th>
-                                    <th>Điện thoại</th>
-                                    <th>Địa chỉ liên hệ</th>
-                                    <th>Người phụ thuộc</th>
-                                    <th>Ghi chú</th>
-                                    <th>Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody id="familyTableBody">${html}</tbody>
-                        </table>
-                    </div>
-                `);
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Quan hệ</th>
+                                        <th>Họ tên</th>
+                                        <th>Ngày sinh</th>
+                                        <th>Nghề nghiệp</th>
+                                        <th>Điện thoại</th>
+                                        <th>Địa chỉ liên hệ</th>
+                                        <th>Người phụ thuộc</th>
+                                        <th>Ghi chú</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="familyTableBody">${html}</tbody>
+                            </table>
+                        </div>
+                    `);
                 }
             }
 

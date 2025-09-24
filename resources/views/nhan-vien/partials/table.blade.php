@@ -15,9 +15,6 @@
                 <th>Email</th>
                 <th>Chức vụ</th>
                 <th>Phòng ban</th>
-                <th>Ngày thử việc</th>
-                <th>Ngày chính thức</th>
-                <th>Lương cơ bản</th>
                 <th>Trạng thái</th>
                 <th width="150">Thao tác</th>
             </tr>
@@ -35,15 +32,6 @@
                     </td>
                     <td>
                         <div class="d-flex align-items-center">
-                            @if($nhanVien->anh_dai_dien)
-                                <img src="{{ Storage::url($nhanVien->anh_dai_dien) }}" alt="Avatar" class="rounded-circle me-2"
-                                    width="32" height="32">
-                            @else
-                                <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-2"
-                                    style="width: 32px; height: 32px;">
-                                    <i class="fas fa-user text-white"></i>
-                                </div>
-                            @endif
                             <div>
                                 <div class="fw-bold">{{ $nhanVien->ho }} {{ $nhanVien->ten }}</div>
                             </div>
@@ -102,27 +90,6 @@
                             <span class="badge bg-secondary">{{ $nhanVien->phongBan->ten_phong_ban }}</span>
                         @else
                             <span class="text-muted">Chưa có</span>
-                        @endif
-                    </td>
-                    <td>
-                        @if($nhanVien->ngay_thu_viec)
-                            {{ \Carbon\Carbon::parse($nhanVien->ngay_thu_viec)->format('d/m/Y') }}
-                        @else
-                            <span class="text-muted">-</span>
-                        @endif
-                    </td>
-                    <td>
-                        @if($nhanVien->ngay_vao_lam)
-                            {{ \Carbon\Carbon::parse($nhanVien->ngay_vao_lam)->format('d/m/Y') }}
-                        @else
-                            <span class="text-muted">-</span>
-                        @endif
-                    </td>
-                    <td>
-                        @if(optional($nhanVien->thongTinLuong)->luong_co_ban)
-                            <span class="text-success fw-bold">{{ number_format($nhanVien->thongTinLuong->luong_co_ban, 0, ',', '.') }} VNĐ</span>
-                        @else
-                            <span class="text-muted">-</span>
                         @endif
                     </td>
                     <td>

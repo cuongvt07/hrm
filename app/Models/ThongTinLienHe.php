@@ -15,8 +15,6 @@ class ThongTinLienHe extends Model
     protected $fillable = [
         'nhan_vien_id',
         'dien_thoai_di_dong',
-        'dien_thoai_co_quan',
-        'dien_thoai_nha_rieng',
         'dien_thoai_khac',
         'email_co_quan',
         'email_ca_nhan',

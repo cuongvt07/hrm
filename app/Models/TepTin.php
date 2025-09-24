@@ -14,7 +14,6 @@ class TepTin extends Model
 
     protected $fillable = [
         'nhan_vien_id',
-        'module_id',
         'loai_tep',
         'ten_tep',
         'duong_dan_tep',

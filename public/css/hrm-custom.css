@@ -176,14 +176,13 @@ body {
 }
 
 .table thead th {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-    color: BLACK !important;
+    background: #ccc;
+    color: rgb(0, 0, 0) !important;
     border: none;
-    font-weight: 600;
+    font-weight: 400;
     text-transform: uppercase;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     letter-spacing: 0.5px;
-    padding: 1rem 0.75rem;
 }
 
 .table tbody tr {

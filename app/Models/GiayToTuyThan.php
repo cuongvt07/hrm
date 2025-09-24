@@ -13,6 +13,7 @@ class GiayToTuyThan extends Model
     protected $table = 'giay_to_tuy_than';
 
     protected $fillable = [
+        'tep_tin_id',
         'nhan_vien_id',
         'loai_giay_to',
         'so_giay_to',
@@ -31,5 +32,11 @@ class GiayToTuyThan extends Model
     public function nhanVien(): BelongsTo
     {
         return $this->belongsTo(NhanVien::class, 'nhan_vien_id');
+    }
+
+    // Quan hệ với TepTin (file đính kèm)
+    public function tepTin(): BelongsTo
+    {
+        return $this->belongsTo(TepTin::class, 'tep_tin_id');
     }
 }

@@ -29,10 +29,10 @@
                 </div>
                 <div class="d-flex gap-2">
                     <a href="{{ route('nhan-vien.edit', $nhanVien->id) }}" class="btn btn-primary">
-                        <i class="fas fa-edit me-1"></i>Chỉnh sửa
+                        Chỉnh sửa
                     </a>
                     <a href="{{ route('nhan-vien.index') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-1"></i>Quay lại danh sách
+                        Quay lại danh sách
                     </a>
                 </div>
             </div>
@@ -72,30 +72,30 @@
                                 <!-- Quick Info -->
                                 <div class="card border-0 shadow-sm mb-4">
                                     <div class="card-header bg-primary text-white">
-                                        <h6 class="mb-0"><i class="fas fa-info-circle me-1"></i>Thông tin nhanh</h6>
+                                        <h6 class="mb-0">Thông tin nhanh</h6>
                                     </div>
                                     <div class="card-body">
                                         <div class="mb-3">
                                             <div class="d-flex justify-content-between align-items-center py-1">
-                                                <small class="text-dark"><i class="fas fa-envelope me-1"></i>Email:</small>
+                                                <small class="text-dark">Email:</small>
                                             </div>
                                             <div class="fw-bold small">{{ $nhanVien->email ?? '-' }}</div>
                                         </div>
                                         <div class="mb-3">
                                             <div class="d-flex justify-content-between align-items-center py-1">
-                                                <small class="text-dark"><i class="fas fa-phone me-1"></i>Điện thoại:</small>
+                                                <small class="text-dark">Điện thoại:</small>
                                             </div>
                                             <div class="fw-bold small">{{ $nhanVien->so_dien_thoai ?? '-' }}</div>
                                         </div>
                                         <div class="mb-3">
                                             <div class="d-flex justify-content-between align-items-center py-1">
-                                                <small class="text-dark"><i class="fas fa-birthday-cake me-1"></i>Ngày sinh:</small>
+                                                <small class="text-dark">Ngày sinh:</small>
                                             </div>
                                             <div class="fw-bold small">{{ $nhanVien->ngay_sinh ? \Carbon\Carbon::parse($nhanVien->ngay_sinh)->format('d/m/Y') : '-' }}</div>
                                         </div>
                                         <div class="mb-3">
                                             <div class="d-flex justify-content-between align-items-center py-1">
-                                                <small class="text-dark"><i class="fas fa-venus-mars me-1"></i>Giới tính:</small>
+                                                <small class="text-dark">Giới tính:</small>
                                             </div>
                                             <div class="fw-bold small">{{ $nhanVien->gioi_tinh == 'nam' ? 'Nam' : 'Nữ' }}</div>
                                         </div>
@@ -105,31 +105,31 @@
                                 <!-- Work Info Summary -->
                                 <div class="card border-0 shadow-sm">
                                     <div class="card-header bg-success text-white">
-                                        <h6 class="mb-0"><i class="fas fa-briefcase me-1"></i>Công việc</h6>
+                                        <h6 class="mb-0">Công việc</h6>
                                     </div>
                                     <div class="card-body">
                                         <div class="mb-3">
                                             <div class="d-flex justify-content-between align-items-center py-1">
-                                                <small class="text-dark"><i class="fas fa-building me-1"></i>Phòng ban:</small>
+                                                <small class="text-dark">Phòng ban:</small>
                                             </div>
                                             <div class="fw-bold small">{{ $nhanVien->phongBan ? $nhanVien->phongBan->ten_phong_ban : '-' }}</div>
                                         </div>
                                         <div class="mb-3">
                                             <div class="d-flex justify-content-between align-items-center py-1">
-                                                <small class="text-dark"><i class="fas fa-user-tie me-1"></i>Chức vụ:</small>
+                                                <small class="text-dark">Chức vụ:</small>
                                             </div>
                                             <div class="fw-bold small">{{ $nhanVien->chucVu ? $nhanVien->chucVu->ten_chuc_vu : '-' }}</div>
                                         </div>
                                         <div class="mb-3">
                                             <div class="d-flex justify-content-between align-items-center py-1">
-                                                <small class="text-dark"><i class="fas fa-calendar-plus me-1"></i>Ngày vào làm:</small>
+                                                <small class="text-dark">Ngày vào làm:</small>
                                             </div>
                                             <div class="fw-bold small">{{ $nhanVien->ngay_vao_lam ? \Carbon\Carbon::parse($nhanVien->ngay_vao_lam)->format('d/m/Y') : '-' }}</div>
                                         </div>
                                         @if(in_array($nhanVien->trang_thai, ['nhan_vien_chinh_thuc', 'thai_san']))
                                             <div class="mb-0">
                                                 <div class="d-flex justify-content-between align-items-center py-1">
-                                                    <small class="text-dark"><i class="fas fa-calendar-alt me-1"></i>Thâm niên:</small>
+                                                    <small class="text-dark">Thâm niên:</small>
                                                 </div>
                                                 <div class="fw-bold small">
                                                     @if($nhanVien->ngay_vao_lam)
@@ -155,7 +155,7 @@
                                         @else
                                             <div class="mb-0">
                                                 <div class="d-flex justify-content-between align-items-center py-1">
-                                                    <small class="text-dark"><i class="fas fa-clock me-1"></i>Ngày thử việc:</small>
+                                                    <small class="text-dark">Ngày thử việc:</small>
                                                 </div>
                                                 <div class="fw-bold small">{{ $nhanVien->ngay_thu_viec ? \Carbon\Carbon::parse($nhanVien->ngay_thu_viec)->format('d/m/Y') : '-' }}</div>
                                             </div>
@@ -181,7 +181,7 @@
                                         <a class="nav-link" id="family-tab" data-bs-toggle="tab" href="#family" role="tab" aria-controls="family" aria-selected="false">Gia đình</a>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <a class="nav-link" id="giayto-tab" data-bs-toggle="tab" href="#giayto" role="tab" aria-controls="giayto" aria-selected="false">Giấy tờ tùy thân</a>
+                                        <a class="nav-link" id="giayto-tab" data-bs-toggle="tab" href="#giayto" role="tab" aria-controls="giayto" aria-selected="false">Giấy tờ & Chứng chỉ</a>
                                     </li>
                                         <li class="nav-item" role="presentation">
                                             <a class="nav-link" id="insurance-tab" data-bs-toggle="tab" href="#insurance" role="tab" aria-controls="insurance" aria-selected="false">Thông tin bảo hiểm</a>
@@ -199,7 +199,7 @@
                                             <div class="col-md-6">
                                                 <div class="card border-0 bg-light mb-4">
                                                     <div class="card-header bg-primary text-white">
-                                                        <h5 class="mb-0"><i class="fas fa-user me-2"></i>Thông tin cơ bản</h5>
+                                                        <h5 class="mb-0">Thông tin cơ bản</h5>
                                                     </div>
                                                     <div class="card-body">
                                                         <div class="row g-3">
@@ -242,7 +242,7 @@
                                             <div class="col-md-6">
                                                 <div class="card border-0 bg-light mb-4">
                                                     <div class="card-header bg-info text-white">
-                                                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Thông tin bổ sung</h5>
+                                                        <h5 class="mb-0">Thông tin bổ sung</h5>
                                                     </div>
                                                     <div class="card-body">
                                                         <div class="row g-3">
@@ -283,25 +283,25 @@
                                             <div class="col-md-6">
                                                 <div class="card border-0 bg-light mb-4">
                                                     <div class="card-header bg-success text-white">
-                                                        <h5 class="mb-0"><i class="fas fa-briefcase me-2"></i>Thông tin công việc</h5>
+                                                        <h5 class="mb-0">Thông tin công việc</h5>
                                                     </div>
                                                     <div class="card-body">
                                                         <div class="row g-3">
                                                             <div class="col-12">
                                                                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                                                                    <strong class="text-dark"><i class="fas fa-building me-1"></i>Phòng ban:</strong>
+                                                                    <strong class="text-dark">Phòng ban:</strong>
                                                                     <span class="fw-bold">{{ $nhanVien->phongBan ? $nhanVien->phongBan->ten_phong_ban : '-' }}</span>
                                                                 </div>
                                                             </div>
                                                             <div class="col-12">
                                                                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                                                                    <strong class="text-dark"><i class="fas fa-user-tie me-1"></i>Chức vụ:</strong>
+                                                                    <strong class="text-dark">Chức vụ:</strong>
                                                                     <span class="fw-bold">{{ $nhanVien->chucVu ? $nhanVien->chucVu->ten_chuc_vu : '-' }}</span>
                                                                 </div>
                                                             </div>
                                                             <div class="col-12">
                                                                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                                                                    <strong class="text-dark"><i class="fas fa-user me-1"></i>Quản lý trực tiếp:</strong>
+                                                                    <strong class="text-dark">Quản lý trực tiếp:</strong>
                                                                     <span class="fw-bold">
                                                                         @if($nhanVien->quanLyTrucTiep)
                                                                             {{ $nhanVien->quanLyTrucTiep->ho }} {{ $nhanVien->quanLyTrucTiep->ten }}
@@ -313,7 +313,7 @@
                                                             </div>
                                                             <div class="col-12">
                                                                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                                                                    <strong class="text-dark"><i class="fas fa-users me-1"></i>Nhân viên cấp dưới:</strong>
+                                                                    <strong class="text-dark">Nhân viên cấp dưới:</strong>
                                                                     <span class="fw-bold">
                                                                         @if($nhanVien->capDuoi && $nhanVien->capDuoi->count() > 0)
                                                                             {!! $nhanVien->capDuoi->map(function($nv){
@@ -327,13 +327,13 @@
                                                             </div>
                                                             <div class="col-12">
                                                                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                                                                    <strong class="text-dark"><i class="fas fa-calendar-plus me-1"></i>Ngày vào làm:</strong>
+                                                                    <strong class="text-dark">Ngày vào làm:</strong>
                                                                     <span class="fw-bold">{{ $nhanVien->ngay_vao_lam ? \Carbon\Carbon::parse($nhanVien->ngay_vao_lam)->format('d/m/Y') : '-' }}</span>
                                                                 </div>
                                                             </div>
                                                             <div class="col-12">
                                                                 <div class="d-flex justify-content-between align-items-center py-2">
-                                                                    <strong class="text-dark"><i class="fas fa-clock me-1"></i>Ngày thử việc:</strong>
+                                                                    <strong class="text-dark">Ngày thử việc:</strong>
                                                                     <span class="fw-bold">{{ $nhanVien->ngay_thu_viec ? \Carbon\Carbon::parse($nhanVien->ngay_thu_viec)->format('d/m/Y') : '-' }}</span>
                                                                 </div>
                                                             </div>
@@ -344,13 +344,13 @@
                                             <div class="col-md-6">
                                                 <div class="card border-0 bg-light mb-4">
                                                     <div class="card-header bg-warning text-dark">
-                                                        <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Trạng thái & Hợp đồng</h5>
+                                                        <h5 class="mb-0">Trạng thái & Hợp đồng</h5>
                                                     </div>
                                                     <div class="card-body">
                                                         <div class="row g-3">
                                                             <div class="col-12">
                                                                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                                                                    <strong class="text-dark"><i class="fas fa-info-circle me-1"></i>Trạng thái:</strong>
+                                                                    <strong class="text-dark">Trạng thái:</strong>
                                                                     <span class="fw-bold">
                                                                         @php
                                                                             $config = $statusConfig[$nhanVien->trang_thai] ?? $statusConfig['khac'];
@@ -362,7 +362,7 @@
                                                             @if($nhanVien->hopDongLaoDong && $nhanVien->hopDongLaoDong->count() > 0)
                                                                 <div class="col-12">
                                                                     <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                                                                        <strong class="text-dark"><i class="fas fa-file-contract me-1"></i>Loại hợp đồng:</strong>
+                                                                        <strong class="text-dark">Loại hợp đồng:</strong>
                                                                         <span class="fw-bold">
                                                                             {{ $nhanVien->hopDongLaoDong->last()->loai_hop_dong ?? '-' }}
                                                                         </span>
@@ -371,7 +371,7 @@
                                                             @endif
                                                             <div class="col-12">
                                                                 <div class="d-flex justify-content-between align-items-center py-2">
-                                                                    <strong class="text-dark"><i class="fas fa-calendar-alt me-1"></i>Thâm niên:</strong>
+                                                                    <strong class="text-dark">Thâm niên:</strong>
                                                                     <span class="fw-bold">
                                                                         @if($nhanVien->ngay_vao_lam)
                                                                             @php
@@ -409,7 +409,7 @@
                                                 <div class="col-12">
                                                     <div class="card border-0 shadow-sm">
                                                         <div class="card-header bg-dark text-white">
-                                                            <h5 class="mb-0"><i class="fas fa-file-signature me-2"></i>Hợp đồng lao động</h5>
+                                                            <h5 class="mb-0">Hợp đồng lao động</h5>
                                                         </div>
                                                         <div class="card-body">
                                                             @foreach($nhanVien->hopDongLaoDong as $hopDong)
@@ -417,29 +417,29 @@
                                                                     <div class="row">
                                                                         <div class="col-md-6">
                                                                             <div class="mb-2">
-                                                                                <strong class="text-primary"><i class="fas fa-hashtag me-1"></i>Số hợp đồng:</strong>
+                                                                                <strong class="text-primary">Số hợp đồng:</strong>
                                                                                 <span class="ms-2">{{ $hopDong->so_hop_dong }}</span>
                                                                             </div>
                                                                             <div class="mb-2">
-                                                                                <strong class="text-primary"><i class="fas fa-calendar-check me-1"></i>Ngày ký:</strong>
+                                                                                <strong class="text-primary">Ngày ký:</strong>
                                                                                 <span class="ms-2">{{ $hopDong->ngay_ky ? \Carbon\Carbon::parse($hopDong->ngay_ky)->format('d/m/Y') : '-' }}</span>
                                                                             </div>
                                                                             <div class="mb-2">
-                                                                                <strong class="text-primary"><i class="fas fa-play-circle me-1"></i>Ngày bắt đầu:</strong>
+                                                                                <strong class="text-primary">Ngày bắt đầu:</strong>
                                                                                 <span class="ms-2">{{ $hopDong->ngay_bat_dau ? \Carbon\Carbon::parse($hopDong->ngay_bat_dau)->format('d/m/Y') : '-' }}</span>
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-md-6">
                                                                             <div class="mb-2">
-                                                                                <strong class="text-primary"><i class="fas fa-stop-circle me-1"></i>Ngày kết thúc:</strong>
+                                                                                <strong class="text-primary">Ngày kết thúc:</strong>
                                                                                 <span class="ms-2">{{ $hopDong->ngay_ket_thuc ? \Carbon\Carbon::parse($hopDong->ngay_ket_thuc)->format('d/m/Y') : '-' }}</span>
                                                                             </div>
                                                                             <div class="mb-2">
-                                                                                <strong class="text-primary"><i class="fas fa-file-contract me-1"></i>Loại hợp đồng:</strong>
+                                                                                <strong class="text-primary">Loại hợp đồng:</strong>
                                                                                 <span class="ms-2">{{ $hopDong->loai_hop_dong }}</span>
                                                                             </div>
                                                                             <div class="mb-2">
-                                                                                <strong class="text-primary"><i class="fas fa-info-circle me-1"></i>Trạng thái:</strong>
+                                                                                <strong class="text-primary">Trạng thái:</strong>
                                                                                 <span class="ms-2">
                                                                                     @if($hopDong->trang_thai == 'active')
                                                                                         <span class="badge bg-success">Đang hoạt động</span>
@@ -468,7 +468,7 @@
                                             <div class="col-md-12">
                                                 <div class="card border-0 bg-light mb-4">
                                                     <div class="card-header bg-warning text-dark">
-                                                        <h5 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i>Thông tin lương</h5>
+                                                        <h5 class="mb-0">Thông tin lương</h5>
                                                     </div>
                                                     <div class="card-body">
                                                         <div class="row">
@@ -503,7 +503,6 @@
                                         </div>
                                         @else
                                         <div class="text-center py-4">
-                                            <i class="fas fa-money-bill-wave fa-2x text-muted mb-2"></i>
                                             <p class="text-muted">Chưa có thông tin lương</p>
                                         </div>
                                         @endif
@@ -515,31 +514,19 @@
                                                 <div class="col-md-6">
                                                     <div class="card border-0 bg-light mb-4">
                                                         <div class="card-header bg-secondary text-white">
-                                                            <h5 class="mb-0"><i class="fas fa-phone me-2"></i>Số điện thoại</h5>
+                                                            <h5 class="mb-0">Số điện thoại</h5>
                                                         </div>
                                                         <div class="card-body">
                                                             <div class="row g-3">
                                                                 <div class="col-12">
                                                                     <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                                                                        <strong class="text-dark"><i class="fas fa-mobile-alt me-1"></i>Điện thoại di động:</strong>
+                                                                        <strong class="text-dark">Điện thoại di động:</strong>
                                                                         <span class="fw-bold">{{ $nhanVien->thongTinLienHe->dien_thoai_di_dong ?? '-' }}</span>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12">
-                                                                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                                                                        <strong class="text-dark"><i class="fas fa-building me-1"></i>Điện thoại cơ quan:</strong>
-                                                                        <span class="fw-bold">{{ $nhanVien->thongTinLienHe->dien_thoai_co_quan ?? '-' }}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-12">
-                                                                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                                                                        <strong class="text-dark"><i class="fas fa-home me-1"></i>Điện thoại nhà riêng:</strong>
-                                                                        <span class="fw-bold">{{ $nhanVien->thongTinLienHe->dien_thoai_nha_rieng ?? '-' }}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-12">
                                                                     <div class="d-flex justify-content-between align-items-center py-2">
-                                                                        <strong class="text-dark"><i class="fas fa-phone-square me-1"></i>Điện thoại khác:</strong>
+                                                                        <strong class="text-dark">Điện thoại khác:</strong>
                                                                         <span class="fw-bold">{{ $nhanVien->thongTinLienHe->dien_thoai_khac ?? '-' }}</span>
                                                                     </div>
                                                                 </div>
@@ -550,19 +537,19 @@
                                                 <div class="col-md-6">
                                                     <div class="card border-0 bg-light mb-4">
                                                         <div class="card-header bg-info text-white">
-                                                            <h5 class="mb-0"><i class="fas fa-envelope me-2"></i>Email</h5>
+                                                            <h5 class="mb-0">Email</h5>
                                                         </div>
                                                         <div class="card-body">
                                                             <div class="row g-3">
                                                                 <div class="col-12">
                                                                     <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                                                                        <strong class="text-dark"><i class="fas fa-envelope-open me-1"></i>Email cơ quan:</strong>
+                                                                        <strong class="text-dark">Email cơ quan:</strong>
                                                                         <span class="fw-bold">{{ $nhanVien->thongTinLienHe->email_co_quan ?? '-' }}</span>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12">
                                                                     <div class="d-flex justify-content-between align-items-center py-2">
-                                                                        <strong class="text-dark"><i class="fas fa-envelope me-1"></i>Email cá nhân:</strong>
+                                                                        <strong class="text-dark">Email cá nhân khác:</strong>
                                                                         <span class="fw-bold">{{ $nhanVien->thongTinLienHe->email_ca_nhan ?? '-' }}</span>
                                                                     </div>
                                                                 </div>
@@ -572,19 +559,19 @@
 
                                                     <div class="card border-0 bg-light mb-4">
                                                         <div class="card-header bg-warning text-dark">
-                                                            <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ</h5>
+                                                            <h5 class="mb-0">Địa chỉ</h5>
                                                         </div>
                                                         <div class="card-body">
                                                             <div class="row g-3">
                                                                 <div class="col-12">
                                                                     <div class="d-flex justify-content-between align-items-start py-2 border-bottom">
-                                                                        <strong class="text-dark"><i class="fas fa-home me-1"></i>Địa chỉ thường trú:</strong>
+                                                                        <strong class="text-dark">Địa chỉ thường trú:</strong>
                                                                         <span class="fw-bold text-end">{{ $nhanVien->thongTinLienHe->dia_chi_thuong_tru ?? '-' }}</span>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12">
                                                                     <div class="d-flex justify-content-between align-items-start py-2">
-                                                                        <strong class="text-dark"><i class="fas fa-map-pin me-1"></i>Địa chỉ hiện tại:</strong>
+                                                                        <strong class="text-dark">Địa chỉ hiện tại:</strong>
                                                                         <span class="fw-bold text-end">{{ $nhanVien->thongTinLienHe->dia_chi_hien_tai ?? '-' }}</span>
                                                                     </div>
                                                                 </div>
@@ -597,27 +584,27 @@
                                                 <div class="col-12">
                                                     <div class="card border-0 shadow-sm">
                                                         <div class="card-header bg-danger text-white">
-                                                            <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Liên hệ khẩn cấp</h5>
+                                                            <h5 class="mb-0">Liên hệ khẩn cấp</h5>
                                                         </div>
                                                         <div class="card-body">
                                                             <div class="row">
                                                                 <div class="col-md-4">
                                                                     <div class="text-center p-3 bg-light rounded">
-                                                                        <i class="fas fa-user fa-2x text-primary mb-2"></i>
+                                                                        <!-- ...existing code... -->
                                                                         <h6 class="text-muted">Tên</h6>
                                                                         <strong class="d-block">{{ $nhanVien->thongTinLienHe->lien_he_khan_cap_ten ?? '-' }}</strong>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-4">
                                                                     <div class="text-center p-3 bg-light rounded">
-                                                                        <i class="fas fa-users fa-2x text-success mb-2"></i>
+                                                                        <!-- ...existing code... -->
                                                                         <h6 class="text-muted">Quan hệ</h6>
                                                                         <strong class="d-block">{{ $nhanVien->thongTinLienHe->lien_he_khan_cap_quan_he ?? '-' }}</strong>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-4">
                                                                     <div class="text-center p-3 bg-light rounded">
-                                                                        <i class="fas fa-phone fa-2x text-warning mb-2"></i>
+                                                                        <!-- ...existing code... -->
                                                                         <h6 class="text-muted">Điện thoại</h6>
                                                                         <strong class="d-block">{{ $nhanVien->thongTinLienHe->lien_he_khan_cap_dien_thoai ?? '-' }}</strong>
                                                                     </div>
@@ -629,7 +616,7 @@
                                             </div>
                                         @else
                                             <div class="text-center py-5">
-                                                <i class="fas fa-address-book fa-3x text-muted mb-3"></i>
+                                                <!-- ...existing code... -->
                                                 <p class="text-muted fs-5">Chưa có thông tin liên hệ bổ sung</p>
                                             </div>
                                         @endif
@@ -639,7 +626,7 @@
                                         @if($nhanVien->thongTinGiaDinh && $nhanVien->thongTinGiaDinh->count() > 0)
                                             <div class="card border-0 shadow-sm">
                                                 <div class="card-header bg-success text-white">
-                                                    <h5 class="mb-0"><i class="fas fa-users me-2"></i>Thành viên gia đình</h5>
+                                                    <h5 class="mb-0">Thành viên gia đình</h5>
                                                 </div>
                                                 <div class="card-body p-0">
                                                     @foreach($nhanVien->thongTinGiaDinh as $member)
@@ -647,7 +634,7 @@
                                                             <div class="row align-items-center">
                                                                 <div class="col-md-3">
                                                                     <div class="d-flex align-items-center">
-                                                                        <i class="fas fa-user-circle fa-2x text-primary me-3"></i>
+                                                                        <!-- ...existing code... -->
                                                                         <div>
                                                                             <h6 class="mb-0 fw-bold">{{ $member->quan_he }}</h6>
                                                                             <small class="text-muted">{{ $member->ho_ten }}</small>
@@ -656,7 +643,7 @@
                                                                 </div>
                                                                 <div class="col-md-3">
                                                                     <div class="text-center">
-                                                                        <i class="fas fa-birthday-cake text-info mb-1"></i>
+                                                                        <!-- ...existing code... -->
                                                                         <div>
                                                                             <small class="text-muted d-block">Ngày sinh</small>
                                                                             <strong>{{ $member->ngay_sinh ? $member->ngay_sinh->format('d/m/Y') : '-' }}</strong>
@@ -665,7 +652,7 @@
                                                                 </div>
                                                                 <div class="col-md-3">
                                                                     <div class="text-center">
-                                                                        <i class="fas fa-briefcase text-warning mb-1"></i>
+                                                                        <!-- ...existing code... -->
                                                                         <div>
                                                                             <small class="text-muted d-block">Nghề nghiệp</small>
                                                                             <strong>{{ $member->nghe_nghiep ?? '-' }}</strong>
@@ -674,21 +661,12 @@
                                                                 </div>
                                                                 <div class="col-md-3">
                                                                     <div class="text-center">
-                                                                        <i class="fas fa-phone text-success mb-1"></i>
+                                                                        <!-- ...existing code... -->
                                                                         <div>
                                                                             <small class="text-muted d-block">Điện thoại</small>
                                                                             <strong>{{ $member->dien_thoai ?? '-' }}</strong>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row mt-2">
-                                                                <div class="col-12 text-end">
-                                                                    @if($member->la_nguoi_phu_thuoc)
-                                                                        <span class="badge bg-success"><i class="fas fa-check me-1"></i>Người phụ thuộc</span>
-                                                                    @else
-                                                                        <span class="badge bg-secondary"><i class="fas fa-times me-1"></i>Không phải người phụ thuộc</span>
-                                                                    @endif
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -697,7 +675,7 @@
                                             </div>
                                         @else
                                             <div class="text-center py-5">
-                                                <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                                                <!-- ...existing code... -->
                                                 <p class="text-muted fs-5">Chưa có thông tin thành viên gia đình</p>
                                             </div>
                                         @endif
@@ -707,22 +685,22 @@
                                         @if($nhanVien->tepTin && $nhanVien->tepTin->count() > 0)
                                             <div class="card border-0 shadow-sm">
                                                 <div class="card-header bg-primary text-white">
-                                                    <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>Tài liệu đính kèm</h5>
+                                                    <h5 class="mb-0">Tài liệu đính kèm</h5>
                                                 </div>
                                                 <div class="card-body p-0">
                                                     @foreach($nhanVien->tepTin as $file)
                                                         <div class="d-flex align-items-center p-3 border-bottom {{ $loop->last ? '' : 'border-bottom' }}">
                                                             <div class="flex-shrink-0 me-3">
                                                                 @if(str_contains($file->kieu_mime, 'pdf'))
-                                                                    <i class="fas fa-file-pdf fa-2x text-danger"></i>
+                                                                    <!-- ...existing code... -->
                                                                 @elseif(str_contains($file->kieu_mime, 'image'))
-                                                                    <i class="fas fa-file-image fa-2x text-success"></i>
+                                                                    <!-- ...existing code... -->
                                                                 @elseif(str_contains($file->kieu_mime, 'word') || str_contains($file->kieu_mime, 'document'))
-                                                                    <i class="fas fa-file-word fa-2x text-primary"></i>
+                                                                    <!-- ...existing code... -->
                                                                 @elseif(str_contains($file->kieu_mime, 'excel') || str_contains($file->kieu_mime, 'spreadsheet'))
-                                                                    <i class="fas fa-file-excel fa-2x text-success"></i>
+                                                                    <!-- ...existing code... -->
                                                                 @else
-                                                                    <i class="fas fa-file fa-2x text-secondary"></i>
+                                                                    <!-- ...existing code... -->
                                                                 @endif
                                                             </div>
                                                             <div class="flex-grow-1">
@@ -730,18 +708,18 @@
                                                                 <div class="row">
                                                                     <div class="col-md-4">
                                                                         <small class="text-muted">
-                                                                            <i class="fas fa-tag me-1"></i>
+                                                                            <!-- ...existing code... -->
                                                                             <span class="badge bg-info">{{ ucfirst($file->loai_tep) }}</span>
                                                                         </small>
                                                                     </div>
                                                                     <div class="col-md-4">
                                                                         <small class="text-muted">
-                                                                            <i class="fas fa-weight me-1"></i>{{ $file->kieu_mime }}
+                                                                            {{ $file->kieu_mime }}
                                                                         </small>
                                                                     </div>
                                                                     <div class="col-md-4">
                                                                         <small class="text-muted">
-                                                                            <i class="fas fa-calendar me-1"></i>{{ $file->created_at->format('d/m/Y H:i') }}
+                                                                            {{ $file->created_at->format('d/m/Y H:i') }}
                                                                         </small>
                                                                     </div>
                                                                 </div>
@@ -749,7 +727,7 @@
                                                             <div class="flex-shrink-0">
                                                                 @if($file->duong_dan_tep)
                                                                     <a href="{{ asset('storage/' . $file->duong_dan_tep) }}" target="_blank" class="btn btn-outline-primary btn-sm">
-                                                                        <i class="fas fa-download me-1"></i>Tải xuống
+                                                                        Tải xuống
                                                                     </a>
                                                                 @endif
                                                             </div>
@@ -759,7 +737,7 @@
                                             </div>
                                         @else
                                             <div class="text-center py-5">
-                                                <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                                                <!-- ...existing code... -->
                                                 <p class="text-muted fs-5">Chưa có tài liệu nào được upload</p>
                                             </div>
                                         @endif
@@ -768,7 +746,7 @@
                                     <div class="tab-pane fade" id="insurance" role="tabpanel" aria-labelledby="insurance-tab">
                                         <div class="card border-0 bg-light mb-4">
                                             <div class="card-header bg-info text-white">
-                                                <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Thông tin bảo hiểm</h5>
+                                                <h5 class="mb-0">Thông tin bảo hiểm</h5>
                                             </div>
                                             <div class="card-body">
                                                 <div class="row">
@@ -830,9 +808,6 @@
                                     <div class="tab-pane fade" id="giayto" role="tabpanel" aria-labelledby="giayto-tab">
                                         @if($nhanVien->thongTinGiayTo && $nhanVien->thongTinGiayTo->count() > 0)
                                             <div class="card border-0 shadow-sm">
-                                                <div class="card-header bg-success text-white">
-                                                    <h5 class="mb-0"><i class="fas fa-id-card me-2"></i>Giấy tờ tùy thân</h5>
-                                                </div>
                                                 <div class="card-body p-0">
                                                     <table class="table table-bordered mb-0">
                                                         <thead class="table-light">
@@ -842,6 +817,7 @@
                                                                 <th>Ngày cấp</th>
                                                                 <th>Nơi cấp</th>
                                                                 <th>Ngày hết hạn</th>
+                                                                <th>File</th>
                                                                 <th>Ghi chú</th>
                                                             </tr>
                                                         </thead>
@@ -853,6 +829,13 @@
                                                                     <td>{{ $giayTo->ngay_cap ? \Carbon\Carbon::parse($giayTo->ngay_cap)->format('d/m/Y') : '-' }}</td>
                                                                     <td>{{ $giayTo->noi_cap ?? '-' }}</td>
                                                                     <td>{{ $giayTo->ngay_het_han ? \Carbon\Carbon::parse($giayTo->ngay_het_han)->format('d/m/Y') : '-' }}</td>
+                                                                    <td>
+                                                                        @if($giayTo->tepTin && $giayTo->tepTin->duong_dan_tep)
+                                                                            <a href="{{ asset('storage/' . $giayTo->tepTin->duong_dan_tep) }}" target="_blank">Xem file</a>
+                                                                        @else
+                                                                            <span class="text-muted">Không có file</span>
+                                                                        @endif
+                                                                    </td>
                                                                     <td>{{ $giayTo->ghi_chu ?? '-' }}</td>
                                                                 </tr>
                                                             @endforeach
@@ -862,8 +845,8 @@
                                             </div>
                                         @else
                                             <div class="text-center py-5">
-                                                <i class="fas fa-id-card fa-3x text-muted mb-3"></i>
-                                                <p class="text-muted fs-5">Chưa có thông tin giấy tờ tùy thân</p>
+                                                <!-- ...existing code... -->
+                                                <p class="text-muted fs-5">Chưa có thông tin Giấy tờ & chứng chỉ</p>
                                             </div>
                                         @endif
                                     </div>
