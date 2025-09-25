@@ -5,6 +5,19 @@
     <div class="card-header">
         <h5 class="mb-0">Sửa hợp đồng lao động</h5>
     </div>
+    <!-- Hiển thị lỗi chung -->
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <form action="{{ route('hop-dong.update', $hopDong->id) }}" method="POST">
         @csrf
         @method('PUT')
@@ -14,47 +27,74 @@
                     <label for="nhan_vien_id" class="form-label">Nhân viên</label>
                     <input type="text" class="form-control bg-light" value="{{ $hopDong->nhanVien->ho ?? '' }} {{ $hopDong->nhanVien->ten ?? '' }} - {{ $hopDong->nhanVien->ma_nhanvien ?? '' }}" readonly>
                     <input type="hidden" name="nhan_vien_id" value="{{ $hopDong->nhan_vien_id }}">
+                    @error('nhan_vien_id')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div class="col-md-6">
                     <label for="so_hop_dong" class="form-label">Số hợp đồng</label>
                     <input type="text" name="so_hop_dong" id="so_hop_dong" class="form-control bg-light" value="{{ $hopDong->so_hop_dong }}" required readonly>
+                    @error('so_hop_dong')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="loai_hop_dong" class="form-label">Loại hợp đồng</label>
                     <select name="loai_hop_dong" id="loai_hop_dong" class="form-select">
+                        @error('loai_hop_dong')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
                         <option value="">-- Chọn loại hợp đồng --</option>
-                        <option value="thu_viec" {{ $hopDong->loai_hop_dong == 'thu_viec' ? 'selected' : '' }}>Thử việc</option>
-                        <option value="xac_dinh_thoi_han" {{ $hopDong->loai_hop_dong == 'xac_dinh_thoi_han' ? 'selected' : '' }}>Hợp đồng xác định thời hạn</option>
-                        <option value="khong_xac_dinh_thoi_han" {{ $hopDong->loai_hop_dong == 'khong_xac_dinh_thoi_han' ? 'selected' : '' }}>Hợp đồng không xác định thời hạn</option>
+                        <option value="Thử việc" {{ $hopDong->loai_hop_dong == 'Thử việc' ? 'selected' : '' }}>Thử việc</option>
+                        <option value="Hợp đồng xác định thời hạn" {{ $hopDong->loai_hop_dong == 'Hợp đồng xác định thời hạn' ? 'selected' : '' }}>Hợp đồng xác định thời hạn</option>
+                        <option value="Hợp đồng không xác định thời hạn" {{ $hopDong->loai_hop_dong == 'Hợp đồng không xác định thời hạn' ? 'selected' : '' }}>Hợp đồng không xác định thời hạn</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <label for="ngay_bat_dau" class="form-label">Ngày bắt đầu</label>
                     <input type="date" name="ngay_bat_dau" id="ngay_bat_dau" class="form-control" value="{{ $hopDong->ngay_bat_dau ? $hopDong->ngay_bat_dau->format('Y-m-d') : '' }}">
+                    @error('ngay_bat_dau')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div class="col-md-3">
                     <label for="ngay_ket_thuc" class="form-label">Ngày kết thúc</label>
                     <input type="date" name="ngay_ket_thuc" id="ngay_ket_thuc" class="form-control" value="{{ $hopDong->ngay_ket_thuc ? $hopDong->ngay_ket_thuc->format('Y-m-d') : '' }}">
+                    @error('ngay_ket_thuc')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-3">
                     <label for="ngay_ky" class="form-label">Ngày ký</label>
                     <input type="date" name="ngay_ky" id="ngay_ky" class="form-control" value="{{ $hopDong->ngay_ky ? $hopDong->ngay_ky->format('Y-m-d') : '' }}">
+                    @error('ngay_ky')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div class="col-md-3">
                     <label for="luong_co_ban" class="form-label">Lương cơ bản</label>
                     <input type="text" name="luong_co_ban" id="luong_co_ban" class="form-control money-input" value="{{ number_format($hopDong->luong_co_ban, 0, ',', '.') }}" autocomplete="off">
+                    @error('luong_co_ban')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div class="col-md-3">
                     <label for="luong_bao_hiem" class="form-label">Lương đóng bảo hiểm</label>
                     <input type="text" name="luong_bao_hiem" id="luong_bao_hiem" class="form-control money-input" value="{{ number_format($hopDong->luong_bao_hiem, 0, ',', '.') }}" autocomplete="off">
+                    @error('luong_bao_hiem')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div class="col-md-3">
                     <label for="trang_thai" class="form-label">Trạng thái</label>
                     <select name="trang_thai" id="trang_thai" class="form-select" required>
+                        @error('trang_thai')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
                         <option value="hieu_luc" {{ $hopDong->trang_thai == 'hieu_luc' ? 'selected' : '' }}>Hiệu lực</option>
                         <option value="het_hieu_luc" {{ $hopDong->trang_thai == 'het_hieu_luc' ? 'selected' : '' }}>Hết hiệu lực</option>
                     </select>
@@ -63,14 +103,23 @@
             <div class="mb-3">
                 <label for="vi_tri_cong_viec" class="form-label">Vị trí công việc</label>
                 <input type="text" name="vi_tri_cong_viec" id="vi_tri_cong_viec" class="form-control" value="{{ $hopDong->vi_tri_cong_viec }}">
+                @error('vi_tri_cong_viec')
+                    <div class="text-danger small">{{ $message }}</div>
+                @enderror
             </div>
             <div class="mb-3">
                 <label for="don_vi_ky_hd" class="form-label">Đơn vị ký hợp đồng</label>
                 <input type="text" name="don_vi_ky_hd" id="don_vi_ky_hd" class="form-control bg-light" value="{{ $hopDong->don_vi_ky_hd }}" readonly>
+                @error('don_vi_ky_hd')
+                    <div class="text-danger small">{{ $message }}</div>
+                @enderror
             </div>
             <div class="mb-3">
                 <label for="trang_thai_ky" class="form-label">Trạng thái ký</label>
                 <select name="trang_thai_ky" id="trang_thai_ky" class="form-select">
+                    @error('trang_thai_ky')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
                     <option value="">-- Chọn trạng thái --</option>
                     <option value="duyet" {{ $hopDong->trang_thai_ky == 'duyet' ? 'selected' : '' }}>Duyệt</option>
                     <option value="tai_ki" {{ $hopDong->trang_thai_ky == 'tai_ki' ? 'selected' : '' }}>Tái kí</option>
@@ -79,6 +128,9 @@
             <div class="mb-3">
                 <label for="thoi_han" class="form-label">Thời hạn hợp đồng (tháng)</label>
                 <select name="thoi_han" id="thoi_han" class="form-select">
+                    @error('thoi_han')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
                     <option value="">-- Chọn thời hạn --</option>
                     @for($i = 1; $i <= 10; $i++)
                         <option value="{{ $i }}" {{ $hopDong->thoi_han == $i ? 'selected' : '' }}>{{ $i }} năm</option>
@@ -88,6 +140,9 @@
             <div class="mb-3">
                 <label for="ghi_chu" class="form-label">Ghi chú</label>
                 <textarea name="ghi_chu" id="ghi_chu" class="form-control" rows="2">{{ $hopDong->ghi_chu }}</textarea>
+                @error('ghi_chu')
+                    <div class="text-danger small">{{ $message }}</div>
+                @enderror
             </div>
         </div>
         <div class="card-footer text-end">

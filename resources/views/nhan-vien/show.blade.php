@@ -441,15 +441,14 @@
                                                                             <div class="mb-2">
                                                                                 <strong class="text-primary">Trạng thái:</strong>
                                                                                 <span class="ms-2">
-                                                                                    @if($hopDong->trang_thai == 'active')
-                                                                                        <span class="badge bg-success">Đang hoạt động</span>
-                                                                                    @elseif($hopDong->trang_thai == 'expired')
-                                                                                        <span class="badge bg-warning">Đã hết hạn</span>
-                                                                                    @elseif($hopDong->trang_thai == 'terminated')
-                                                                                        <span class="badge bg-danger">Đã chấm dứt</span>
-                                                                                    @else
-                                                                                        <span class="badge bg-secondary">{{ $hopDong->trang_thai }}</span>
-                                                                                    @endif
+                                                                                    @php
+                                                                                        $contractStatusConfig = [
+                                                                                            'hieu_luc' => ['text' => 'Hiệu lực', 'class' => 'success'],
+                                                                                            'het_hieu_luc' => ['text' => 'Hết hiệu lực', 'class' => 'secondary'],
+                                                                                        ];
+                                                                                        $contractConfig = $contractStatusConfig[$hopDong->trang_thai] ?? $contractStatusConfig['het_hieu_luc'];
+                                                                                    @endphp
+                                                                                    <span class="badge bg-{{ $contractConfig['class'] }}">{{ $contractConfig['text'] }}</span>
                                                                                 </span>
                                                                             </div>
                                                                         </div>
