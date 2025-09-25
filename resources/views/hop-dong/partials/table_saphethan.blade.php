@@ -1,9 +1,9 @@
-<!-- Contract Table Partial -->
+<!-- Contract Table Partial (Sắp hết hạn) -->
 <div class="table-responsive">
     <table class="table table-light table-hover mb-0">
         <thead class="table-light">
             <tr>
-                <th><input type="checkbox" id="checkAll"></th>
+                <th><input type="checkbox" id="checkAllSapHetHan"></th>
                 <th>Số HĐ</th>
                 <th>Họ và tên NLĐ</th>
                 <th>Vị trí công việc</th>
@@ -14,14 +14,14 @@
                 <th>Ngày hết hạn</th>
                 <th>Trạng thái ký</th>
                 <th>Trạng thái hợp đồng</th>
-                 <th>Ngày ký HĐ</th>
+                <th>Ngày ký HĐ</th>
                 <th>Thao tác</th>
             </tr>
         </thead>
         <tbody>
             @foreach($hopDongs as $hopDong)
                 <tr>
-                    <td><input type="checkbox" name="hopdong_ids[]" value="{{ $hopDong->id }}"></td>
+                    <td><input type="checkbox" class="hopdong-saphethan" name="hopdong_ids[]" value="{{ $hopDong->id }}"></td>
                     <td>{{ $hopDong->so_hop_dong }}</td>
                     <td>{{ $hopDong->nhanVien->ho_ten ?? '-' }}</td>
                     <td>{{ $hopDong->vi_tri_cong_viec ?? ($hopDong->nhanVien->chucVu->ten_chuc_vu ?? '-') }}</td>
@@ -35,7 +35,6 @@
                             <span class="badge bg-success">Không xác định thời hạn</span>
                         @else
                             <span class="badge bg-secondary">-</span>
-                        @endif
                     </td>
                     <td>{{ $hopDong->thoi_han ? $hopDong->thoi_han . ' tháng' : '-' }}</td>
                     <td>{{ $hopDong->ngay_bat_dau ? $hopDong->ngay_bat_dau->format('d/m/Y') : '-' }}</td>
@@ -59,16 +58,12 @@
                         @endif
                     </td>
                     <td>{{ $hopDong->ngay_ky ? $hopDong->ngay_ky->format('d/m/Y') : '-' }}</td>
-                    @if(isset($specialStatus) && $specialStatus === 'sap_het_han')
-                        @include('hop-dong.partials.table_action_giahan', ['hopDong' => $hopDong])
-                    @else
-                        @component('components.table-action', [
-                            'showRoute' => 'hop-dong.show',
-                            'editRoute' => 'hop-dong.edit',
-                            'deleteRoute' => 'hop-dong.destroy',
-                            'id' => $hopDong->id
-                        ])@endcomponent
-                    @endif
+                    @component('components.table-action', [
+                        'showRoute' => 'hop-dong.show',
+                        'editRoute' => 'hop-dong.edit',
+                        'deleteRoute' => 'hop-dong.destroy',
+                        'id' => $hopDong->id
+                    ])@endcomponent
                 </tr>
             @endforeach
         </tbody>

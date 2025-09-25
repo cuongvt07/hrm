@@ -36,20 +36,29 @@
                 </a>
             </li>
 
-            <!-- Quản lý hợp đồng -->
+            <!-- Dropdown Quản lý hợp đồng -->
+            @php
+                $contractActive = request()->routeIs('hop-dong.*') || request()->routeIs('hop-dong.saphethan');
+            @endphp
             <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('hop-dong.*') ? 'active' : '' }}" 
-                   href="{{ route('hop-dong.index') }}" title="Quản lý hợp đồng">
-                    <i class="fas fa-file-contract"></i>
-                    <span class="nav-text">Hợp đồng</span>
+                <a class="nav-link d-flex justify-content-between align-items-center {{ $contractActive ? 'active' : '' }}" data-bs-toggle="collapse" href="#contractDropdown" role="button" aria-expanded="{{ $contractActive ? 'true' : 'false' }}" aria-controls="contractDropdown">
+                    <span><i class="fas fa-file-contract"></i> <span class="nav-text">Quản lý hợp đồng</span></span>
+                    <i class="fas fa-chevron-down ms-2"></i>
                 </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('hop-dong.saphethan') ? 'active' : '' }}" 
-                   href="{{ route('hop-dong.saphethan') }}" title="Hợp đồng sắp hết hạn">
-                    <i class="fas fa-exclamation-triangle text-warning"></i>
-                    <span class="nav-text">HĐ sắp hết hạn</span>
-                </a>
+                <div class="collapse {{ $contractActive ? 'show' : '' }}" id="contractDropdown">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('hop-dong.index') ? 'active' : '' }}" href="{{ route('hop-dong.index') }}">
+                                <i class="fas fa-file-contract"></i> Hợp đồng
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('hop-dong.saphethan') ? 'active' : '' }}" href="{{ route('hop-dong.saphethan') }}">
+                                <i class="fas fa-exclamation-triangle text-warning"></i> Hợp đồng sắp hết hạn
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
 
             <!-- Divider -->

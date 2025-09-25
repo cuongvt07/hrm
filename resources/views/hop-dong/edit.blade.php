@@ -25,9 +25,9 @@
                     <label for="loai_hop_dong" class="form-label">Loại hợp đồng</label>
                     <select name="loai_hop_dong" id="loai_hop_dong" class="form-select">
                         <option value="">-- Chọn loại hợp đồng --</option>
-                        <option value="Hợp đồng lao động có thời hạn" {{ $hopDong->loai_hop_dong == 'Hợp đồng lao động có thời hạn' ? 'selected' : '' }}>Hợp đồng lao động có thời hạn</option>
-                        <option value="Hợp đồng lao động không thời hạn" {{ $hopDong->loai_hop_dong == 'Hợp đồng lao động không thời hạn' ? 'selected' : '' }}>Hợp đồng lao động không thời hạn</option>
-                        <option value="Hợp đồng lao động theo mùa vụ" {{ $hopDong->loai_hop_dong == 'Hợp đồng lao động theo mùa vụ' ? 'selected' : '' }}>Hợp đồng lao động theo mùa vụ</option>
+                        <option value="thu_viec" {{ $hopDong->loai_hop_dong == 'thu_viec' ? 'selected' : '' }}>Thử việc</option>
+                        <option value="xac_dinh_thoi_han" {{ $hopDong->loai_hop_dong == 'xac_dinh_thoi_han' ? 'selected' : '' }}>Hợp đồng xác định thời hạn</option>
+                        <option value="khong_xac_dinh_thoi_han" {{ $hopDong->loai_hop_dong == 'khong_xac_dinh_thoi_han' ? 'selected' : '' }}>Hợp đồng không xác định thời hạn</option>
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -55,9 +55,8 @@
                 <div class="col-md-3">
                     <label for="trang_thai" class="form-label">Trạng thái</label>
                     <select name="trang_thai" id="trang_thai" class="form-select" required>
-                        <option value="hoat_dong" {{ $hopDong->trang_thai == 'hoat_dong' ? 'selected' : '' }}>Hoạt động</option>
-                        <option value="het_han" {{ $hopDong->trang_thai == 'het_han' ? 'selected' : '' }}>Hết hạn</option>
-                        <option value="cham_dut" {{ $hopDong->trang_thai == 'cham_dut' ? 'selected' : '' }}>Chấm dứt</option>
+                        <option value="hieu_luc" {{ $hopDong->trang_thai == 'hieu_luc' ? 'selected' : '' }}>Hiệu lực</option>
+                        <option value="het_hieu_luc" {{ $hopDong->trang_thai == 'het_hieu_luc' ? 'selected' : '' }}>Hết hiệu lực</option>
                     </select>
                 </div>
             </div>

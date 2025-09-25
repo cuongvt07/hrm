@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\HopDongLaoDong;
 use App\Models\NhanVien;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class HopDongController extends Controller
 {
@@ -17,13 +18,11 @@ class HopDongController extends Controller
     public function giaHanStore(Request $request)
     {
         $validated = $request->validate([
-            'hopdong_cu_id' => 'required|exists:hop_dong_lao_dong,id',
-            'nhan_vien_id' => 'nullable|exists:nhanvien,id',
-            'so_hop_dong' => 'required|string|max:100|unique:hop_dong_lao_dong',
+            'so_hop_dong' => 'nullable|string|max:100',
             'loai_hop_dong' => 'nullable|string|max:100',
-            'ngay_bat_dau' => 'required|date',
-            'ngay_ket_thuc' => 'required|date|after:ngay_bat_dau',
-            'trang_thai' => 'required|in:hoat_dong,het_han,cham_dut',
+            'ngay_bat_dau' => 'nullable|date',
+            'ngay_ket_thuc' => 'nullable|date',
+            'trang_thai' => 'nullable|in:hieu_luc,het_hieu_luc',
             'ngay_ky' => 'nullable|date',
             'luong_co_ban' => 'nullable|numeric|min:0',
             'luong_bao_hiem' => 'nullable|numeric|min:0',
@@ -33,8 +32,12 @@ class HopDongController extends Controller
             'trang_thai_ky' => 'nullable|string|max:50',
             'thoi_han' => 'nullable|integer'
         ]);
-        $hopDongCu = HopDongLaoDong::findOrFail($validated['hopdong_cu_id']);
+        $hopDongCu = HopDongLaoDong::findOrFail($request->hopdong_cu_id);
         $validated['nhan_vien_id'] = $hopDongCu->nhan_vien_id;
+        // Thêm mã random vào số hợp đồng để khác biệt
+        if (!empty($validated['so_hop_dong'])) {
+            $validated['so_hop_dong'] .= '_' . strtoupper(Str::random(6));
+        }
         // Tạo hợp đồng mới
         $hopDongMoi = HopDongLaoDong::create($validated);
         \App\Models\ThongTinLuong::updateOrCreate(
@@ -42,14 +45,14 @@ class HopDongController extends Controller
             ['luong_co_ban' => $hopDongMoi->luong_co_ban]
         );
         // Cập nhật trạng thái hợp đồng cũ
-        $hopDongCu->update(['trang_thai' => 'het_han']);
+        $hopDongCu->update(['trang_thai' => 'het_hieu_luc']);
         return redirect()->route('hop-dong.index')->with('success', 'Gia hạn hợp đồng thành công!');
     }
     public function sapHetHan(Request $request)
     {
-        $query = HopDongLaoDong::with('nhanVien')->sapHetHan();
+        $query = HopDongLaoDong::with('nhanVien');
 
-        // Tìm kiếm
+        // Search: họ tên nhân viên, số hợp đồng, loại hợp đồng
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -57,13 +60,44 @@ class HopDongController extends Controller
                   ->orWhere('loai_hop_dong', 'like', "%{$search}%")
                   ->orWhereHas('nhanVien', function($q) use ($search) {
                       $q->where('ten', 'like', "%{$search}%")
-                        ->orWhere('ho', 'like', "%{$search}%");
+                        ->orWhere('ho', 'like', "%{$search}%")
+                        ->orWhereRaw("CONCAT(ho, ' ', ten) like ?", ["%{$search}%"]);
                   });
             });
         }
 
-        $hopDongs = $query->orderBy('ngay_ket_thuc', 'asc')->paginate(20);
-        return view('hop-dong.saphethan', compact('hopDongs'));
+        // Lọc loại hợp đồng (text)
+        if ($request->filled('loai_hop_dong')) {
+            $query->where('loai_hop_dong', 'like', "%{$request->loai_hop_dong}%");
+        }
+
+        // Lọc theo ngày bắt đầu
+        if ($request->filled('ngay_bat_dau')) {
+            $query->whereDate('ngay_bat_dau', '>=', $request->ngay_bat_dau);
+        }
+        // Lọc theo ngày kết thúc
+        if ($request->filled('ngay_ket_thuc')) {
+            $query->whereDate('ngay_ket_thuc', '<=', $request->ngay_ket_thuc);
+        }
+
+        // Lọc theo thời hạn
+        if ($request->filled('thoi_han')) {
+            $query->where('thoi_han', $request->thoi_han);
+        }
+
+        // Lọc theo trạng thái
+        if ($request->filled('trang_thai')) {
+            $query->where('trang_thai', $request->trang_thai);
+        }
+
+        $hopDongs = $query
+            ->whereDate('ngay_ket_thuc', '<=', now()->addMonth())
+            ->whereDate('ngay_ket_thuc', '>=', now())
+            ->orderBy('ngay_ket_thuc', 'desc')
+            ->paginate(20);
+        $nhanViens = NhanVien::dangLamViec()->get();
+
+        return view('hop-dong.saphethan', compact('hopDongs', 'nhanViens'));
     }
     public function index(Request $request)
     {
@@ -135,7 +169,7 @@ class HopDongController extends Controller
             'loai_hop_dong' => 'nullable|string|max:100',
             'ngay_bat_dau' => 'nullable|date',
             'ngay_ket_thuc' => 'nullable|date|after:ngay_bat_dau',
-            'trang_thai' => 'nullable|in:hoat_dong,het_han,cham_dut',
+            'trang_thai' => 'nullable|in:hieu_luc,het_hieu_luc',
             'ngay_ky' => 'nullable|date',
             'luong_co_ban' => 'nullable|numeric|min:0',
             'luong_bao_hiem' => 'nullable|numeric|min:0',

@@ -31,9 +31,9 @@
                     <label for="loai_hop_dong" class="form-label">Loại hợp đồng</label>
                     <select name="loai_hop_dong" id="loai_hop_dong" class="form-select">
                         <option value="">-- Chọn loại hợp đồng --</option>
-                        <option value="Hợp đồng lao động có thời hạn" {{ old('loai_hop_dong') == 'Hợp đồng lao động có thời hạn' ? 'selected' : '' }}>Hợp đồng lao động có thời hạn</option>
-                        <option value="Hợp đồng lao động không thời hạn" {{ old('loai_hop_dong') == 'Hợp đồng lao động không thời hạn' ? 'selected' : '' }}>Hợp đồng lao động không thời hạn</option>
-                        <option value="Hợp đồng lao động theo mùa vụ" {{ old('loai_hop_dong') == 'Hợp đồng lao động theo mùa vụ' ? 'selected' : '' }}>Hợp đồng lao động theo mùa vụ</option>
+                        <option value="Thử việc" {{ old('loai_hop_dong') == 'Thử việc' ? 'selected' : '' }}>Thử việc</option>
+                        <option value="Hợp đồng xác định thời hạn" {{ old('loai_hop_dong') == 'Hợp đồng xác định thời hạn' ? 'selected' : '' }}>Hợp đồng xác định thời hạn</option>
+                        <option value="Hợp đồng không xác định thời hạn" {{ old('loai_hop_dong') == 'Hợp đồng không xác định thời hạn' ? 'selected' : '' }}>Hợp đồng không xác định thời hạn</option>
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -62,9 +62,8 @@
                 <div class="col-md-3">
                     <label for="trang_thai" class="form-label">Trạng thái</label>
                     <select name="trang_thai" id="trang_thai" class="form-select" required>
-                        <option value="hoat_dong">Hoạt động</option>
-                        <option value="het_han">Hết hạn</option>
-                        <option value="cham_dut">Chấm dứt</option>
+                        <option value="hieu_luc">Hiệu lực</option>
+                        <option value="het_hieu_luc">Hết hiệu lực</option>
                     </select>
                 </div>
             </div>

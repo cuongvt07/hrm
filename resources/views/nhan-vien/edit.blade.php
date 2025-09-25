@@ -336,14 +336,6 @@
                                                                     <input type="text" class="form-control" id="dien_thoai_di_dong" name="dien_thoai_di_dong" value="{{ $nhanVien->thongTinLienHe->dien_thoai_di_dong ?? '' }}">
                                                                 </div>
                                                                 <div class="mb-3">
-                                                                    <label for="dien_thoai_co_quan" class="form-label">Điện thoại cơ quan</label>
-                                                                    <input type="text" class="form-control" id="dien_thoai_co_quan" name="dien_thoai_co_quan" value="{{ $nhanVien->thongTinLienHe->dien_thoai_co_quan ?? '' }}">
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label for="dien_thoai_nha_rieng" class="form-label">Điện thoại nhà riêng</label>
-                                                                    <input type="text" class="form-control" id="dien_thoai_nha_rieng" name="dien_thoai_nha_rieng" value="{{ $nhanVien->thongTinLienHe->dien_thoai_nha_rieng ?? '' }}">
-                                                                </div>
-                                                                <div class="mb-3">
                                                                     <label for="dien_thoai_khac" class="form-label">Điện thoại khác</label>
                                                                     <input type="text" class="form-control" id="dien_thoai_khac" name="dien_thoai_khac" value="{{ $nhanVien->thongTinLienHe->dien_thoai_khac ?? '' }}">
                                                                 </div>
@@ -555,6 +547,7 @@
                                                                             <option value="">Chọn loại giấy tờ</option>
                                                                             <option value="giay_to_tuy_than">Giấy tờ tùy thân</option>
                                                                             <option value="chung_chi">Chứng chỉ</option>
+                                                                            <option value="bang_cap">Bằng cấp</option>
                                                                             <option value="khac">Khác</option>
                                                                         </select>
                                                                     </div>
