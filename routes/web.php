@@ -69,3 +69,7 @@ Route::prefix('bao-cao')->name('bao-cao.')->group(function () {
     Route::get('/nhan-su/export', [BaoCaoController::class, 'exportNhanSu'])->name('nhan-su.export');
     Route::get('/hop-dong/export', [BaoCaoController::class, 'exportHopDong'])->name('hop-dong.export');
 });
+
+// Quá trình công tác
+Route::post('nhan-vien/{nhanvien}/qua-trinh-cong-tac', [QuaTrinhCongTacController::class, 'store'])->name('qua-trinh-cong-tac.store');
+Route::delete('qua-trinh-cong-tac/{id}', [QuaTrinhCongTacController::class, 'destroy'])->name('qua-trinh-cong-tac.destroy');

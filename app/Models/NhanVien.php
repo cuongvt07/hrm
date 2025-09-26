@@ -141,4 +141,10 @@ class NhanVien extends Model
     {
         return $this->hasOne(BaoHiem::class, 'nhan_vien_id');
     }
+
+    // Quan hệ với quá trình công tác
+    public function quaTrinhCongTac()
+    {
+        return $this->hasMany(\App\Models\QuaTrinhCongTac::class, 'nhanvien_id');
+    }
 }

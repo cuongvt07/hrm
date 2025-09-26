@@ -401,6 +401,35 @@
                                             </div>
 
 
+                                            <div>
+                                                <h5 class="mb-2 fw-bold" style="background:none;padding:0;margin-bottom:8px;">Quá trình công tác</h5>
+                                                <div class="timeline-qtct" style="position:relative;">
+                                                    @forelse($nhanVien->quaTrinhCongTac as $qt)
+                                                    <div class="timeline-item mb-4" style="position:relative;padding-left:32px;">
+                                                        <span class="timeline-dot" style="position:absolute;left:0;top:35px;width:16px;height:16px;background:#0d6efd;border-radius:50%;border:2px solid #fff;"></span>
+                                                        <div class="card border-0 shadow-sm" style="background:#f8f9fa;">
+                                                            <div class="card-body py-2 px-3">
+                                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                                    <span class="fw-bold">
+                                                                        <span class="fw-bold">Chức vụ:</span>
+                                                                        <span class="text-primary">{{ $qt->chucVu->ten_chuc_vu ?? '' }}</span>
+                                                                    </span>
+                                                                </div>
+                                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                                    <span class="fw-bold">Phòng ban:</span>
+                                                                    <span class="fw-bold">{{ $qt->phongBan->ten_phong_ban ?? '' }}</span>
+                                                                    <span class="text-muted small ms-auto">{{ $qt->ngay_bat_dau }} - {{ $qt->ngay_ket_thuc ?? '...' }}</span>
+                                                                </div>
+                                                                <div class="mb-1"><span class="fw-bold">Mô tả:</span> {{ $qt->mo_ta }}</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    @empty
+                                                    <div class="text-center text-muted py-3">Chưa có dữ liệu</div>
+                                                    @endforelse
+                                                    <div style="position:absolute;left:8px;top:0;bottom:0;width:2px;background:#dee2e6;"></div>
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <!-- Contract Information -->

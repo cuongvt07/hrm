@@ -321,6 +321,28 @@ class NhanVienController extends Controller
                 }
             }
 
+            // Handle new work history rows (quá trình công tác)
+            if ($request->has('cong_tac_temp') && is_array($request->cong_tac_temp)) {
+                foreach ($request->cong_tac_temp as $row) {
+                    if (empty($row['chucvu_id']) || empty($row['phongban_id']) || empty($row['ngay_bat_dau'])) {
+                        continue;
+                    }
+                    \App\Models\QuaTrinhCongTac::create([
+                        'nhanvien_id' => $nhanVien->id,
+                        'chucvu_id' => $row['chucvu_id'],
+                        'phongban_id' => $row['phongban_id'],
+                        'mo_ta' => $row['mo_ta'] ?? null,
+                        'ngay_bat_dau' => $row['ngay_bat_dau'],
+                        'ngay_ket_thuc' => $row['ngay_ket_thuc'] ?? null,
+                    ]);
+                }
+            }
+
+            // Xóa các quá trình công tác theo id gửi lên từ cong_tac_delete[]
+            if ($request->has('cong_tac_delete') && is_array($request->cong_tac_delete)) {
+                \App\Models\QuaTrinhCongTac::whereIn('id', $request->cong_tac_delete)->delete();
+            }
+
             // Handle giấy tờ tùy thân (my file) & upload files
             if ($request->has('giay_to') && is_array($request->giay_to)) {
                 foreach ($request->giay_to as $index => $giayTo) {
@@ -578,18 +600,18 @@ class NhanVienController extends Controller
         $phongBans = PhongBan::all();
         $chucVus = ChucVu::all();
 
-        $managers = collect();
-        if ($nhanVien->phong_ban_id && $nhanVien->chuc_vu_id) {
-            // Lấy id chức vụ hiện tại
-            $currentChucVuId = $nhanVien->chuc_vu_id;
-            $managers = NhanVien::where('phong_ban_id', $nhanVien->phong_ban_id)->with('chucVu')
-                ->where('id', '!=', $nhanVien->id)
-                ->whereNotNull('chuc_vu_id')
-                ->where('chuc_vu_id', '!=', $currentChucVuId)
-                ->get();
-        }
+        // Always provide all managers, but optionally filter if needed
+        $managers = NhanVien::where('id', '!=', $nhanVien->id)
+            ->whereNotNull('chuc_vu_id')
+            ->with('chucVu')
+            ->get();
 
-        return view('nhan-vien.edit', compact('nhanVien', 'phongBans', 'chucVus', 'managers'));
+        return view('nhan-vien.edit', [
+            'nhanVien' => $nhanVien,
+            'phongBans' => $phongBans,
+            'chucVus' => $chucVus,
+            'managers' => $managers
+        ]);
     }
 
     public function bulkDelete(Request $request)
