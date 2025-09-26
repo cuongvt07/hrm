@@ -166,8 +166,8 @@
                         </div>
                         <!-- Right Column -->
                         <div class="col-md-9">
-                            <div class="p-4">
-                                <ul class="nav nav-tabs mb-4" id="employeeTabs" role="tablist">
+                            <div class=" p-4">
+                                <ul class="nav nav-tabs flex-nowrap nav-tabs-scroll" id="employeeTabs" role="tablist">
                                     <li class="nav-item" role="presentation">
                                         <a class="nav-link active" id="basic-tab" data-bs-toggle="tab" href="#basic" role="tab" aria-controls="basic" aria-selected="true">Thông tin cơ bản</a>
                                     </li>

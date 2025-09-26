@@ -64,6 +64,14 @@
             <!-- Divider -->
             <hr class="sidebar-divider">
 
+            <!-- Cài đặt hệ thống -->
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('cai-dat.*') ? 'active' : '' }}" href="{{ route('cai-dat.index') }}">
+                    <i class="fas fa-cogs"></i>
+                    <span class="nav-text">Cài đặt hệ thống</span>
+                </a>
+            </li>
+
             <!-- Chế độ Section -->
             <li class="nav-item">
                 <div class="sidebar-heading">Chế độ</div>

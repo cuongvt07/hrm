@@ -115,8 +115,7 @@
                                 <!-- Right Column -->
                                 <div class="col-md-9">
                                     <div class="p-4">
-                                        <!-- Tabs -->
-                                        <ul class="nav nav-tabs mb-4" id="employeeTabs" role="tablist">
+                                        <ul class="nav nav-tabs flex-nowrap nav-tabs-scroll" id="employeeTabs" role="tablist">
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link active" id="basic-tab" data-bs-toggle="tab"
                                                     data-bs-target="#basic" type="button" role="tab">Thông tin cơ
@@ -283,8 +282,8 @@
                                                     </div>
                                                     <!-- Quá trình công tác Tab -->
                                                     @if(isset($nhanVien))
-                                                        <div class="card mb-3">
-                                                            <div class="card-header bg-warning text-dark">
+                                                        <div class="mb-3">
+                                                            <div class="card-header">
                                                                 <h5 class="mb-0">Quá trình công tác</h5>
                                                             </div>
                                                             <div class="card-body p-0">

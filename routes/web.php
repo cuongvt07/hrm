@@ -53,6 +53,14 @@ Route::post('hop-dong/gia-han', [HopDongController::class, 'giaHanStore'])->name
 // Bulk update trạng thái hợp đồng
 Route::post('hop-dong/bulk-update-status', [HopDongController::class, 'bulkUpdateStatus'])->name('hop-dong.bulk-update-status');
 
+// Cài đặt hệ thống
+Route::prefix('cai-dat')->name('cai-dat.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\CaiDatHeThongController::class, 'index'])->name('index');
+    Route::post('/', [\App\Http\Controllers\CaiDatHeThongController::class, 'store'])->name('store');
+    Route::put('/{item}', [\App\Http\Controllers\CaiDatHeThongController::class, 'update'])->name('update');
+    Route::delete('/{item}', [\App\Http\Controllers\CaiDatHeThongController::class, 'destroy'])->name('destroy');
+});
+
 // Quản lý chế độ
 Route::prefix('che-do')->name('che-do.')->group(function () {
     // Khen thưởng kỷ luật
