@@ -281,6 +281,92 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <!-- Quá trình công tác Tab -->
+                                                    @if(isset($nhanVien))
+                                                        <div class="card mb-3">
+                                                            <div class="card-header bg-warning text-dark">
+                                                                <h5 class="mb-0">Quá trình công tác</h5>
+                                                            </div>
+                                                            <div class="card-body p-0">
+                                                                <table class="table table-bordered mb-0" id="congTacTable">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Chức vụ</th>
+                                                                            <th>Phòng ban</th>
+                                                                            <th>Mô tả</th>
+                                                                            <th>Thời gian</th>
+                                                                            <th>Thao tác</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="congTacTableBody">
+                                                                        @foreach(($nhanVien->quaTrinhCongTac ?? []) as $qt)
+                                                                        <tr>
+                                                                            <td>
+                                                                                <select name="cong_tac_existing_chucvu[]" class="form-select">
+                                                                                    <option value="">-- Chọn chức vụ --</option>
+                                                                                    @foreach($chucVus as $cv)
+                                                                                        <option value="{{ $cv->id }}" {{ $qt->chucvu_id == $cv->id ? 'selected' : '' }}>{{ $cv->ten_chuc_vu }}</option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </td>
+                                                                            <td>
+                                                                                <select name="cong_tac_existing_phongban[]" class="form-select">
+                                                                                    <option value="">-- Chọn phòng ban --</option>
+                                                                                    @foreach($phongBans as $pb)
+                                                                                        <option value="{{ $pb->id }}" {{ $qt->phongban_id == $pb->id ? 'selected' : '' }}>{{ $pb->ten_phong_ban }}</option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </td>
+                                                                            <td><input type="text" name="cong_tac_existing_mo_ta[]" class="form-control" value="{{ $qt->mo_ta }}"></td>
+                                                                            <td>
+                                                                                <div class="d-flex gap-2">
+                                                                                    <input type="date" name="cong_tac_existing_ngay_bat_dau[]" class="form-control" value="{{ $qt->ngay_bat_dau }}">
+                                                                                    <input type="date" name="cong_tac_existing_ngay_ket_thuc[]" class="form-control" value="{{ $qt->ngay_ket_thuc }}">
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <button type="button" class="btn btn-sm btn-danger delete-cong-tac">Xóa</button>
+                                                                                <input type="hidden" name="cong_tac_existing[]" value="{{ $qt->id }}">
+                                                                            </td>
+                                                                        </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                    <tfoot>
+                                                                        <tr>
+                                                                            <td>
+                                                                                <select id="new_chucvu_id" class="form-select">
+                                                                                    <option value="">-- Chọn chức vụ --</option>
+                                                                                    @foreach($chucVus as $cv)
+                                                                                        <option value="{{ $cv->id }}">{{ $cv->ten_chuc_vu }}</option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </td>
+                                                                            <td>
+                                                                                <select id="new_phongban_id" class="form-select">
+                                                                                    <option value="">-- Chọn phòng ban --</option>
+                                                                                    @foreach($phongBans as $pb)
+                                                                                        <option value="{{ $pb->id }}">{{ $pb->ten_phong_ban }}</option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </td>
+                                                                            <td>
+                                                                                <input type="text" id="new_mo_ta" class="form-control" placeholder="Mô tả">
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="d-flex gap-2">
+                                                                                    <input type="date" id="new_ngay_bat_dau" class="form-control">
+                                                                                    <input type="date" id="new_ngay_ket_thuc" class="form-control">
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <button type="button" class="btn btn-sm btn-success" id="addCongTacRow">Thêm</button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tfoot>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    @endif
                                                 </div>
                                                 <!-- Thông tin lương -->
                                                 <div class="row">
@@ -603,56 +689,56 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-@foreach($nhanVien->GiayToTuyThan as $idx => $file)
-    <tr>
-        <td>{{ $file->loai_giay_to }}</td>
-        <td>{{ $file->so_giay_to }}</td>
-        <td>{{ $file->ngay_cap }}</td>
-        <td>{{ $file->ngay_het_han }}</td>
-        <td>{{ $file->noi_cap }}</td>
-        <td>{{ $file->ghi_chu }}</td>
+                                                                    @foreach($nhanVien->GiayToTuyThan as $idx => $file)
+                                                                        <tr>
+                                                                            <td>{{ $file->loai_giay_to }}</td>
+                                                                            <td>{{ $file->so_giay_to }}</td>
+                                                                            <td>{{ $file->ngay_cap }}</td>
+                                                                            <td>{{ $file->ngay_het_han }}</td>
+                                                                            <td>{{ $file->noi_cap }}</td>
+                                                                            <td>{{ $file->ghi_chu }}</td>
 
-        <td>
-            {{-- Input chọn file mới --}}
-            <input type="file" 
-                   name="giay_to[{{ $idx }}][tep_tin]" 
-                   accept=".pdf,image/*" 
-                   class="form-control form-control-sm"
-                   onchange="showFileName(this, {{ $idx }})">
+                                                                            <td>
+                                                                                {{-- Input chọn file mới --}}
+                                                                                <input type="file" 
+                                                                                    name="giay_to[{{ $idx }}][tep_tin]" 
+                                                                                    accept=".pdf,image/*" 
+                                                                                    class="form-control form-control-sm"
+                                                                                    onchange="showFileName(this, {{ $idx }})">
 
-            {{-- Nếu có file cũ thì hiển thị link --}}
-            @if(!empty($file->tepTin))
-                <div class="mt-1">
-                    <small class="text-muted">
-                        File hiện tại: 
-                        <a href="{{ asset('storage/' . $file->tepTin->duong_dan_tep) }}" 
-                           target="_blank">
-                           {{ $file->tepTin->ten_tep }}
-                        </a>
-                    </small>
-                </div>
-                {{-- Giữ lại tep_tin_id để khi không upload file mới thì còn file cũ --}}
-                <input type="hidden" name="giay_to[{{ $idx }}][tep_tin_id]" value="{{ $file->tep_tin_id }}">
-            @endif
+                                                                                {{-- Nếu có file cũ thì hiển thị link --}}
+                                                                                @if(!empty($file->tepTin))
+                                                                                    <div class="mt-1">
+                                                                                        <small class="text-muted">
+                                                                                            File hiện tại: 
+                                                                                            <a href="{{ asset('storage/' . $file->tepTin->duong_dan_tep) }}" 
+                                                                                            target="_blank">
+                                                                                            {{ $file->tepTin->ten_tep }}
+                                                                                            </a>
+                                                                                        </small>
+                                                                                    </div>
+                                                                                    {{-- Giữ lại tep_tin_id để khi không upload file mới thì còn file cũ --}}
+                                                                                    <input type="hidden" name="giay_to[{{ $idx }}][tep_tin_id]" value="{{ $file->tep_tin_id }}">
+                                                                                @endif
 
-            {{-- Chỗ hiển thị preview tên file mới --}}
-            <small id="file-name-{{ $idx }}" class="text-primary"></small>
+                                                                                {{-- Chỗ hiển thị preview tên file mới --}}
+                                                                                <small id="file-name-{{ $idx }}" class="text-primary"></small>
 
-            {{-- Hidden fields giữ dữ liệu cũ --}}
-            <input type="hidden" name="giay_to[{{ $idx }}][id]" value="{{ $file->id }}">
-            <input type="hidden" name="giay_to[{{ $idx }}][loai_giay_to]" value="{{ $file->loai_giay_to }}">
-            <input type="hidden" name="giay_to[{{ $idx }}][so_giay_to]" value="{{ $file->so_giay_to }}">
-            <input type="hidden" name="giay_to[{{ $idx }}][ngay_cap]" value="{{ $file->ngay_cap }}">
-            <input type="hidden" name="giay_to[{{ $idx }}][ngay_het_han]" value="{{ $file->ngay_het_han }}">
-            <input type="hidden" name="giay_to[{{ $idx }}][noi_cap]" value="{{ $file->noi_cap }}">
-            <input type="hidden" name="giay_to[{{ $idx }}][ghi_chu]" value="{{ $file->ghi_chu }}">
-        </td>
+                                                                                {{-- Hidden fields giữ dữ liệu cũ --}}
+                                                                                <input type="hidden" name="giay_to[{{ $idx }}][id]" value="{{ $file->id }}">
+                                                                                <input type="hidden" name="giay_to[{{ $idx }}][loai_giay_to]" value="{{ $file->loai_giay_to }}">
+                                                                                <input type="hidden" name="giay_to[{{ $idx }}][so_giay_to]" value="{{ $file->so_giay_to }}">
+                                                                                <input type="hidden" name="giay_to[{{ $idx }}][ngay_cap]" value="{{ $file->ngay_cap }}">
+                                                                                <input type="hidden" name="giay_to[{{ $idx }}][ngay_het_han]" value="{{ $file->ngay_het_han }}">
+                                                                                <input type="hidden" name="giay_to[{{ $idx }}][noi_cap]" value="{{ $file->noi_cap }}">
+                                                                                <input type="hidden" name="giay_to[{{ $idx }}][ghi_chu]" value="{{ $file->ghi_chu }}">
+                                                                            </td>
 
-        <td>
-            <button type="button" class="btn btn-sm btn-outline-danger delete-my-file">Xóa</button>
-        </td>
-    </tr>
-@endforeach
+                                                                            <td>
+                                                                                <button type="button" class="btn btn-sm btn-outline-danger delete-my-file">Xóa</button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
 
                                                                 </tbody>
                                                             </table>
@@ -750,7 +836,125 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
         $(document).ready(function () {
-            // Array to store all family members (database + temporary)
+            // Xóa dòng quá trình công tác đã có trong DB (existing rows)
+            $('#congTacTableBody').on('click', '.delete-cong-tac', function () {
+                var $tr = $(this).closest('tr');
+                var id = $tr.find('input[name="cong_tac_existing[]"]').val();
+                // Xóa toàn bộ input/select trong dòng này để không submit lên backend
+                $tr.find('input, select, textarea').remove();
+                $tr.remove();
+                if (id) {
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'cong_tac_delete[]',
+                        value: id
+                    }).appendTo('#employeeForm');
+                }
+            });
+
+            let tempCongTac = [];
+
+            // Hàm render lại bảng quá trình công tác mới
+            function renderCongTacTable() {
+                const $tbody = $('#congTacTableBody');
+                $tbody.find('.temp-cong-tac-row').remove();
+                // Re-render all temp rows with correct data-idx
+                for (let i = 0; i < tempCongTac.length; i++) {
+                    const row = tempCongTac[i];
+                    const chucvuText = $('#new_chucvu_id option[value="' + row.chucvu_id + '"]').text();
+                    const phongbanText = $('#new_phongban_id option[value="' + row.phongban_id + '"]').text();
+                    $tbody.append(`
+                        <tr class="temp-cong-tac-row">
+                            <td>${chucvuText}</td>
+                            <td>${phongbanText}</td>
+                            <td>${row.mo_ta || ''}</td>
+                            <td>${row.ngay_bat_dau} / ${row.ngay_ket_thuc || '...'}</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-danger delete-temp-cong-tac" data-idx="${i}">Xóa</button>
+                            </td>
+                        </tr>
+                    `);
+                }
+            }
+
+            // Thêm dòng mới
+            $('#addCongTacRow').click(function () {
+                const chucvu_id = $('#new_chucvu_id').val();
+                const phongban_id = $('#new_phongban_id').val();
+                const mo_ta = $('#new_mo_ta').val();
+                const ngay_bat_dau = $('#new_ngay_bat_dau').val();
+                const ngay_ket_thuc = $('#new_ngay_ket_thuc').val();
+
+                if (!chucvu_id || !phongban_id || !ngay_bat_dau) {
+                    alert('Vui lòng chọn đầy đủ chức vụ, phòng ban, ngày bắt đầu');
+                    return;
+                }
+
+                tempCongTac.push({ chucvu_id, phongban_id, mo_ta, ngay_bat_dau, ngay_ket_thuc });
+                renderCongTacTable();
+                console.log("Sau khi thêm:", tempCongTac);
+
+                // reset input
+                $('#new_chucvu_id').val('');
+                $('#new_phongban_id').val('');
+                $('#new_mo_ta').val('');
+                $('#new_ngay_bat_dau').val('');
+                $('#new_ngay_ket_thuc').val('');
+            });
+
+            // Xóa dòng tạm
+            $('#congTacTableBody').on('click', '.delete-temp-cong-tac', function () {
+                const idx = $(this).data('idx');
+                tempCongTac.splice(idx, 1);
+                renderCongTacTable();
+                console.log("Sau khi xóa:", tempCongTac);
+            });
+
+            // Submit form
+            $('#employeeForm').submit(function (e) {
+                // Xóa input cũ
+                $('input[name^="cong_tac_temp"]').remove();
+
+                // Append input mới
+                tempCongTac.forEach(function (row, i) {
+                    $('<input>', {
+                        type: 'hidden',
+                        name: `cong_tac_temp[${i}][chucvu_id]`,
+                        value: row.chucvu_id
+                    }).appendTo(e.target);
+
+                    $('<input>', {
+                        type: 'hidden',
+                        name: `cong_tac_temp[${i}][phongban_id]`,
+                        value: row.phongban_id
+                    }).appendTo(e.target);
+
+                    $('<input>', {
+                        type: 'hidden',
+                        name: `cong_tac_temp[${i}][mo_ta]`,
+                        value: row.mo_ta
+                    }).appendTo(e.target);
+
+                    $('<input>', {
+                        type: 'hidden',
+                        name: `cong_tac_temp[${i}][ngay_bat_dau]`,
+                        value: row.ngay_bat_dau
+                    }).appendTo(e.target);
+
+                    $('<input>', {
+                        type: 'hidden',
+                        name: `cong_tac_temp[${i}][ngay_ket_thuc]`,
+                        value: row.ngay_ket_thuc
+                    }).appendTo(e.target);
+                });
+
+                // Log ra trước khi submit
+                console.log("tempCongTac trước submit:", tempCongTac);
+                console.log("Form data serialize:", $(this).serializeArray());
+
+                return true; // cho form gửi tiếp
+            });
+
             let familyMembers = @json($nhanVien->thongTinGiaDinh ?? []);
 
  let idxCounter = $("#myFileTable tbody tr").length; // bắt đầu từ số row hiện có
@@ -839,6 +1043,13 @@ $(document).on("click", ".delete-my-file", function () {
                 }
                 $input.val(JSON.stringify(myFiles));
             });
+
+
+            // Function to render the my file table (preview newly added files)
+            function renderMyFileTable() {
+                // You can implement preview logic here if needed, or leave empty if not required
+                // For now, this is a stub to prevent JS error
+            }
 
             // Initialize my file table on page load
             renderMyFileTable();
@@ -1044,6 +1255,9 @@ $(document).on("click", ".delete-my-file", function () {
 
             // Initialize table on page load
             renderFamilyTable();
+
+            // Quá trình công tác script
+            // ...existing code...
         });
     </script>
 @endsection
