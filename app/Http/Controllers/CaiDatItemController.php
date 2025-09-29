@@ -23,12 +23,12 @@ class CaiDatItemController extends Controller
             'ten_item' => 'required|string|max:100',
             'mo_ta' => 'nullable|string',
         ]);
-        CaiDatItem::create([
+        $item = CaiDatItem::create([
             'danh_muc_id' => $danhMucId,
             'ten_item' => $validated['ten_item'],
             'mo_ta' => $validated['mo_ta'] ?? null,
         ]);
-        return back()->with('success', 'Thêm item thành công!');
+        return response()->json(['success' => true, 'message' => 'Thêm item thành công!', 'item' => $item]);
     }
 
     // Sửa item
@@ -39,13 +39,13 @@ class CaiDatItemController extends Controller
             'mo_ta' => 'nullable|string',
         ]);
         $item->update($validated);
-        return back()->with('success', 'Cập nhật item thành công!');
+        return response()->json(['success' => true, 'message' => 'Cập nhật item thành công!', 'item' => $item]);
     }
 
     // Xóa item
     public function destroy(CaiDatItem $item)
     {
         $item->delete();
-        return back()->with('success', 'Xóa item thành công!');
+        return response()->json(['success' => true, 'message' => 'Xóa item thành công!']);
     }
 }

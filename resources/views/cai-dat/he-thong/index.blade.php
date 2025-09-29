@@ -7,7 +7,7 @@
         <div class="list-group" id="danhMucSidebar">
             @foreach($danhMucs as $danhMuc)
                 <a href="{{ route('cai-dat.index', ['danh_muc' => $danhMuc]) }}"
-                   class="list-group-item list-group-item-action {{ $activeDanhMuc == $danhMuc ? 'active' : '' }}">
+                   class="list-group-item list-group-item-action {{ $activeDanhMuc == $danhMuc ? 'active' : ($loop->last && !$activeDanhMuc ? 'active' : '') }}">
                     <i class="fas fa-folder"></i> {{ $danhMuc }}
                 </a>
             @endforeach
@@ -35,110 +35,95 @@
         </div>
     </div>
     <div class="col-md-9">
-        @if($activeDanhMuc)
-        <!-- Main content: bảng item -->
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <span><i class="fas fa-folder-open"></i> {{ $activeDanhMuc }}</span>
+                <span><i class="fas fa-folder-open"></i> {{ isset($danhMucModel) ? $danhMucModel->ten_cai_dat : ($danhMucs->count() ? $danhMucs->last() : 'Chưa chọn danh mục') }}</span>
+                @if(isset($danhMucModel) && $danhMucModel->mo_ta)
+                    <span class="text-muted small ms-3">{{ $danhMucModel->mo_ta }}</span>
+                @endif
             </div>
             <div class="card-body">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Tên item</th>
-                            <th>Mô tả</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($items as $item)
+                <form id="inlineItemForm" method="POST" action="{{ route('cai-dat.store') }}">
+                    @csrf
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
                             <tr>
-                                <td>{{ $item->gia_tri_cai_dat }}</td>
-                                <td>{{ $item->mo_ta }}</td>
+                                <th style="width: 30%">Tên item</th>
+                                <th style="width: 50%">Mô tả</th>
+                                <th style="width: 20%">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemTableBody">
+                            @if(isset($items) && count($items))
+                                @foreach($items as $item)
+                                    <tr data-id="{{ $item->id }}">
+                                        <td>
+                                            <input type="text" class="form-control form-control-sm" name="ten_item" value="{{ $item->ten_item }}" readonly>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control form-control-sm" name="mo_ta" value="{{ $item->mo_ta }}">
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-success btn-save-item" data-id="{{ $item->id }}">Lưu</button>
+                                            <form method="POST" action="" style="display:inline-block">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="btn btn-sm btn-danger" onclick="return confirm('Xóa item này?')">Xóa</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            <!-- Dòng thêm mới -->
+                            <tr id="addRow">
                                 <td>
-                                    <form method="POST" action="{{ route('cai-dat.destroy', $item->id) }}" style="display:inline-block">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-sm btn-danger" onclick="return confirm('Xóa item này?')">Xóa</button>
-                                    </form>
-                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editItemModal{{ $item->id }}">Sửa</button>
+                                    <input type="text" class="form-control form-control-sm" name="new_ten_item" placeholder="Tên item mới">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm" name="new_mo_ta" placeholder="Mô tả">
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-primary" id="btnAddItem">Thêm</button>
                                 </td>
                             </tr>
-                            <!-- Modal sửa item -->
-                            <div class="modal fade" id="editItemModal{{ $item->id }}" tabindex="-1">
-                                <div class="modal-dialog">
-                                    <form class="modal-content" method="POST" action="{{ route('cai-dat.update', $item->id) }}">
-                                        @csrf
-                                        @method('PUT')
-                                        <div class="modal-header"><h5 class="modal-title">Sửa item</h5></div>
-                                        <div class="modal-body">
-                                            <input type="text" name="ten_cai_dat" class="form-control mb-2" value="{{ $item->ten_cai_dat }}" required>
-                                            <input type="text" name="gia_tri_cai_dat" class="form-control mb-2" value="{{ $item->gia_tri_cai_dat }}" required readonly>
-                                            <textarea name="mo_ta" class="form-control" placeholder="Mô tả">{{ $item->mo_ta }}</textarea>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                            <button type="submit" class="btn btn-warning">Cập nhật</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </form>
             </div>
         </div>
-        @endif
     </div>
 </div>
 @push('scripts')
 <script>
-function toSlug(str) {
-    str = str.toLowerCase();
-    str = str.normalize('NFD').replace(/\p{Diacritic}/gu, '');
-    str = str.replace(/[^a-z0-9]+/g, '-');
-    str = str.replace(/^-+|-+$/g, '');
-    return str;
-}
+// Lưu item trực tiếp
 document.addEventListener('DOMContentLoaded', function() {
-    var tenInput = document.getElementById('tenDanhMucInput');
-    var slugInput = document.getElementById('slugDanhMucInput');
-    if (tenInput && slugInput) {
-        tenInput.addEventListener('input', function() {
-            slugInput.value = toSlug(tenInput.value);
-        });
-    }
-    var form = document.getElementById('formAddDanhMuc');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            var formData = new FormData(form);
-            fetch("{{ route('cai-dat.store') }}", {
-                method: "POST",
+    // Lưu item
+    document.querySelectorAll('.btn-save-item').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const row = btn.closest('tr');
+            const id = btn.getAttribute('data-id');
+            const ten_item = row.querySelector('input[name="ten_item"]').value;
+            const mo_ta = row.querySelector('input[name="mo_ta"]').value;
+            fetch(`{{ url('cai-dat-item') }}/${id}`, {
+                method: 'PUT',
                 headers: {
-                    'X-CSRF-TOKEN': formData.get('_token'),
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json'
                 },
-                body: formData
+                body: JSON.stringify({
+                    ten_item: ten_item,
+                    mo_ta: mo_ta
+                })
             })
-            .then(async res => {
-                let data;
-                try {
-                    data = await res.json();
-                } catch (e) {
-                    console.log('Không parse được JSON:', res);
-                    alert('Lỗi dữ liệu trả về!');
-                    return;
-                }
-                console.log('Response:', res, 'Data:', data);
+            .then(res => res.json())
+            .then(data => {
                 if (data.success) {
                     if (window.HRM && typeof HRM.showSuccess === 'function') {
-                        HRM.showSuccess(data.message || 'Thêm danh mục thành công!');
-                        setTimeout(() => location.reload(), 1200);
+                        HRM.showSuccess(data.message || 'Cập nhật thành công!');
                     } else {
-                        alert(data.message || 'Thêm danh mục thành công!');
-                        location.reload();
+                        alert(data.message || 'Cập nhật thành công!');
                     }
                 } else {
                     alert(data.message || 'Lỗi!');
@@ -146,7 +131,46 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(() => alert('Lỗi mạng!'));
         });
-    }
+    });
+    // Thêm item mới
+    document.getElementById('btnAddItem').addEventListener('click', function() {
+        const row = document.getElementById('addRow');
+        const ten = row.querySelector('input[name="new_ten_item"]').value.trim();
+        const mo_ta = row.querySelector('input[name="new_mo_ta"]').value.trim();
+        if (!ten) {
+            alert('Vui lòng nhập tên item!');
+            return;
+        }
+        const formData = new FormData();
+        formData.append('_token', '{{ csrf_token() }}');
+        formData.append('ten_item', ten);
+        formData.append('mo_ta', mo_ta);
+        var danhMucId = "{{ isset($danhMucModel) ? $danhMucModel->id : '' }}";
+        formData.append('danh_muc_id', danhMucId);
+        fetch("{{ route('cai-dat-item.store', isset($danhMucModel) ? $danhMucModel->id : 0) }}", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                if (window.HRM && typeof HRM.showSuccess === 'function') {
+                    HRM.showSuccess(data.message || 'Thêm item thành công!');
+                } else {
+                    alert(data.message || 'Thêm item thành công!');
+                }
+                // Reload lại đúng danh mục cha đang mở
+                window.location.href = "{{ route('cai-dat.index') }}?danh_muc={{ isset($danhMucModel) ? $danhMucModel->ten_cai_dat : '' }}";
+            } else {
+                alert(data.message || 'Lỗi!');
+            }
+        })
+        .catch(() => alert('Lỗi mạng!'));
+    });
 });
 </script>
 @endpush

@@ -61,11 +61,22 @@ Route::prefix('cai-dat')->name('cai-dat.')->group(function () {
     Route::delete('/{item}', [\App\Http\Controllers\CaiDatHeThongController::class, 'destroy'])->name('destroy');
 });
 
+// Cài đặt item (thêm/sửa/xóa item con của danh mục)
+Route::prefix('cai-dat-item')->name('cai-dat-item.')->group(function () {
+    Route::post('/{danh_muc_id}', [\App\Http\Controllers\CaiDatItemController::class, 'store'])->name('store');
+    Route::put('/{item}', [\App\Http\Controllers\CaiDatItemController::class, 'update'])->name('update');
+    Route::delete('/{item}', [\App\Http\Controllers\CaiDatItemController::class, 'destroy'])->name('destroy');
+});
+
 // Quản lý chế độ
 Route::prefix('che-do')->name('che-do.')->group(function () {
-    // Khen thưởng kỷ luật
-    Route::get('/khen-thuong-ky-luat', [CheDoController::class, 'khenThuongKyLuatIndex'])->name('khen-thuong-ky-luat.index');
+    // Khen thưởng
+    Route::get('/khen-thuong', [CheDoController::class, 'khenThuongIndex'])->name('khen-thuong.index');
+    // Kỷ luật
+    Route::get('/ky-luat', [CheDoController::class, 'kyLuatIndex'])->name('ky-luat.index');
+    // Các route chung
     Route::get('/khen-thuong-ky-luat/create', [CheDoController::class, 'khenThuongKyLuatCreate'])->name('khen-thuong-ky-luat.create');
+    Route::get('/khen-thuong-ky-luat/{id}', [CheDoController::class, 'khenThuongKyLuatShow'])->name('khen-thuong-ky-luat.show');
     Route::post('/khen-thuong-ky-luat', [CheDoController::class, 'khenThuongKyLuatStore'])->name('khen-thuong-ky-luat.store');
 });
 

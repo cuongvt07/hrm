@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class KhenThuongKyLuat extends Model
 {
+    public $timestamps = false;
     use HasFactory;
 
     protected $table = 'khen_thuong_ky_luat';

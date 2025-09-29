@@ -78,10 +78,17 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('che-do.khen-thuong-ky-luat.*') ? 'active' : '' }}" 
-                   href="{{ route('che-do.khen-thuong-ky-luat.index') }}" title="Khen thưởng & Kỷ luật">
-                    <i class="fas fa-award"></i>
-                    <span class="nav-text">Khen thưởng & Kỷ luật</span>
+                <a class="nav-link {{ request()->routeIs('che-do.khen-thuong.index') ? 'active' : '' }}" 
+                   href="{{ route('che-do.khen-thuong.index') }}" title="Khen thưởng">
+                    <i class="fas fa-award text-warning"></i>
+                    <span class="nav-text">Khen thưởng</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('che-do.ky-luat.index') ? 'active' : '' }}" 
+                   href="{{ route('che-do.ky-luat.index') }}" title="Kỷ luật">
+                    <i class="fas fa-gavel text-danger"></i>
+                    <span class="nav-text">Kỷ luật</span>
                 </a>
             </li>
 

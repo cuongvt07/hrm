@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CaiDatHeThong;
+use App\Models\CaiDatItem;
 use Illuminate\Http\Request;
 
 class CaiDatHeThongController extends Controller
@@ -11,9 +12,13 @@ class CaiDatHeThongController extends Controller
     public function index(Request $request)
     {
         $danhMucs = CaiDatHeThong::select('ten_cai_dat')->distinct()->pluck('ten_cai_dat');
-        $activeDanhMuc = $request->get('danh_muc', $danhMucs->first());
-        $items = CaiDatHeThong::where('ten_cai_dat', $activeDanhMuc)->get();
-        return view('cai-dat.he-thong.index', compact('danhMucs', 'activeDanhMuc', 'items'));
+        $activeDanhMuc = $request->get('danh_muc', $danhMucs->last());
+        $danhMucModel = CaiDatHeThong::where('ten_cai_dat', $activeDanhMuc)->first();
+        $items = [];
+        if ($danhMucModel) {
+            $items = CaiDatItem::where('danh_muc_id', $danhMucModel->id)->get();
+        }
+        return view('cai-dat.he-thong.index', compact('danhMucs', 'activeDanhMuc', 'danhMucModel', 'items'));
     }
 
     // Thêm mới item
