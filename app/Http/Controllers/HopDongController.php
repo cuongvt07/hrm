@@ -48,9 +48,18 @@ class HopDongController extends Controller
         $hopDongCu->update(['trang_thai' => 'het_hieu_luc']);
         return redirect()->route('hop-dong.index')->with('success', 'Gia hạn hợp đồng thành công!');
     }
+
     public function sapHetHan(Request $request)
     {
         $query = HopDongLaoDong::with('nhanVien');
+        // Lấy danh sách các số hợp đồng đã bị tái ký (tức là có hợp đồng mới bắt đầu bằng số hợp đồng gốc + '_')
+        $soHopDongGocDaTaiKi = HopDongLaoDong::whereRaw("so_hop_dong REGEXP '_.{6}$'")
+            ->pluck('so_hop_dong')
+            ->map(function($so){
+                return preg_replace('/_.{6}$/', '', $so);
+            })
+            ->unique()
+            ->toArray();
 
         // Search: họ tên nhân viên, số hợp đồng, loại hợp đồng
         if ($request->filled('search')) {
@@ -93,12 +102,18 @@ class HopDongController extends Controller
         $hopDongs = $query
             ->whereDate('ngay_ket_thuc', '<=', now()->addMonth())
             ->whereDate('ngay_ket_thuc', '>=', now())
+            // Ẩn các hợp đồng hết hiệu lực đã bị tái ký dựa vào tiền tố so_hop_dong
+            ->where(function($q) use ($soHopDongGocDaTaiKi) {
+                $q->where('trang_thai', '!=', 'het_hieu_luc')
+                ->orWhereNotIn('so_hop_dong', $soHopDongGocDaTaiKi);
+            })
             ->orderBy('ngay_ket_thuc', 'desc')
             ->paginate(20);
         $nhanViens = NhanVien::dangLamViec()->get();
 
         return view('hop-dong.saphethan', compact('hopDongs', 'nhanViens'));
     }
+    
     public function index(Request $request)
     {
         $query = HopDongLaoDong::with('nhanVien');
