@@ -507,4 +507,4 @@ hrm-system/
 - **Component-based**: UI nhất quán và dễ bảo trì
 
 
-// check chỗ thêm nv chưa dc
+// xử lý module cài đặt hệ thống nữa

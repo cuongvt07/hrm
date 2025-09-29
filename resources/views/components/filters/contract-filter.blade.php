@@ -7,9 +7,8 @@
     <div class="col-md-2">
         <select name="trang_thai" class="form-select">
             <option value="">Trạng thái</option>
-            <option value="hoat_dong" {{ request('trang_thai')=='hoat_dong' ? 'selected' : '' }}>Hoạt động</option>
-            <option value="het_han" {{ request('trang_thai')=='het_han' ? 'selected' : '' }}>Hết hạn</option>
-            <option value="cham_dut" {{ request('trang_thai')=='cham_dut' ? 'selected' : '' }}>Chấm dứt</option>
+            <option value="hieu_luc" {{ request('trang_thai')=='hieu_luc' ? 'selected' : '' }}>Hiệu lực</option>
+            <option value="het_hieu_luc" {{ request('trang_thai')=='het_hieu_luc' ? 'selected' : '' }}>Hết hiệu lực</option>
         </select>
     </div>
     <div class="col-md-2">

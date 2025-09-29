@@ -50,6 +50,16 @@ Route::get('hop-dong/{id}/view', [HopDongController::class, 'view'])->name('hop-
 Route::get('hop-dong-sap-het-han', [HopDongController::class, 'sapHetHan'])->name('hop-dong.saphethan');
 Route::get('hop-dong/{id}/gia-han', [HopDongController::class, 'giaHanForm'])->name('hop-dong.giahan.form');
 Route::post('hop-dong/gia-han', [HopDongController::class, 'giaHanStore'])->name('hop-dong.giahan.store');
+// Bulk update trạng thái hợp đồng
+Route::post('hop-dong/bulk-update-status', [HopDongController::class, 'bulkUpdateStatus'])->name('hop-dong.bulk-update-status');
+
+// Cài đặt hệ thống
+Route::prefix('cai-dat')->name('cai-dat.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\CaiDatHeThongController::class, 'index'])->name('index');
+    Route::post('/', [\App\Http\Controllers\CaiDatHeThongController::class, 'store'])->name('store');
+    Route::put('/{item}', [\App\Http\Controllers\CaiDatHeThongController::class, 'update'])->name('update');
+    Route::delete('/{item}', [\App\Http\Controllers\CaiDatHeThongController::class, 'destroy'])->name('destroy');
+});
 
 // Quản lý chế độ
 Route::prefix('che-do')->name('che-do.')->group(function () {

@@ -26,11 +26,35 @@ body {
     display: flex;
     justify-content: space-evenly;
 }
+
+.nav-tabs-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
+
+  .nav-tabs {
+    flex-wrap: nowrap;
+    min-width: max-content; 
+  }
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+  }
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
 /* Table-light custom for blue theme */
 .table-light {
-    background: #F5F6F8; !important;
+    background: #F5F6F8 !important;
     border: none;
 }
+
 .table-light th {
     background: transparent !important;
     border: none;
@@ -1095,10 +1119,6 @@ h5, h6 {
 
 .card-header {
     padding: 0.5rem 0.75rem;
-}
-
-.table td, .table th {
-    padding: 0.375rem 0.5rem;
 }
 
 .form-control, .form-select {

@@ -1,5 +1,5 @@
 @if(isset($nhanVien) && isset($chucVus) && isset($phongBans))
-<div class="card mb-3">
+<div class="mb-3">
     <div class="card-header d-flex justify-content-between align-items-center">
         <span>Quá trình công tác</span>
     </div>

@@ -12,11 +12,6 @@
                     <h2 class="mb-0">Dashboard</h2>
                     <p class="text-muted mb-0">Tổng quan hệ thống quản lý nhân sự</p>
                 </div>
-                <div>
-                    <x-ui.button type="primary" icon="plus">
-                        Thêm mới
-                    </x-ui.button>
-                </div>
             </div>
         </div>
     </div>
