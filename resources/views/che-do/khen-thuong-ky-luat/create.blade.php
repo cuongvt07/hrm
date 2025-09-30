@@ -76,7 +76,7 @@
             </div>
         </div>
         <div class="card-footer text-end">
-            <a href="{{ route('che-do.khen-thuong-ky-luat.index') }}" class="btn btn-secondary">Quay lại</a>
+            <a href="{{ route('che-do.khen-thuong.index') }}" class="btn btn-secondary">Quay lại</a>
             <button type="submit" class="btn btn-primary">Lưu quyết định</button>
         </div>
     </form>

@@ -2,12 +2,21 @@
 @section('title', 'Thêm hợp đồng lao động')
 @section('content')
 <div class="card">
-    <div class="card-header">
-        <h5 class="mb-0">Thêm hợp đồng lao động</h5>
+    <div class="card-header pb-0">
+        <ul class="nav nav-tabs card-header-tabs" id="hopDongTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="tab-chitiet" data-bs-toggle="tab" data-bs-target="#chitiet" type="button" role="tab" aria-controls="chitiet" aria-selected="true">Chi tiết hợp đồng</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-phucloi" data-bs-toggle="tab" data-bs-target="#phucloi" type="button" role="tab" aria-controls="phucloi" aria-selected="false">Phụ cấp & phúc lợi</button>
+            </li>
+        </ul>
     </div>
     <form action="{{ route('hop-dong.store') }}" method="POST">
         @csrf
         <div class="card-body">
+        <div class="tab-content" id="hopDongTabContent">
+            <div class="tab-pane fade show active" id="chitiet" role="tabpanel" aria-labelledby="tab-chitiet">
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="nhan_vien_id" class="form-label">Nhân viên</label>
@@ -72,9 +81,9 @@
                 <label for="vi_tri_cong_viec" class="form-label">Vị trí công việc</label>
                 <input type="text" name="vi_tri_cong_viec" id="vi_tri_cong_viec" class="form-control" value="{{ old('vi_tri_cong_viec') }}">
             </div>
-            <div class="mb-3">
-                <label for="don_vi_ky_hd" class="form-label">Đơn vị ký hợp đồng</label>
-                <input type="text" name="don_vi_ky_hd" id="don_vi_ky_hd" class="form-control bg-light" value="{{ old('don_vi_ky_hd') }}" readonly>
+            <div class="mb-3 d-none">
+                <label for="phu_cap_ids" class="form-label">Phụ cấp (ẩn)</label>
+                <input type="hidden" name="phu_cap_ids" id="phu_cap_ids" value="">
             </div>
             <div class="mb-3">
                 <label for="trang_thai_ky" class="form-label">Trạng thái ký</label>
@@ -98,6 +107,52 @@
                 <textarea name="ghi_chu" id="ghi_chu" class="form-control" rows="2"></textarea>
             </div>
         </div>
+        <div class="tab-pane fade" id="phucloi" role="tabpanel" aria-labelledby="tab-phucloi">
+            <h5 class="mb-3">Danh sách phúc lợi công ty</h5>
+            @if(isset($phucLoiItems) && $phucLoiItems->count())
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 30%">Tên phúc lợi</th>
+                            <th>Mô tả</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($phucLoiItems as $item)
+                        <tr>
+                            <td>{{ $item->ten_item }}</td>
+                            <td>{{ $item->mo_ta }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @else
+                <div class="text-muted">Chưa có phúc lợi nào được cấu hình.</div>
+            @endif
+            <h5 class="mb-3">Chọn phụ cấp áp dụng cho hợp đồng</h5>
+            @if(isset($phuCapItems) && $phuCapItems->count())
+                <div class="row">
+                @foreach($phuCapItems as $item)
+                    <div class="col-md-4 mb-2">
+                        <div class="form-check">
+                            <input class="form-check-input phu-cap-checkbox" type="checkbox" value="{{ $item->id }}" id="phuCap{{ $item->id }}">
+                            <label class="form-check-label" for="phuCap{{ $item->id }}">
+                                {{ $item->ten_item }}
+                                @if($item->mo_ta)
+                                    <span class="text-muted small">({{ $item->mo_ta }})</span>
+                                @endif
+                            </label>
+                        </div>
+                    </div>
+                @endforeach
+                </div>
+            @else
+                <div class="text-muted">Chưa có phụ cấp nào được cấu hình.</div>
+            @endif
+        </div>
+        </div>
         <div class="card-footer text-end">
             <a href="{{ route('hop-dong.index') }}" class="btn btn-secondary">Quay lại</a>
             <button type="submit" class="btn btn-primary">Lưu hợp đồng</button>
@@ -107,6 +162,18 @@
 @endsection
 
 @push('scripts')
+<script>
+// Khi submit form, lưu các phụ cấp đã chọn vào input hidden
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function() {
+            const checked = Array.from(document.querySelectorAll('.phu-cap-checkbox:checked')).map(cb => cb.value);
+            document.getElementById('phu_cap_ids').value = JSON.stringify(checked);
+        });
+    }
+});
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.money-input').forEach(function(input) {

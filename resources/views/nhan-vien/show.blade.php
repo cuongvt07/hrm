@@ -178,6 +178,9 @@
                                         <a class="nav-link" id="contact-tab" data-bs-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Thông tin liên hệ</a>
                                     </li>
                                     <li class="nav-item" role="presentation">
+                                        <a class="nav-link" id="ktkl-tab" data-bs-toggle="tab" href="#ktkl" role="tab" aria-controls="ktkl" aria-selected="false">Khen thưởng & Kỷ luật</a>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
                                         <a class="nav-link" id="family-tab" data-bs-toggle="tab" href="#family" role="tab" aria-controls="family" aria-selected="false">Gia đình</a>
                                     </li>
                                     <li class="nav-item" role="presentation">
@@ -193,6 +196,101 @@
 
                                 <!-- Tab Content -->
                                 <div class="tab-content" id="employeeTabContent">
+                                    <!-- Khen thưởng & Kỷ luật Tab -->
+                                    <div class="tab-pane fade" id="ktkl" role="tabpanel" aria-labelledby="ktkl-tab">
+                                        <div class="row">
+                                            <div class="col-12 mb-4">
+                                                <div class="card border-0 shadow-sm">
+                                                    <div class="card-header bg-success text-white">
+                                                        <h5 class="mb-0">Khen thưởng</h5>
+                                                    </div>
+                                                    <div class="card-body p-0">
+                                                        @if($khenThuong->count())
+                                                        <div class="table-responsive">
+                                                            <table class="table table-bordered mb-0">
+                                                                <thead class="table-light">
+                                                                    <tr>
+                                                                        <th>Quyết định</th>
+                                                                        <th>Ngày</th>
+                                                                        <th>Tiêu đề</th>
+                                                                        <th>Mô tả</th>
+                                                                        <th>Giá trị</th>
+                                                                        <th>Đối tượng</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                @foreach($khenThuong as $item)
+                                                                    <tr>
+                                                                        <td>{{ $item->khenThuongKyLuat->so_quyet_dinh ?? '-' }}</td>
+                                                                        <td>{{ $item->khenThuongKyLuat->ngay_quyet_dinh ? \Carbon\Carbon::parse($item->khenThuongKyLuat->ngay_quyet_dinh)->format('d/m/Y') : '-' }}</td>
+                                                                        <td>{{ $item->khenThuongKyLuat->tieu_de ?? '-' }}</td>
+                                                                        <td>{{ $item->khenThuongKyLuat->mo_ta ?? '-' }}</td>
+                                                                        <td>{{ $item->khenThuongKyLuat->gia_tri ? number_format($item->khenThuongKyLuat->gia_tri) : '-' }}</td>
+                                                                        <td>
+                                                                            @if($item->loai_doi_tuong == 'nhan_vien')
+                                                                                Cá nhân
+                                                                            @elseif($item->loai_doi_tuong == 'phong_ban')
+                                                                                Tập thể ({{ $item->phongBan->ten_phong_ban ?? '-' }})
+                                                                            @endif
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        @else
+                                                            <div class="text-center text-muted py-3">Chưa có khen thưởng</div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="card border-0 shadow-sm">
+                                                    <div class="card-header bg-danger text-white">
+                                                        <h5 class="mb-0">Kỷ luật</h5>
+                                                    </div>
+                                                    <div class="card-body p-0">
+                                                        @if($kyLuat->count())
+                                                        <div class="table-responsive">
+                                                            <table class="table table-bordered mb-0">
+                                                                <thead class="table-light">
+                                                                    <tr>
+                                                                        <th>Quyết định</th>
+                                                                        <th>Ngày</th>
+                                                                        <th>Tiêu đề</th>
+                                                                        <th>Mô tả</th>
+                                                                        <th>Giá trị</th>
+                                                                        <th>Đối tượng</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                @foreach($kyLuat as $item)
+                                                                    <tr>
+                                                                        <td>{{ $item->khenThuongKyLuat->so_quyet_dinh ?? '-' }}</td>
+                                                                        <td>{{ $item->khenThuongKyLuat->ngay_quyet_dinh ? \Carbon\Carbon::parse($item->khenThuongKyLuat->ngay_quyet_dinh)->format('d/m/Y') : '-' }}</td>
+                                                                        <td>{{ $item->khenThuongKyLuat->tieu_de ?? '-' }}</td>
+                                                                        <td>{{ $item->khenThuongKyLuat->mo_ta ?? '-' }}</td>
+                                                                        <td>{{ $item->khenThuongKyLuat->gia_tri ? number_format($item->khenThuongKyLuat->gia_tri) : '-' }}</td>
+                                                                        <td>
+                                                                            @if($item->loai_doi_tuong == 'nhan_vien')
+                                                                                Cá nhân
+                                                                            @elseif($item->loai_doi_tuong == 'phong_ban')
+                                                                                Tập thể ({{ $item->phongBan->ten_phong_ban ?? '-' }})
+                                                                            @endif
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        @else
+                                                            <div class="text-center text-muted py-3">Chưa có kỷ luật</div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <!-- Basic Info Tab -->
                                     <div class="tab-pane fade show active" id="basic" role="tabpanel" aria-labelledby="basic-tab">
                                         <div class="row">
@@ -841,18 +939,36 @@
                                                         <thead class="table-light">
                                                             <tr>
                                                                 <th>Loại giấy tờ</th>
+                                                                <th>Tên</th>
                                                                 <th>Số giấy tờ</th>
                                                                 <th>Ngày cấp</th>
                                                                 <th>Nơi cấp</th>
                                                                 <th>Ngày hết hạn</th>
                                                                 <th>File</th>
-                                                                <th>Ghi chú</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             @foreach($nhanVien->thongTinGiayTo as $giayTo)
                                                                 <tr>
-                                                                    <td>{{ $giayTo->loai_giay_to }}</td>
+                                                                    <td>
+                                                                        @switch($giayTo->loai_giay_to)
+                                                                            @case('giay_to_tuy_than')
+                                                                                Giấy tờ tùy thân
+                                                                                @break
+                                                                            @case('chung_chi')
+                                                                                Chứng chỉ
+                                                                                @break
+                                                                            @case('bang_cap')
+                                                                                Bằng cấp
+                                                                                @break
+                                                                            @case('khac')
+                                                                                Khác
+                                                                                @break
+                                                                            @default
+                                                                                {{ $giayTo->loai_giay_to }}
+                                                                        @endswitch
+                                                                    </td>
+                                                                    <td>{{ $giayTo->ghi_chu ?? '-' }}</td>
                                                                     <td>{{ $giayTo->so_giay_to }}</td>
                                                                     <td>{{ $giayTo->ngay_cap ? \Carbon\Carbon::parse($giayTo->ngay_cap)->format('d/m/Y') : '-' }}</td>
                                                                     <td>{{ $giayTo->noi_cap ?? '-' }}</td>
@@ -864,7 +980,6 @@
                                                                             <span class="text-muted">Không có file</span>
                                                                         @endif
                                                                     </td>
-                                                                    <td>{{ $giayTo->ghi_chu ?? '-' }}</td>
                                                                 </tr>
                                                             @endforeach
                                                         </tbody>

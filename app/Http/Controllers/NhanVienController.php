@@ -70,9 +70,15 @@ class NhanVienController extends Controller
 
     public function show(NhanVien $nhanVien)
     {
-        $nhanVien->load(['phongBan', 'chucVu', 'taiKhoan', 'hopDongLaoDong', 'thongTinLienHe', 'thongTinGiaDinh', 'tepTin', 'thongTinGiayTo.tepTin', 'thongTinLuong', 'quanLyTrucTiep', 'capDuoi', 'baoHiem']);
+    $nhanVien->load(['phongBan', 'chucVu', 'taiKhoan', 'hopDongLaoDong', 'thongTinLienHe', 'thongTinGiaDinh', 'tepTin', 'thongTinGiayTo.tepTin', 'thongTinLuong', 'quanLyTrucTiep', 'capDuoi', 'baoHiem']);
 
-        return view('nhan-vien.show', compact('nhanVien'));
+    // Lấy danh sách khen thưởng/kỷ luật (cá nhân + tập thể)
+    require_once app_path('Helpers/KhenThuongKyLuatHelper.php');
+    $ktkl = getKhenThuongKyLuatForNhanVien($nhanVien);
+    $khenThuong = $ktkl['khenThuong'];
+    $kyLuat = $ktkl['kyLuat'];
+
+    return view('nhan-vien.show', compact('nhanVien', 'khenThuong', 'kyLuat'));
     }
 
     public function create()
@@ -386,7 +392,6 @@ class NhanVienController extends Controller
                         }
                     }
 
-                    dd($fileData);
                     // Update hoặc tạo mới
                     if (!empty($giayTo['id'])) {
                         \App\Models\GiayToTuyThan::where('id', $giayTo['id'])

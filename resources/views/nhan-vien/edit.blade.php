@@ -640,6 +640,10 @@
                                                                         <label class="form-label">Số giấy tờ <span class="text-danger">*</span></label>
                                                                         <input type="text" class="form-control" id="so_giay_to">
                                                                     </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Tên</label>
+                                                                    <textarea class="form-control" id="ghi_chu" rows="2"></textarea>
+                                                                </div>
                                                                     <div class="mb-3">
                                                                         <label class="form-label">Ngày cấp</label>
                                                                         <input type="date" class="form-control" id="ngay_cap">
@@ -660,10 +664,6 @@
                                                                 <label class="form-label">Tệp đính kèm (PDF, ảnh)</label>
                                                                 <input type="file" class="form-control" id="tep_tin" accept=".pdf,image/*">
                                                             </div>
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Ghi chú</label>
-                                                                <textarea class="form-control" id="ghi_chu" rows="2"></textarea>
-                                                            </div>
                                                             <div class="d-flex gap-2">
                                                                 <button type="button" class="btn btn-secondary" id="cancelAddMyFile">Hủy</button>
                                                                 <button type="button" class="btn btn-primary" id="addMyFile">Lưu</button>
@@ -678,11 +678,11 @@
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Loại giấy tờ</th>
+                                                                        <td>Tên</td>
                                                                         <th>Số giấy tờ</th>
                                                                         <th>Ngày cấp</th>
                                                                         <th>Ngày hết hạn</th>
                                                                         <th>Nơi cấp</th>
-                                                                        <th>Ghi chú</th>
                                                                         <th>Tệp đính kèm</th>
                                                                         <th>Thao tác</th>
                                                                     </tr>
@@ -691,11 +691,11 @@
                                                                     @foreach($nhanVien->GiayToTuyThan as $idx => $file)
                                                                         <tr>
                                                                             <td>{{ $file->loai_giay_to }}</td>
+                                                                            <td>{{ $file->ghi_chu }}</td>
                                                                             <td>{{ $file->so_giay_to }}</td>
                                                                             <td>{{ $file->ngay_cap }}</td>
                                                                             <td>{{ $file->ngay_het_han }}</td>
                                                                             <td>{{ $file->noi_cap }}</td>
-                                                                            <td>{{ $file->ghi_chu }}</td>
 
                                                                             <td>
                                                                                 {{-- Input chọn file mới --}}

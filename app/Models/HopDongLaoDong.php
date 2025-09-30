@@ -25,9 +25,9 @@ class HopDongLaoDong extends Model
         'ghi_chu',
         // Bổ sung các trường mới
         'vi_tri_cong_viec', // Vị trí công việc
-        'don_vi_ky_hd',     // Đơn vị ký hợp đồng
         'trang_thai_ky',    // Trạng thái ký
-        'thoi_han'          // Thời hạn hợp đồng
+        'thoi_han',         // Thời hạn hợp đồng
+        'phu_cap_ids'       // Danh sách phụ cấp (JSON array)
     ];
 
     protected $casts = [
@@ -36,7 +36,8 @@ class HopDongLaoDong extends Model
         'ngay_ky' => 'date',
         'luong_co_ban' => 'decimal:2',
         'luong_bao_hiem' => 'decimal:2',
-        'thoi_han' => 'integer' // Thời hạn hợp đồng (số tháng hoặc ngày)
+        'thoi_han' => 'integer', // Thời hạn hợp đồng (số tháng hoặc ngày)
+        'phu_cap_ids' => 'array', // Danh sách phụ cấp (JSON array)
     ];
 
     // Quan hệ với nhân viên

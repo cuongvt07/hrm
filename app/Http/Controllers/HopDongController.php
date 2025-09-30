@@ -12,7 +12,19 @@ class HopDongController extends Controller
     public function giaHanForm($id)
     {
         $hopDongCu = HopDongLaoDong::with('nhanVien')->findOrFail($id);
-        return view('hop-dong.giahan', compact('hopDongCu'));
+        // Lấy danh mục phúc lợi
+        $phucLoiDanhMuc = \App\Models\CaiDatHeThong::where('gia_tri_cai_dat', 'phuc-loi')->first();
+        $phucLoiItems = collect();
+        if ($phucLoiDanhMuc) {
+            $phucLoiItems = \App\Models\CaiDatItem::where('danh_muc_id', $phucLoiDanhMuc->id)->get();
+        }
+        // Lấy danh mục phụ cấp
+        $phuCapDanhMuc = \App\Models\CaiDatHeThong::where('gia_tri_cai_dat', 'phu-cap')->first();
+        $phuCapItems = collect();
+        if ($phuCapDanhMuc) {
+            $phuCapItems = \App\Models\CaiDatItem::where('danh_muc_id', $phuCapDanhMuc->id)->get();
+        }
+        return view('hop-dong.giahan', compact('hopDongCu', 'phucLoiItems', 'phuCapItems'));
     }
 
     public function giaHanStore(Request $request)
@@ -28,7 +40,7 @@ class HopDongController extends Controller
             'luong_bao_hiem' => 'nullable|numeric|min:0',
             'ghi_chu' => 'nullable|string',
             'vi_tri_cong_viec' => 'nullable|string|max:100',
-            'don_vi_ky_hd' => 'nullable|string|max:100',
+            'phu_cap_ids' => 'nullable|string',
             'trang_thai_ky' => 'nullable|string|max:50',
             'thoi_han' => 'nullable|integer'
         ]);
@@ -161,7 +173,12 @@ class HopDongController extends Controller
             $query->where('trang_thai', $request->trang_thai);
         }
 
-        $hopDongs = $query->orderBy('ngay_ket_thuc', 'desc')->paginate(20);
+                // Chỉ lấy hợp đồng còn hạn trên 1 tháng hoặc đã hết hạn
+                $query->where(function($q) {
+                        $q->whereDate('ngay_ket_thuc', '>', now()->addMonth())
+                            ->orWhere('trang_thai', 'het_hieu_luc');
+                });
+                $hopDongs = $query->orderBy('ngay_ket_thuc', 'desc')->paginate(20);
         $nhanViens = NhanVien::dangLamViec()->get();
 
         if ($request->ajax()) {
@@ -175,15 +192,33 @@ class HopDongController extends Controller
     public function show(HopDongLaoDong $hopDong)
     {
         $hopDong->load('nhanVien');
-        
-        return view('hop-dong.show', compact('hopDong'));
+
+        // Lấy danh mục phúc lợi
+        $phucLoiDanhMuc = \App\Models\CaiDatHeThong::where('gia_tri_cai_dat', 'phuc-loi')->first();
+        $phucLoiItems = collect();
+        if ($phucLoiDanhMuc) {
+            $phucLoiItems = \App\Models\CaiDatItem::where('danh_muc_id', $phucLoiDanhMuc->id)->get();
+        }
+
+        return view('hop-dong.show', compact('hopDong', 'phucLoiItems'));
     }
 
     public function create()
     {
         $nhanViens = NhanVien::dangLamViec()->get();
-        
-        return view('hop-dong.create', compact('nhanViens'));
+        // Lấy danh mục phúc lợi
+        $phucLoiDanhMuc = \App\Models\CaiDatHeThong::where('gia_tri_cai_dat', 'phuc-loi')->first();
+        $phucLoiItems = collect();
+        if ($phucLoiDanhMuc) {
+            $phucLoiItems = \App\Models\CaiDatItem::where('danh_muc_id', $phucLoiDanhMuc->id)->get();
+        }
+        // Lấy danh mục phụ cấp
+        $phuCapDanhMuc = \App\Models\CaiDatHeThong::where('gia_tri_cai_dat', 'phu-cap')->first();
+        $phuCapItems = collect();
+        if ($phuCapDanhMuc) {
+            $phuCapItems = \App\Models\CaiDatItem::where('danh_muc_id', $phuCapDanhMuc->id)->get();
+        }
+        return view('hop-dong.create', compact('nhanViens', 'phucLoiItems', 'phuCapItems'));
     }
 
     public function store(Request $request)
@@ -201,11 +236,15 @@ class HopDongController extends Controller
                 'luong_bao_hiem' => 'nullable|numeric|min:0',
                 'ghi_chu' => 'nullable|string',
                 'vi_tri_cong_viec' => 'nullable|string|max:100',
-                'don_vi_ky_hd' => 'nullable|string|max:100',
+                'phu_cap_ids' => 'nullable|string',
                 'trang_thai_ky' => 'nullable|string|max:50',
                 'thoi_han' => 'nullable|integer'
             ]);
 
+            // Chuyển phu_cap_ids từ JSON string sang array nếu có
+            if (!empty($validated['phu_cap_ids'])) {
+                $validated['phu_cap_ids'] = json_decode($validated['phu_cap_ids'], true) ?? [];
+            }
             $hopDong = HopDongLaoDong::create($validated);
             \App\Models\ThongTinLuong::updateOrCreate(
                 ['nhan_vien_id' => $hopDong->nhan_vien_id],
@@ -221,8 +260,19 @@ class HopDongController extends Controller
     public function edit(HopDongLaoDong $hopDong)
     {
         $nhanViens = NhanVien::dangLamViec()->get();
-        
-        return view('hop-dong.edit', compact('hopDong', 'nhanViens'));
+        // Lấy danh mục phúc lợi
+        $phucLoiDanhMuc = \App\Models\CaiDatHeThong::where('gia_tri_cai_dat', 'phuc-loi')->first();
+        $phucLoiItems = collect();
+        if ($phucLoiDanhMuc) {
+            $phucLoiItems = \App\Models\CaiDatItem::where('danh_muc_id', $phucLoiDanhMuc->id)->get();
+        }
+        // Lấy danh mục phụ cấp
+        $phuCapDanhMuc = \App\Models\CaiDatHeThong::where('gia_tri_cai_dat', 'phu-cap')->first();
+        $phuCapItems = collect();
+        if ($phuCapDanhMuc) {
+            $phuCapItems = \App\Models\CaiDatItem::where('danh_muc_id', $phuCapDanhMuc->id)->get();
+        }
+        return view('hop-dong.edit', compact('hopDong', 'nhanViens', 'phucLoiItems', 'phuCapItems'));
     }
 
     public function update(Request $request, HopDongLaoDong $hopDong)
@@ -240,11 +290,15 @@ class HopDongController extends Controller
                 'luong_bao_hiem' => 'nullable|numeric|min:0',
                 'ghi_chu' => 'nullable|string',
                 'vi_tri_cong_viec' => 'nullable|string|max:100',
-                'don_vi_ky_hd' => 'nullable|string|max:100',
+                'phu_cap_ids' => 'nullable|string',
                 'trang_thai_ky' => 'nullable|string|max:50',
                 'thoi_han' => 'nullable|integer'
             ]);
 
+            // Chuyển phu_cap_ids từ JSON string sang array nếu có
+            if (!empty($validated['phu_cap_ids'])) {
+                $validated['phu_cap_ids'] = json_decode($validated['phu_cap_ids'], true) ?? [];
+            }
             $hopDong->update($validated);
             \App\Models\ThongTinLuong::updateOrCreate(
                 ['nhan_vien_id' => $hopDong->nhan_vien_id],
