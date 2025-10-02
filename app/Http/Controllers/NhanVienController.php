@@ -70,15 +70,15 @@ class NhanVienController extends Controller
 
     public function show(NhanVien $nhanVien)
     {
-    $nhanVien->load(['phongBan', 'chucVu', 'taiKhoan', 'hopDongLaoDong', 'thongTinLienHe', 'thongTinGiaDinh', 'tepTin', 'thongTinGiayTo.tepTin', 'thongTinLuong', 'quanLyTrucTiep', 'capDuoi', 'baoHiem']);
+        $nhanVien->load(['phongBan', 'chucVu', 'taiKhoan', 'hopDongLaoDong', 'thongTinLienHe', 'thongTinGiaDinh', 'tepTin', 'thongTinGiayTo.tepTin', 'thongTinLuong', 'quanLyTrucTiep', 'capDuoi', 'baoHiem']);
 
-    // Lấy danh sách khen thưởng/kỷ luật (cá nhân + tập thể)
-    require_once app_path('Helpers/KhenThuongKyLuatHelper.php');
-    $ktkl = getKhenThuongKyLuatForNhanVien($nhanVien);
-    $khenThuong = $ktkl['khenThuong'];
-    $kyLuat = $ktkl['kyLuat'];
+        // Lấy danh sách khen thưởng/kỷ luật (cá nhân + tập thể)
+        require_once app_path('Helpers/KhenThuongKyLuatHelper.php');
+        $ktkl = getKhenThuongKyLuatForNhanVien($nhanVien);
+        $khenThuong = $ktkl['khenThuong'];
+        $kyLuat = $ktkl['kyLuat'];
 
-    return view('nhan-vien.show', compact('nhanVien', 'khenThuong', 'kyLuat'));
+        return view('nhan-vien.show', compact('nhanVien', 'khenThuong', 'kyLuat'));
     }
 
     public function create()
@@ -150,7 +150,7 @@ class NhanVienController extends Controller
                 'ty_le_bhtn' => $request->ty_le_bhtn,
                 'so_so_bhxh' => $request->so_so_bhxh,
                 'ma_so_bhxh' => $request->ma_so_bhxh,
-                'tham_gia_bao_hiem' => $request->tham_gia_bao_hiem,
+                'tham_gia_bao_hiem' => $request->tham_gia_bao_hiem ?? 1,
                 'tinh_cap' => $request->tinh_cap,
                 'ma_tinh_cap' => $request->ma_tinh_cap,
                 'so_the_bhyt' => $request->so_the_bhyt,
@@ -262,7 +262,7 @@ class NhanVienController extends Controller
                 'ty_le_bhtn' => $request->ty_le_bhtn,
                 'so_so_bhxh' => $request->so_so_bhxh,
                 'ma_so_bhxh' => $request->ma_so_bhxh,
-                'tham_gia_bao_hiem' => $request->tham_gia_bao_hiem,
+                'tham_gia_bao_hiem' => $request->tham_gia_bao_hiem ?? 1,
                 'tinh_cap' => $request->tinh_cap,
                 'ma_tinh_cap' => $request->ma_tinh_cap,
                 'so_the_bhyt' => $request->so_the_bhyt,
@@ -520,7 +520,7 @@ class NhanVienController extends Controller
     public function addDocument(Request $request, NhanVien $nhanVien)
     {
         $validated = $request->validate([
-            'loai_tep' => 'required|string|in:avatar,cv,chung_chi,hop_dong,khac',
+            'loai_tep' => 'required|string|in:giay_to_tuy_than,chung_chi,hop_dong,khac',
             'ten_tep' => 'required|string|max:255',
             'tep_tin' => 'required|file|max:10240' // 10MB max
         ]);

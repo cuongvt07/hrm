@@ -114,11 +114,11 @@
             </x-ui.card>
         </div>
 
-        <!-- Monthly Leave Stats Chart -->
+        <!-- Biểu đồ biến động nhân sự -->
         <div class="col-xl-6 col-lg-12 mb-4">
-            <x-ui.card title="Nghỉ phép theo tháng">
+            <x-ui.card title="Biểu đồ biến động nhân sự (Tăng/Giảm)">
                 <div class="chart-bar pt-4 pb-2">
-                    <canvas id="monthlyLeaveChart"></canvas>
+                    <canvas id="staffChangeChart"></canvas>
                 </div>
             </x-ui.card>
         </div>
@@ -139,14 +139,20 @@
                                 </div>
                             </div>
                             <div class="flex-grow-1">
-                                <h6 class="mb-1">{{ $contract->nhanVien->ho_ten ?? 'N/A' }}</h6>
+                                <h6 class="mb-1">
+                                    @if(isset($contract->nhanVien) && $contract->nhanVien)
+                                        <a href="{{ route('nhan-vien.show', $contract->nhanVien->id) }}" class="text-decoration-underline text-primary">{{ $contract->nhanVien->ho_ten }}</a>
+                                    @else
+                                        N/A
+                                    @endif
+                                </h6>
                                 <p class="mb-1 text-muted small">
-                                    Hết hạn: {{ $contract->ngay_ket_thuc->format('d/m/Y') ?? 'N/A' }}
+                                    Hết hạn: {{ optional($contract->ngay_ket_thuc)->format('d/m/Y') ?? 'N/A' }}
                                 </p>
                             </div>
                             <div class="flex-shrink-0">
                                 <x-ui.badge type="warning" size="sm">
-                                    {{ $contract->ngay_ket_thuc->diffInDays(now()) ?? 0 }} ngày
+                                    {{ optional($contract->ngay_ket_thuc)->diffInDays(now()) ?? 0 }} ngày
                                 </x-ui.badge>
                             </div>
                         </div>
@@ -154,40 +160,6 @@
                         <div class="text-center py-4 text-muted">
                             <i class="fas fa-file-contract fa-3x mb-3"></i>
                             <p>Không có hợp đồng sắp hết hạn</p>
-                        </div>
-                    @endforelse
-                </div>
-            </x-ui.card>
-        </div>
-
-        <!-- Pending Leaves -->
-        <div class="col-xl-6 col-lg-12 mb-4">
-            <x-ui.card title="Đơn nghỉ chờ duyệt">
-                <div class="list-group list-group-flush">
-                    @forelse($pendingLeaves ?? [] as $leave)
-                        <div class="list-group-item d-flex align-items-center">
-                            <div class="flex-shrink-0 me-3">
-                                <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center" 
-                                     style="width: 40px; height: 40px;">
-                                    <i class="fas fa-calendar-times"></i>
-                                </div>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">{{ $leave->nhanVien->ho_ten ?? 'N/A' }}</h6>
-                                <p class="mb-1 text-muted small">
-                                    {{ $leave->ngay_bat_dau->format('d/m/Y') ?? 'N/A' }} - {{ $leave->ngay_ket_thuc->format('d/m/Y') ?? 'N/A' }}
-                                </p>
-                            </div>
-                            <div class="flex-shrink-0">
-                                <x-ui.badge type="info" size="sm">
-                                    {{ ucfirst(str_replace('_', ' ', $leave->loai_nghi ?? 'N/A')) }}
-                                </x-ui.badge>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="text-center py-4 text-muted">
-                            <i class="fas fa-calendar-times fa-3x mb-3"></i>
-                            <p>Không có đơn nghỉ chờ duyệt</p>
                         </div>
                     @endforelse
                 </div>
@@ -243,75 +215,54 @@ new Chart(departmentCtx, {
     }
 });
 
-// Monthly Leave Chart
-const monthlyLeaveCtx = document.getElementById('monthlyLeaveChart').getContext('2d');
-new Chart(monthlyLeaveCtx, {
-    type: 'bar',
+// Biểu đồ biến động nhân sự (Tăng/Giảm)
+const staffChangeCtx = document.getElementById('staffChangeChart').getContext('2d');
+new Chart(staffChangeCtx, {
+    type: 'line',
     data: {
-        labels: {!! json_encode(($monthlyLeaveStats ?? collect())->pluck('month')->toArray()) !!},
-        datasets: [{
-            label: 'Số đơn nghỉ',
-            data: {!! json_encode(($monthlyLeaveStats ?? collect())->pluck('count')->toArray()) !!},
-            backgroundColor: '#4e73df',
-            hoverBackgroundColor: '#2e59d9',
-            hoverBorderColor: "rgba(78, 115, 223, 1)",
-        }]
+        labels: {!! json_encode(($staffChangeStats['months'] ?? [])) !!},
+        datasets: [
+            {
+                label: 'Tăng',
+                data: {!! json_encode(($staffChangeStats['increase'] ?? [])) !!},
+                borderColor: '#1cc88a',
+                backgroundColor: 'rgba(28,200,138,0.1)',
+                fill: true,
+                tension: 0.3,
+            },
+            {
+                label: 'Giảm',
+                data: {!! json_encode(($staffChangeStats['decrease'] ?? [])) !!},
+                borderColor: '#e74a3b',
+                backgroundColor: 'rgba(231,74,59,0.1)',
+                fill: true,
+                tension: 0.3,
+            }
+        ]
     },
     options: {
         responsive: true,
         maintainAspectRatio: false,
-        layout: {
-            padding: {
-                left: 10,
-                right: 25,
-                top: 25,
-                bottom: 0
+        plugins: {
+            legend: { display: true },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
             }
+        },
+        interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false
         },
         scales: {
             x: {
-                time: {
-                    unit: 'month'
-                },
-                gridLines: {
-                    display: false,
-                    drawBorder: false
-                },
-                ticks: {
-                    maxTicksLimit: 6
-                },
-                maxBarThickness: 25,
+                title: { display: true, text: 'Tháng' },
             },
             y: {
                 beginAtZero: true,
-                gridLines: {
-                    color: "rgb(234, 236, 244)",
-                    zeroLineColor: "rgb(234, 236, 244)",
-                    drawBorder: false,
-                    borderDash: [2],
-                    zeroLineBorderDash: [2]
-                },
-                ticks: {
-                    padding: 20,
-                    fontColor: "#858796"
-                }
+                title: { display: true, text: 'Số lượng' },
             }
-        },
-        legend: {
-            display: false
-        },
-        tooltips: {
-            titleMarginBottom: 10,
-            titleFontColor: '#6e707e',
-            titleFontSize: 14,
-            backgroundColor: "rgb(255,255,255)",
-            bodyFontColor: "#858796",
-            borderColor: '#dddfeb',
-            borderWidth: 1,
-            xPadding: 15,
-            yPadding: 15,
-            displayColors: false,
-            caretPadding: 10,
         }
     }
 });

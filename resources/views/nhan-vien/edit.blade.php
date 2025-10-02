@@ -293,8 +293,8 @@
                                                                             <th>Chức vụ</th>
                                                                             <th>Phòng ban</th>
                                                                             <th>Mô tả</th>
-                                                                            <th>Thời gian</th>
-                                                                            <th>Thao tác</th>
+                                                                            <th>Từ ngày - Đến ngày</th>
+                                                                            <th></th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody id="congTacTableBody">

@@ -7,7 +7,7 @@
         <h4 class="mb-0">
             {{ $loai === 'ky_luat' ? 'Danh sách quyết định kỷ luật' : 'Danh sách quyết định khen thưởng' }}
         </h4>
-        <a href="{{ route('che-do.khen-thuong-ky-luat.create') }}" class="btn btn-primary">
+    <a href="{{ route('che-do.khen-thuong-ky-luat.create', ['loai' => $loai]) }}" class="btn btn-primary">
             <i class="fas fa-plus me-1"></i> Tạo quyết định {{ $loai === 'ky_luat' ? 'kỷ luật' : 'khen thưởng' }}
         </a>
     </div>
@@ -40,6 +40,7 @@
                         <th>Tiêu đề</th>
                         <th>Ngày quyết định</th>
                         <th>Người quyết định</th>
+                        <th>Trạng thái</th>
                         <th>Đối tượng áp dụng</th>
                         <th>Thao tác</th>
                     </tr>
@@ -59,6 +60,15 @@
                             <td>{{ $item->tieu_de }}</td>
                             <td>{{ $item->ngay_quyet_dinh ? $item->ngay_quyet_dinh->format('d/m/Y') : '' }}</td>
                             <td>{{ $item->nguoi_quyet_dinh }}</td>
+                            <td>
+                                @if($item->trang_thai === 'chua_thuc_hien')
+                                    <span class="badge bg-secondary">Chưa thực hiện</span>
+                                @elseif($item->trang_thai === 'dang_thuc_hien')
+                                    <span class="badge bg-warning text-dark">Đang thực hiện</span>
+                                @elseif($item->trang_thai === 'hoan_thanh')
+                                    <span class="badge bg-success">Hoàn thành</span>
+                                @endif
+                            </td>
                             <td>
                                 @php
                                     $nhanVienArr = $item->doiTuongApDung->where('loai_doi_tuong', 'nhan_vien')->pluck('nhanVien.ho_ten')->toArray();

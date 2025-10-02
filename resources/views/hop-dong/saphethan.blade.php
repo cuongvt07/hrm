@@ -4,9 +4,6 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Danh sách hợp đồng sắp hết hạn</h5>
-        <button id="btnGiaHan" class="btn btn-success btn-sm" disabled>
-            <i class="fas fa-sync-alt"></i> Gia hạn hợp đồng
-        </button>
     </div>
     {{-- Bộ lọc --}}
     <x-filters.contract-filter :nhanViens="$nhanViens" />

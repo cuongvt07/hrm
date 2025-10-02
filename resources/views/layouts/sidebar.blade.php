@@ -23,7 +23,7 @@
                 <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" 
                    href="{{ route('dashboard') }}" title="Dashboard">
                     <i class="fas fa-tachometer-alt"></i>
-                    <span class="nav-text">Dashboard</span>
+                    <span class="nav-text">HomePage</span>
                 </a>
             </li>
 
@@ -64,6 +64,34 @@
             <!-- Divider -->
             <hr class="sidebar-divider">
 
+            <!-- Dropdown Chế độ -->
+            @php
+                $cheDoActive = request()->routeIs('che-do.khen-thuong.index') || request()->routeIs('che-do.ky-luat.index');
+            @endphp
+            <li class="nav-item">
+                <a class="nav-link d-flex justify-content-between align-items-center {{ $cheDoActive ? 'active' : '' }}" data-bs-toggle="collapse" href="#cheDoDropdown" role="button" aria-expanded="{{ $cheDoActive ? 'true' : 'false' }}" aria-controls="cheDoDropdown">
+                    <span><i class="fas fa-gift"></i> <span class="nav-text">Chế độ</span></span>
+                    <i class="fas fa-chevron-down ms-2"></i>
+                </a>
+                <div class="collapse {{ $cheDoActive ? 'show' : '' }}" id="cheDoDropdown">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('che-do.khen-thuong.index') ? 'active' : '' }}" href="{{ route('che-do.khen-thuong.index') }}">
+                                <i class="fas fa-award text-white"></i> Khen thưởng
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('che-do.ky-luat.index') ? 'active' : '' }}" href="{{ route('che-do.ky-luat.index') }}">
+                                <i class="fas fa-gavel text-white"></i> Kỷ luật
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
             <!-- Cài đặt hệ thống -->
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('cai-dat.*') ? 'active' : '' }}" href="{{ route('cai-dat.index') }}">
@@ -71,29 +99,6 @@
                     <span class="nav-text">Cài đặt hệ thống</span>
                 </a>
             </li>
-
-            <!-- Chế độ Section -->
-            <li class="nav-item">
-                <div class="sidebar-heading">Chế độ</div>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('che-do.khen-thuong.index') ? 'active' : '' }}" 
-                   href="{{ route('che-do.khen-thuong.index') }}" title="Khen thưởng">
-                    <i class="fas fa-award text-warning"></i>
-                    <span class="nav-text">Khen thưởng</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('che-do.ky-luat.index') ? 'active' : '' }}" 
-                   href="{{ route('che-do.ky-luat.index') }}" title="Kỷ luật">
-                    <i class="fas fa-gavel text-danger"></i>
-                    <span class="nav-text">Kỷ luật</span>
-                </a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
 
             <!-- Báo cáo -->
             <li class="nav-item">

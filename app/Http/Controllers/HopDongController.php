@@ -113,11 +113,15 @@ class HopDongController extends Controller
 
         $hopDongs = $query
             ->whereDate('ngay_ket_thuc', '<=', now()->addMonth())
-            ->whereDate('ngay_ket_thuc', '>=', now())
+            // Lấy cả hợp đồng sắp hết hạn (còn hạn) và đã hết hạn
+            ->where(function($q) {
+            $q->whereDate('ngay_ket_thuc', '>=', now())
+              ->orWhere('trang_thai', 'het_hieu_luc');
+            })
             // Ẩn các hợp đồng hết hiệu lực đã bị tái ký dựa vào tiền tố so_hop_dong
             ->where(function($q) use ($soHopDongGocDaTaiKi) {
-                $q->where('trang_thai', '!=', 'het_hieu_luc')
-                ->orWhereNotIn('so_hop_dong', $soHopDongGocDaTaiKi);
+            $q->where('trang_thai', '!=', 'het_hieu_luc')
+              ->orWhereNotIn('so_hop_dong', $soHopDongGocDaTaiKi);
             })
             ->orderBy('ngay_ket_thuc', 'desc')
             ->paginate(20);
@@ -173,12 +177,10 @@ class HopDongController extends Controller
             $query->where('trang_thai', $request->trang_thai);
         }
 
-                // Chỉ lấy hợp đồng còn hạn trên 1 tháng hoặc đã hết hạn
-                $query->where(function($q) {
-                        $q->whereDate('ngay_ket_thuc', '>', now()->addMonth())
-                            ->orWhere('trang_thai', 'het_hieu_luc');
-                });
-                $hopDongs = $query->orderBy('ngay_ket_thuc', 'desc')->paginate(20);
+        // Chỉ lấy hợp đồng có ngày kết thúc lớn hơn 1 tháng kể từ thời điểm hiện tại
+        $query->whereDate('ngay_ket_thuc', '>', now()->addMonth());
+
+        $hopDongs = $query->orderBy('ngay_ket_thuc', 'desc')->paginate(20);
         $nhanViens = NhanVien::dangLamViec()->get();
 
         if ($request->ajax()) {
@@ -238,8 +240,16 @@ class HopDongController extends Controller
                 'vi_tri_cong_viec' => 'nullable|string|max:100',
                 'phu_cap_ids' => 'nullable|string',
                 'trang_thai_ky' => 'nullable|string|max:50',
-                'thoi_han' => 'nullable|integer'
+                'thoi_han' => 'nullable|integer',
             ]);
+
+            // Validate file upload nếu có file
+            if ($request->hasFile('tep_tin_hop_dong')) {
+                $request->validate([
+                    'tep_tin_hop_dong' => 'array',
+                    'tep_tin_hop_dong.*' => 'file|mimes:jpg,jpeg,png,gif,bmp,pdf,doc,docx,xls,xlsx|max:10240',
+                ]);
+            }
 
             // Chuyển phu_cap_ids từ JSON string sang array nếu có
             if (!empty($validated['phu_cap_ids'])) {
@@ -250,6 +260,26 @@ class HopDongController extends Controller
                 ['nhan_vien_id' => $hopDong->nhan_vien_id],
                 ['luong_co_ban' => $hopDong->luong_co_ban]
             );
+
+            // Xử lý upload file tài liệu hợp đồng
+            if ($request->hasFile('tep_tin_hop_dong')) {
+                $files = $request->file('tep_tin_hop_dong');
+                foreach ($files as $file) {
+                    if ($file->isValid()) {
+                        $fileName = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
+                        $filePath = $file->storeAs('documents', $fileName, 'public');
+                        \App\Models\TepTin::create([
+                            'nhan_vien_id' => $hopDong->nhan_vien_id,
+                            'hop_dong_id'  => $hopDong->id,
+                            'loai_tep'     => 'hop_dong',
+                            'ten_tep'      => $file->getClientOriginalName(),
+                            'duong_dan_tep' => $filePath,
+                            'nguoi_tai_len' => auth()->id(),
+                        ]);
+                    }
+                }
+            }
+
             return redirect()->route('hop-dong.index')
                 ->with('success', 'Thêm hợp đồng thành công!');
         } catch (\Exception $e) {
@@ -292,8 +322,16 @@ class HopDongController extends Controller
                 'vi_tri_cong_viec' => 'nullable|string|max:100',
                 'phu_cap_ids' => 'nullable|string',
                 'trang_thai_ky' => 'nullable|string|max:50',
-                'thoi_han' => 'nullable|integer'
+                'thoi_han' => 'nullable|integer',
             ]);
+
+            // Validate file upload nếu có file
+            if ($request->hasFile('tep_tin_hop_dong')) {
+                $request->validate([
+                    'tep_tin_hop_dong' => 'array',
+                    'tep_tin_hop_dong.*' => 'file|mimes:jpg,jpeg,png,gif,bmp,pdf,doc,docx,xls,xlsx|max:10240',
+                ]);
+            }
 
             // Chuyển phu_cap_ids từ JSON string sang array nếu có
             if (!empty($validated['phu_cap_ids'])) {
@@ -304,6 +342,26 @@ class HopDongController extends Controller
                 ['nhan_vien_id' => $hopDong->nhan_vien_id],
                 ['luong_co_ban' => $hopDong->luong_co_ban]
             );
+
+            // Xử lý upload file tài liệu hợp đồng
+            if ($request->hasFile('tep_tin_hop_dong')) {
+                $files = $request->file('tep_tin_hop_dong');
+                foreach ($files as $file) {
+                    if ($file->isValid()) {
+                        $fileName = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
+                        $filePath = $file->storeAs('documents', $fileName, 'public');
+                        \App\Models\TepTin::create([
+                            'nhan_vien_id' => $hopDong->nhan_vien_id,
+                            'hop_dong_id'  => $hopDong->id,
+                            'loai_tep'     => 'hop_dong',
+                            'ten_tep'      => $file->getClientOriginalName(),
+                            'duong_dan_tep' => $filePath,
+                            'nguoi_tai_len' => auth()->id(),
+                        ]);
+                    }
+                }
+            }
+
             return redirect()->route('hop-dong.index')
                 ->with('success', 'Cập nhật hợp đồng thành công!');
         } catch (\Exception $e) {

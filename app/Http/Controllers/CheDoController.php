@@ -83,6 +83,7 @@ class CheDoController extends Controller
             'loai_doi_tuong' => 'required|in:nhan_vien,phong_ban',
             'doi_tuong_ap_dung' => 'required|array|min:1',
             'doi_tuong_ap_dung.*' => 'required|integer',
+            'trang_thai' => 'nullable|in:chua_thuc_hien,dang_thuc_hien,hoan_thanh',
         ]);
 
         // Lưu quyết định
@@ -94,6 +95,7 @@ class CheDoController extends Controller
             'mo_ta' => $validated['mo_ta'] ?? null,
             'gia_tri' => $validated['gia_tri'] ?? null,
             'nguoi_quyet_dinh' => $validated['nguoi_quyet_dinh'] ?? null,
+            'trang_thai' => $validated['trang_thai'] ?? 'chua_thuc_hien',
         ]);
 
         // Lưu đối tượng áp dụng
@@ -103,6 +105,44 @@ class CheDoController extends Controller
                 'loai_doi_tuong' => $validated['loai_doi_tuong'],
                 'doi_tuong_id' => $id,
             ]);
+        }
+
+        // Xử lý lưu tệp tin cho từng nhân viên liên quan
+        if ($request->hasFile('tep_tin')) {
+            $file = $request->file('tep_tin');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('khen-thuong-ky-luat', $fileName, 'public');
+            if ($validated['loai_doi_tuong'] === 'nhan_vien') {
+                foreach ($validated['doi_tuong_ap_dung'] as $nvId) {
+                    if (class_exists('App\\Models\\TepTin')) {
+                        \App\Models\TepTin::create([
+                            'ten_tep' => $file->getClientOriginalName(),
+                            'duong_dan_tep' => $filePath,
+                            'loai_tep' => $validated['loai'],
+                            'nguoi_tai_len' => auth()->id(),
+                            'nhan_vien_id' => $nvId,
+                        ]);
+                    }
+                }
+            } elseif ($validated['loai_doi_tuong'] === 'phong_ban') {
+                foreach ($validated['doi_tuong_ap_dung'] as $phongBanId) {
+                    $nhanViens = \App\Models\NhanVien::where('phong_ban_id', $phongBanId)
+                        ->whereNotIn('trang_thai', ['nghi_viec', 'khac'])
+                        ->pluck('id');
+                        dd($nhanViens);
+                    foreach ($nhanViens as $nvId) {
+                        if (class_exists('App\\Models\\TepTin')) {
+                            \App\Models\TepTin::create([
+                                'ten_tep' => $file->getClientOriginalName(),
+                                'duong_dan_tep' => $filePath,
+                                'loai_tep' => $validated['loai'],
+                                'nguoi_tai_len' => auth()->id(),
+                                'nhan_vien_id' => $nvId,
+                            ]);
+                        }
+                    }
+                }
+            }
         }
 
         if ($khenThuongKyLuat->loai === 'ky_luat') {

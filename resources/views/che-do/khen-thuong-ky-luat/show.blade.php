@@ -20,6 +20,16 @@
                         <span class="badge bg-danger">Kỷ luật</span>
                     @endif
                 </div>
+                <div class="col-md-4">
+                    <strong>Trạng thái:</strong>
+                    @if($item->trang_thai === 'chua_thuc_hien')
+                        <span class="badge bg-secondary">Chưa thực hiện</span>
+                    @elseif($item->trang_thai === 'dang_thuc_hien')
+                        <span class="badge bg-warning text-dark">Đang thực hiện</span>
+                    @elseif($item->trang_thai === 'hoan_thanh')
+                        <span class="badge bg-success">Hoàn thành</span>
+                    @endif
+                </div>
                 <div class="col-md-4"><strong>Số quyết định:</strong> {{ $item->so_quyet_dinh }}</div>
                 <div class="col-md-4"><strong>Ngày quyết định:</strong> {{ $item->ngay_quyet_dinh ? $item->ngay_quyet_dinh->format('d/m/Y') : '' }}</div>
             </div>

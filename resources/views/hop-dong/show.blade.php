@@ -26,6 +26,29 @@
                 <input type="text" class="form-control bg-light" value="{{ $hopDong->so_hop_dong }}" readonly>
             </div>
         </div>
+        <div class="mb-3">
+            <label class="form-label">Tài liệu hợp đồng đã upload</label>
+            @php
+                $tepTinList = \App\Models\TepTin::where('hop_dong_id', $hopDong->id)
+                    ->where('loai_tep', 'hop_dong')
+                    ->orderByDesc('created_at')
+                    ->get();
+            @endphp
+            @if($tepTinList->count())
+                <ul class="list-group">
+                    @foreach($tepTinList as $tep)
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="{{ asset('storage/' . $tep->duong_dan_tep) }}" target="_blank">
+                                <i class="fas fa-paperclip me-1"></i>{{ $tep->ten_tep }}
+                            </a>
+                            <span class="text-muted small">{{ $tep->created_at->format('d/m/Y H:i') }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <div class="text-muted">Chưa có file tài liệu hợp đồng nào.</div>
+            @endif
+        </div>
         <div class="row mb-3">
             <div class="col-md-6">
                 <label class="form-label">Loại hợp đồng</label>
@@ -68,7 +91,7 @@
         </div>
         <div class="mb-3">
             <label class="form-label">Trạng thái ký</label>
-            <input type="text" class="form-control bg-light" value="{{ $hopDong->trang_thai_ky }}" readonly>
+            <input type="text" class="form-control bg-light" value="{{ $hopDong->trang_thai_ky == 'duyet' ? 'Đã ký' : ($hopDong->trang_thai_ky == 'tai_ky' ? 'Gia hạn' : $hopDong->trang_thai_ky) }}" readonly>
         </div>
         <div class="mb-3">
             <label class="form-label">Thời hạn hợp đồng</label>

@@ -25,7 +25,7 @@
             </ul>
         </div>
     @endif
-    <form action="{{ route('hop-dong.update', $hopDong->id) }}" method="POST">
+    <form action="{{ route('hop-dong.update', $hopDong->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <div class="card-body">
@@ -48,6 +48,11 @@
                                 <div class="text-danger small">{{ $message }}</div>
                             @enderror
                         </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tep_tin_hop_dong" class="form-label">Tài liệu hợp đồng (ảnh, doc, excel, pdf)</label>
+                        <input type="file" name="tep_tin_hop_dong[]" id="tep_tin_hop_dong" class="form-control" accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.doc,.docx,.xls,.xlsx" multiple>
+                        <small class="text-muted">Có thể chọn nhiều file. Định dạng: ảnh, pdf, doc, excel.</small>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -124,8 +129,8 @@
                                 <div class="text-danger small">{{ $message }}</div>
                             @enderror
                             <option value="">-- Chọn trạng thái --</option>
-                            <option value="duyet" {{ $hopDong->trang_thai_ky == 'duyet' ? 'selected' : '' }}>Duyệt</option>
-                            <option value="tai_ki" {{ $hopDong->trang_thai_ky == 'tai_ki' ? 'selected' : '' }}>Tái kí</option>
+                            <option value="duyet" {{ $hopDong->trang_thai_ky == 'duyet' ? 'selected' : '' }}>Đã ký</option>
+                            <option value="tai_ki" {{ $hopDong->trang_thai_ky == 'tai_ki' ? 'selected' : '' }}>Gia hạn</option>
                         </select>
                     </div>
                     <div class="mb-3">

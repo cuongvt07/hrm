@@ -17,7 +17,7 @@ class TepTin extends Model
         'loai_tep',
         'ten_tep',
         'duong_dan_tep',
-        'kieu_mime',
+        'hop_dong_id',
         'nguoi_tai_len'
     ];
 

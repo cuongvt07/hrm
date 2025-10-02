@@ -20,12 +20,14 @@ class KhenThuongKyLuat extends Model
         'tieu_de',
         'mo_ta',
         'gia_tri',
-        'nguoi_quyet_dinh'
+        'nguoi_quyet_dinh',
+        'trang_thai',
     ];
 
     protected $casts = [
         'ngay_quyet_dinh' => 'date',
-        'gia_tri' => 'decimal:2'
+        'gia_tri' => 'decimal:2',
+        'trang_thai' => 'string',
     ];
 
     // Quan hệ với đối tượng áp dụng

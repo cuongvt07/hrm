@@ -55,7 +55,7 @@ class HopDongLaoDong extends Model
     // Scope cho hợp đồng sắp hết hạn
     public function scopeSapHetHan($query, $days = 30)
     {
-        return $query->where('trang_thai', 'hoat_dong')
+        return $query->where('trang_thai', 'hieu_luc')
                     ->where('ngay_ket_thuc', '<=', now()->addDays($days))
                     ->where('ngay_ket_thuc', '>', now());
     }

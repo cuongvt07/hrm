@@ -8,6 +8,9 @@
                 <button class="nav-link active" id="tab-chitiet" data-bs-toggle="tab" data-bs-target="#chitiet" type="button" role="tab" aria-controls="chitiet" aria-selected="true">Chi tiết hợp đồng</button>
             </li>
             <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-baohiem" data-bs-toggle="tab" data-bs-target="#baohiem" type="button" role="tab" aria-controls="baohiem" aria-selected="false">Thông tin bảo hiểm</button>
+            </li>
+            <li class="nav-item" role="presentation">
                 <button class="nav-link" id="tab-phucloi" data-bs-toggle="tab" data-bs-target="#phucloi" type="button" role="tab" aria-controls="phucloi" aria-selected="false">Phụ cấp & phúc lợi</button>
             </li>
         </ul>
@@ -17,6 +20,11 @@
         <div class="card-body">
         <div class="tab-content" id="hopDongTabContent">
             <div class="tab-pane fade show active" id="chitiet" role="tabpanel" aria-labelledby="tab-chitiet">
+            <div class="mb-3">
+                <label for="tep_tin_hop_dong" class="form-label">Tài liệu hợp đồng (ảnh, doc, excel, pdf)</label>
+                <input type="file" name="tep_tin_hop_dong[]" id="tep_tin_hop_dong" class="form-control" accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.doc,.docx,.xls,.xlsx" multiple>
+                <small class="text-muted">Có thể chọn nhiều file. Định dạng: ảnh, pdf, doc, excel.</small>
+            </div>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="nhan_vien_id" class="form-label">Nhân viên</label>
@@ -89,8 +97,8 @@
                 <label for="trang_thai_ky" class="form-label">Trạng thái ký</label>
                 <select name="trang_thai_ky" id="trang_thai_ky" class="form-select">
                     <option value="">-- Chọn trạng thái --</option>
-                    <option value="duyet" {{ old('trang_thai_ky') == 'duyet' ? 'selected' : '' }}>Duyệt</option>
-                    <option value="tai_ki" {{ old('trang_thai_ky') == 'tai_ki' ? 'selected' : '' }}>Tái kí</option>
+                    <option value="duyet" {{ old('trang_thai_ky') == 'duyet' ? 'selected' : '' }}>Đã ký</option>
+                    <option value="tai_ki" {{ old('trang_thai_ky') == 'tai_ki' ? 'selected' : '' }}>Gia hạn</option>
                 </select>
             </div>
             <div class="mb-3">

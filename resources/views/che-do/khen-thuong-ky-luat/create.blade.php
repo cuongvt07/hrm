@@ -3,19 +3,14 @@
 @section('content')
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">Tạo quyết định khen thưởng/kỷ luật</h5>
+        <h5 class="mb-0">Tạo quyết định {{ request('loai', old('loai', 'khen_thuong')) === 'ky_luat' ? 'kỷ luật' : 'khen thưởng' }}</h5>
     </div>
-    <form action="{{ route('che-do.khen-thuong-ky-luat.store') }}" method="POST">
-        @csrf
+    <form action="{{ route('che-do.khen-thuong-ky-luat.store') }}" method="POST" enctype="multipart/form-data">
+    @csrf
+    <input type="hidden" name="loai" value="{{ request('loai', old('loai', 'khen_thuong')) }}">
         <div class="card-body">
             <div class="row mb-3">
-                <div class="col-md-3">
-                    <label class="form-label">Loại quyết định <span class="text-danger">*</span></label>
-                    <select name="loai" class="form-select" required>
-                        <option value="khen_thuong">Khen thưởng</option>
-                        <option value="ky_luat">Kỷ luật</option>
-                    </select>
-                </div>
+                <input type="hidden" name="loai" value="{{ request('loai', old('loai', 'khen_thuong')) }}">
                 <div class="col-md-3">
                     <label class="form-label">Số quyết định</label>
                     <input type="text" name="so_quyet_dinh" class="form-control">
@@ -30,6 +25,14 @@
                 </div>
             </div>
             <div class="mb-3">
+        <div class="mb-3">
+            <label class="form-label">Trạng thái</label>
+            <select name="trang_thai" class="form-select">
+                <option value="chua_thuc_hien" selected>Chưa thực hiện</option>
+                <option value="dang_thuc_hien">Đang thực hiện</option>
+                <option value="hoan_thanh">Hoàn thành</option>
+            </select>
+        </div>
                 <label class="form-label">Tiêu đề <span class="text-danger">*</span></label>
                 <input type="text" name="tieu_de" class="form-control" required>
             </div>
@@ -40,6 +43,10 @@
             <div class="mb-3">
                 <label class="form-label">Giá trị (nếu có)</label>
                 <input type="number" name="gia_tri" class="form-control" min="0" step="0.01">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Tệp đính kèm (nếu có)</label>
+                <input type="file" name="tep_tin" class="form-control">
             </div>
             <div class="mb-3">
                 <label class="form-label">Áp dụng cho <span class="text-danger">*</span></label><br>

@@ -42,9 +42,9 @@
                 <td>{{ $hopDong->ngay_ket_thuc ? $hopDong->ngay_ket_thuc->format('d/m/Y') : '-' }}</td>
                 <td>
                     @if($hopDong->trang_thai_ky === 'duyet')
-                        <span class="badge bg-success">Duyệt</span>
+                        <span class="badge bg-success">Đã ký</span>
                     @elseif($hopDong->trang_thai_ky === 'tai_ki')
-                        <span class="badge bg-warning text-dark">Tái kí</span>
+                        <span class="badge bg-warning text-dark">Gia hạn</span>
                     @else
                         <span class="badge bg-secondary">-</span>
                     @endif

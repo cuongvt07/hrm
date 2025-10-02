@@ -98,23 +98,83 @@
                                         <ul class="nav nav-tabs flex-nowrap nav-tabs-scroll" id="employeeTabs" role="tablist">
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link active" id="basic-tab" data-bs-toggle="tab"
-                                                    data-bs-target="#basic" type="button" role="tab">Thông tin cơ
-                                                    bản</button>
+                                                    data-bs-target="#basic" type="button" role="tab">Thông tin cơ bản</button>
                                             </li>
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link" id="work-tab" data-bs-toggle="tab"
-                                                    data-bs-target="#work" type="button" role="tab">Thông tin công
-                                                    việc</button>
+                                                    data-bs-target="#work" type="button" role="tab">Thông tin công việc</button>
                                             </li>
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link" id="contact-tab" data-bs-toggle="tab"
-                                                    data-bs-target="#contact" type="button" role="tab">Thông tin liên
-                                                    hệ</button>
+                                                    data-bs-target="#contact" type="button" role="tab">Thông tin liên hệ</button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="baohiem-tab" data-bs-toggle="tab"
+                                                    data-bs-target="#baohiem" type="button" role="tab">Thông tin bảo hiểm</button>
                                             </li>
                                         </ul>
 
                                         <div class="tab-content" id="employeeTabContent">
                                             <!-- Basic Info Tab -->
+                                            <!-- Bảo hiểm Tab -->
+                                            <div class="tab-pane fade" id="baohiem" role="tabpanel" aria-labelledby="baohiem-tab">
+                                                <div class="row mb-3">
+                                                    <div class="col-md-4">
+                                                        <label for="so_so_bhxh" class="form-label">Số sổ BHXH</label>
+                                                        <input type="text" name="so_so_bhxh" id="so_so_bhxh" class="form-control" value="{{ old('so_so_bhxh') }}">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label for="ma_so_bhxh" class="form-label">Mã số BHXH</label>
+                                                        <input type="text" name="ma_so_bhxh" id="ma_so_bhxh" class="form-control" value="{{ old('ma_so_bhxh') }}">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label for="so_the_bhyt" class="form-label">Số thẻ BHYT</label>
+                                                        <input type="text" name="so_the_bhyt" id="so_the_bhyt" class="form-control" value="{{ old('so_the_bhyt') }}">
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-md-4">
+                                                        <label for="ngay_tham_gia_bh" class="form-label">Ngày tham gia BH</label>
+                                                        <input type="date" name="ngay_tham_gia_bh" id="ngay_tham_gia_bh" class="form-control" value="{{ old('ngay_tham_gia_bh') }}">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label for="tham_gia_bao_hiem" class="form-label">Tham gia bảo hiểm</label>
+                                                        <select name="tham_gia_bao_hiem" id="tham_gia_bao_hiem" class="form-select">
+                                                            <option value="">-- Chọn --</option>
+                                                            <option value="1" {{ old('tham_gia_bao_hiem') == '1' ? 'selected' : '' }}>Có</option>
+                                                            <option value="0" {{ old('tham_gia_bao_hiem') == '0' ? 'selected' : '' }}>Không</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label for="tinh_cap" class="form-label">Tỉnh cấp BHYT</label>
+                                                        <input type="text" name="tinh_cap" id="tinh_cap" class="form-control" value="{{ old('tinh_cap') }}">
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-md-4">
+                                                        <label for="ma_tinh_cap" class="form-label">Mã tỉnh cấp</label>
+                                                        <input type="text" name="ma_tinh_cap" id="ma_tinh_cap" class="form-control" value="{{ old('ma_tinh_cap') }}">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label for="ty_le_dong_bh" class="form-label">Tỷ lệ đóng BH (%)</label>
+                                                        <input type="number" step="0.01" min="0" max="100" name="ty_le_dong_bh" id="ty_le_dong_bh" class="form-control" value="{{ old('ty_le_dong_bh') }}">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label for="ty_le_bhxh" class="form-label">Tỷ lệ BHXH (%)</label>
+                                                        <input type="number" step="0.01" min="0" max="100" name="ty_le_bhxh" id="ty_le_bhxh" class="form-control" value="{{ old('ty_le_bhxh') }}">
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-md-4">
+                                                        <label for="ty_le_bhyt" class="form-label">Tỷ lệ BHYT (%)</label>
+                                                        <input type="number" step="0.01" min="0" max="100" name="ty_le_bhyt" id="ty_le_bhyt" class="form-control" value="{{ old('ty_le_bhyt') }}">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label for="ty_le_bhtn" class="form-label">Tỷ lệ BHTN (%)</label>
+                                                        <input type="number" step="0.01" min="0" max="100" name="ty_le_bhtn" id="ty_le_bhtn" class="form-control" value="{{ old('ty_le_bhtn') }}">
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="tab-pane fade show active" id="basic" role="tabpanel">
                                                 <div class="row">
                                                     <div class="col-md-6">
@@ -501,22 +561,22 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="ty_le_dong_bh" class="form-label">Tỷ lệ đóng BH (%)</label>
-                                    <input type="number" step="0.01" class="form-control" id="ty_le_dong_bh"
+                                    <input type="number" step="0.01" min="0" max="100" class="form-control" id="ty_le_dong_bh"
                                         name="ty_le_dong_bh" value="{{ old('ty_le_dong_bh') }}">
                                 </div>
                                 <div class="mb-3">
                                     <label for="ty_le_bhxh" class="form-label">Tỷ lệ đóng BHXH (%)</label>
-                                    <input type="number" step="0.01" class="form-control" id="ty_le_bhxh" name="ty_le_bhxh"
+                                    <input type="number" step="0.01" min="0" max="100" class="form-control" id="ty_le_bhxh" name="ty_le_bhxh"
                                         value="{{ old('ty_le_bhxh') }}">
                                 </div>
                                 <div class="mb-3">
                                     <label for="ty_le_bhyt" class="form-label">Tỷ lệ đóng BHYT (%)</label>
-                                    <input type="number" step="0.01" class="form-control" id="ty_le_bhyt" name="ty_le_bhyt"
+                                    <input type="number" step="0.01" min="0" max="100" class="form-control" id="ty_le_bhyt" name="ty_le_bhyt"
                                         value="{{ old('ty_le_bhyt') }}">
                                 </div>
                                 <div class="mb-3">
                                     <label for="ty_le_bhtn" class="form-label">Tỷ lệ đóng BHTN (%)</label>
-                                    <input type="number" step="0.01" class="form-control" id="ty_le_bhtn" name="ty_le_bhtn"
+                                    <input type="number" step="0.01" min="0" max="100" class="form-control" id="ty_le_bhtn" name="ty_le_bhtn"
                                         value="{{ old('ty_le_bhtn') }}">
                                 </div>
                             </div>

@@ -507,4 +507,4 @@ hrm-system/
 - **Component-based**: UI nhất quán và dễ bảo trì
 
 
-// xử lý module cài đặt hệ thống nữa
+// xử lý dashboard + làm báo cáo

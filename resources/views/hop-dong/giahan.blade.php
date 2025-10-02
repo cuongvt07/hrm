@@ -97,8 +97,8 @@
                                 <label for="trang_thai_ky" class="form-label">Trạng thái ký</label>
                                 <select name="trang_thai_ky" id="trang_thai_ky" class="form-select">
                                     <option value="">-- Chọn trạng thái --</option>
-                                    <option value="duyet" {{ old('trang_thai_ky', $hopDongCu->trang_thai_ky) == 'duyet' ? 'selected' : '' }}>Duyệt</option>
-                                    <option value="tai_ki" {{ old('trang_thai_ky', $hopDongCu->trang_thai_ky) == 'tai_ki' ? 'selected' : '' }}>Tái kí</option>
+                                    <option value="duyet" {{ old('trang_thai_ky', $hopDongCu->trang_thai_ky) == 'duyet' ? 'selected' : '' }}>Đã ký</option>
+                                    <option value="tai_ki" {{ old('trang_thai_ky', $hopDongCu->trang_thai_ky) == 'tai_ki' ? 'selected' : '' }}>Gia hạn</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
