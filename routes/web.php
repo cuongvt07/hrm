@@ -125,9 +125,11 @@ Route::middleware('auth')->group(function () {
         
         // Các route chung
         Route::prefix('khen-thuong-ky-luat')->name('khen-thuong-ky-luat.')->group(function () {
-            Route::get('/create', [CheDoController::class, 'create'])->name('create');
-            Route::get('/{id}', [CheDoController::class, 'show'])->name('show');
-            Route::post('/', [CheDoController::class, 'store'])->name('store');
+            Route::get('/create', [CheDoController::class, 'khenThuongKyLuatCreate'])->name('create');
+            Route::post('/', [CheDoController::class, 'khenThuongKyLuatStore'])->name('store');
+            Route::get('/{id}', [CheDoController::class, 'khenThuongKyLuatShow'])->name('show');
+            Route::get('/khen-thuong', [CheDoController::class, 'khenThuongIndex'])->name('khen-thuong.index');
+            Route::get('/ky-luat', [CheDoController::class, 'kyLuatIndex'])->name('ky-luat.index');
         });
     });
 });
