@@ -106,6 +106,8 @@ Route::middleware('auth')->group(function () {
     Route::prefix('cai-dat')->name('cai-dat.')->group(function () {
         Route::get('/', [\App\Http\Controllers\CaiDatHeThongController::class, 'index'])->name('index');
         Route::post('/update', [\App\Http\Controllers\CaiDatHeThongController::class, 'update'])->name('update');
+        Route::post('/store', [\App\Http\Controllers\CaiDatHeThongController::class, 'store'])->name('store');
+        Route::delete('/{item}', [\App\Http\Controllers\CaiDatHeThongController::class, 'destroy'])->name('destroy');
     });
 
     // Quản lý chế độ
