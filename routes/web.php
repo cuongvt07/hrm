@@ -110,6 +110,12 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{item}', [\App\Http\Controllers\CaiDatHeThongController::class, 'destroy'])->name('destroy');
     });
 
+    Route::prefix('cai-dat-item')->name('cai-dat-item.')->group(function () {
+        Route::post('/{danhMucId}/store', [\App\Http\Controllers\CaiDatItemController::class, 'store'])->name('store');
+        Route::put('/{item}', [\App\Http\Controllers\CaiDatItemController::class, 'update'])->name('update');
+        Route::delete('/{item}', [\App\Http\Controllers\CaiDatItemController::class, 'destroy'])->name('destroy');
+    });
+
     // Quản lý chế độ
     Route::prefix('che-do')->name('che-do.')->group(function () {
         Route::get('/khen-thuong', [CheDoController::class, 'khenThuongIndex'])->name('khen-thuong.index');
