@@ -137,9 +137,10 @@
                 </table>
             </div>
 
-            <!-- Pagination -->
-            <div class="d-flex justify-content-end mt-3">
-                {{ $taiKhoans->links() }}
+            <div class="mt-3">
+                @if($taiKhoans->hasPages())
+                    <x-pagination :paginator="$taiKhoans" />
+                @endif
             </div>
         </div>
     </div>

@@ -176,3 +176,74 @@
         </div>
     </div>
 </div>
+<style>
+/* Sidebar mặc định */
+.sidebar {
+  width: 250px;
+  background: #2d2f33;
+  color: #fff;
+  transition: width 0.3s ease;
+  overflow: hidden;
+}
+
+/* Sidebar thu gọn */
+.sidebar.collapsed {
+  width: 80px; /* chỉ còn icon */
+}
+
+/* Khi thu gọn, ẩn text */
+.sidebar.collapsed .nav-text {
+  display: none;
+}
+
+/* Căn giữa icon khi thu gọn */
+.sidebar .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+}
+
+.sidebar.collapsed .nav-link {
+  justify-content: center;
+  padding: 10px 0;
+}
+
+/* Icon căn giữa và to hơn chút */
+.sidebar .nav-link i {
+  font-size: 18px;
+}
+
+/* Tên brand */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+}
+
+.sidebar.collapsed .sidebar-brand-text {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-brand {
+  justify-content: center;
+}
+
+/* Footer căn giữa */
+.sidebar-footer {
+  text-align: center;
+  padding: 10px;
+}
+
+.sidebar.collapsed .sidebar-footer div {
+  font-size: 12px;
+}
+
+/* Đảm bảo ẩn mũi tên dropdown khi thu gọn */
+.sidebar.collapsed .fa-chevron-down,
+.sidebar.collapsed .collapse {
+  display: none !important;
+}
+</style>

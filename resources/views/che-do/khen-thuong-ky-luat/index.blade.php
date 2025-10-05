@@ -90,7 +90,9 @@
                 </tbody>
             </table>
             <div class="mt-3 px-3 pb-3">
-                {{ $khenThuongKyLuats->links() }}
+                @if($khenThuongKyLuats->hasPages())
+                    <x-pagination :paginator="$khenThuongKyLuats" />
+                @endif
             </div>
         </div>
     </div>
