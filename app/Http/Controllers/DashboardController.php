@@ -12,16 +12,22 @@ class DashboardController extends Controller
     public function index()
     {
         // Thống kê tổng quan
-        $expiringContractsQuery = HopDongLaoDong::with('nhanVien')->sapHetHan(30);
+        $expiringContractsQuery = HopDongLaoDong::with(['nhanVien.phongBan', 'nhanVien.chucVu'])->sapHetHan(30);
         $stats = [
             'total_employees' => NhanVien::count(),
             'active_employees' => NhanVien::dangLamViec()->count(),
+            'resigned_employees' => NhanVien::where('trang_thai', 'nghi_viec')->count(),
+            'probation_employees' => NhanVien::where('trang_thai', 'thu_viec')->count(),
+            'maternity_employees' => NhanVien::where('trang_thai', 'thai_san')->count(),
             'total_departments' => PhongBan::count(),
             'expiring_contracts' => $expiringContractsQuery->count(),
         ];
 
         // Thống kê theo phòng ban
-        $departmentStats = PhongBan::withCount('nhanViens')
+        $departmentStats = PhongBan::withCount(['nhanViens', 'nhanViens as nhan_vien_active_count' => function ($query) {
+                $query->where('trang_thai', 'dang_lam_viec');
+            }])
+            ->with(['nhanViens.chucVu'])
             ->orderBy('nhan_viens_count', 'desc')
             ->limit(5)
             ->get();
@@ -73,10 +79,11 @@ class DashboardController extends Controller
                 ->get();
             foreach ($allPendingLeaves as $leave) {
                 $type = $leave->loai_nghi;
-                if (!in_array($type, ['thu_viec', 'thai_san', 'nghi_viec'])) {
-                    $type = 'khac';
+                if (in_array($type, ['thu_viec', 'thai_san', 'nghi_viec'])) {
+                    $pendingLeaves[$type]->push($leave);
+                } else {
+                    $pendingLeaves['khac']->push($leave);
                 }
-                $pendingLeaves[$type]->push($leave);
             }
         }
 

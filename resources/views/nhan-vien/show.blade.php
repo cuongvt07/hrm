@@ -65,7 +65,18 @@
                                         @php
                                             $config = $statusConfig[$nhanVien->trang_thai] ?? $statusConfig['khac'];
                                         @endphp
-                                        <span class="badge bg-{{ $config['class'] }} fs-6 px-3 py-2">{{ $config['text'] }}</span>
+                                        <span class="badge bg-{{ $config['class'] }} px-2 py-1" style="font-size: 0.75rem;">{{ $config['text'] }}</span>
+                                    </div>
+                                    <div class="mb-3">
+                                        @if($nhanVien->taiKhoan)
+                                            <a href="{{ route('tai-khoan.edit', $nhanVien->taiKhoan->id) }}" class="badge bg-success px-2 py-1 text-decoration-none" style="font-size: 0.75rem;">
+                                                Đã có tài khoản nhân viên
+                                            </a>
+                                        @else
+                                            <a href="{{ route('tai-khoan.create', ['nhan_vien_id' => $nhanVien->id]) }}" class="badge bg-secondary px-2 py-1 text-decoration-none" style="font-size: 0.75rem;">
+                                                Chưa có tài khoản nhân viên
+                                            </a>
+                                        @endif
                                     </div>
                                 </div>
 
@@ -212,7 +223,7 @@
                                                                     <tr>
                                                                         <th>Quyết định</th>
                                                                         <th>Ngày</th>
-                                                                        <th>Tiêu đề</th>
+                                                                        <th>Khen thưởng</th>
                                                                         <th>Mô tả</th>
                                                                         <th>Giá trị</th>
                                                                         <th>Đối tượng</th>
@@ -257,7 +268,7 @@
                                                                     <tr>
                                                                         <th>Quyết định</th>
                                                                         <th>Ngày</th>
-                                                                        <th>Tiêu đề</th>
+                                                                        <th>Kỷ luật</th>
                                                                         <th>Mô tả</th>
                                                                         <th>Giá trị</th>
                                                                         <th>Đối tượng</th>
@@ -294,7 +305,7 @@
                                     <!-- Basic Info Tab -->
                                     <div class="tab-pane fade show active" id="basic" role="tabpanel" aria-labelledby="basic-tab">
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-5">
                                                 <div class="card border-0 bg-light mb-4">
                                                     <div class="card-header bg-primary text-white">
                                                         <h5 class="mb-0">Thông tin cơ bản</h5>
@@ -337,7 +348,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-7">
                                                 <div class="card border-0 bg-light mb-4">
                                                     <div class="card-header bg-info text-white">
                                                         <h5 class="mb-0">Thông tin bổ sung</h5>

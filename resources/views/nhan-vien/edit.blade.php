@@ -149,7 +149,7 @@
                                             <!-- Basic Info Tab -->
                                             <div class="tab-pane fade show active" id="basic" role="tabpanel">
                                                 <div class="row">
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-5">
                                                         <div class="card border-0 bg-light mb-4">
                                                             <div class="card-header bg-primary text-white">
                                                                 <h5 class="mb-0">Thông tin cơ bản</h5>
@@ -175,7 +175,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-7">
                                                         <div class="card border-0 bg-light mb-4">
                                                             <div class="card-header bg-info text-white">
                                                                 <h5 class="mb-0">Thông tin bổ sung</h5>

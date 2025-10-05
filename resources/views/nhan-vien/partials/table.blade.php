@@ -1,5 +1,33 @@
 <!-- Employee Table -->
 <div class="table-responsive">
+    <style>
+        .table-wrapper {
+            overflow-x: auto;
+            position: relative;
+            max-width: 100%; /* hoặc giá trị bạn muốn */
+        }
+
+        /* Định dạng bảng */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px; /* giúp kích hoạt scroll ngang */
+        }
+
+        .table th, .table td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            white-space: nowrap;
+            background: #fff;
+        }
+
+        /* Styling cho header */
+        .table th {
+            background-color: #f9fafb;
+            font-weight: bold;
+        }
+    </style>
+
     <table class="table table-hover mb-0">
         <thead class="table-light">
             <tr>

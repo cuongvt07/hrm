@@ -412,6 +412,8 @@ body {
     
     .table-responsive {
         border-radius: var(--border-radius);
+            overflow-x: auto;
+    position: relative; /* Bắt buộc để sticky hoạt động */
     }
     
     .btn-group {
@@ -426,6 +428,27 @@ body {
     .modal-xl {
         max-width: 95%;
     }
+}
+
+/* Sticky cột Thao tác bên phải */
+.table th:last-child,
+.table td:last-child {
+    position: sticky;
+    right: 0; /* Dính sát mép phải container */
+    box-shadow: -3px 0 5px rgba(0, 0, 0, 0.05); /* viền phân tách nhẹ */
+}
+
+/* Sticky header (hàng tiêu đề) */
+.table thead th {
+    position: sticky;
+    top: 0;
+    background: #f8f9fa;
+    z-index: 4;
+}
+
+/* Header của cột thao tác cần ưu tiên cao hơn */
+.table thead th:last-child {
+    z-index: 5;
 }
 
 /* Animation Classes */
@@ -1333,7 +1356,7 @@ h5, h6 {
 
 /* Improved Table Header */
 .table-light {
-    background: #F5F6F8; !important;
+    background: #F5F6F8 !important;
     border: none;
 }
 

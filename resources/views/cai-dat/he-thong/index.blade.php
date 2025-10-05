@@ -65,7 +65,7 @@
                                         <tr data-id="{{ $item->id }}">
                                             <td>
                                                 <input type="text" class="form-control form-control-sm" name="ten_item"
-                                                    value="{{ $item->ten_item }}" readonly>
+                                                    value="{{ $item->ten_item }}">
                                             </td>
                                             <td>
                                                 <input type="text" class="form-control form-control-sm" name="mo_ta"

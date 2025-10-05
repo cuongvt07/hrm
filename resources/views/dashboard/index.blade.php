@@ -17,8 +17,9 @@
     </div>
 
     <!-- Stats cards -->
+
     <div class="row mb-4">
-        <!-- Total Employees -->
+        <!-- Tổng nhân viên -->
         <div class="col-xl-3 col-md-6 mb-4">
             <x-ui.card class="border-left-primary">
                 <div class="card-body">
@@ -39,7 +40,7 @@
             </x-ui.card>
         </div>
 
-        <!-- Active Employees -->
+        <!-- Đang làm việc -->
         <div class="col-xl-3 col-md-6 mb-4">
             <x-ui.card class="border-left-success">
                 <div class="card-body">
@@ -60,21 +61,65 @@
             </x-ui.card>
         </div>
 
-        <!-- Pending Leaves -->
+        <!-- Thử việc -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <x-ui.card class="border-left-info">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Thử việc
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ number_format($stats['probation_employees'] ?? 0) }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </x-ui.card>
+        </div>
+
+        <!-- Đã nghỉ việc -->
         <div class="col-xl-3 col-md-6 mb-4">
             <x-ui.card class="border-left-warning">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Đơn nghỉ chờ duyệt
+                                Đã nghỉ việc
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                {{ number_format($stats['pending_leaves'] ?? 0) }}
+                                {{ number_format($stats['resigned_employees'] ?? 0) }}
                             </div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-calendar-times fa-2x text-gray-300"></i>
+                            <i class="fas fa-user-times fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </x-ui.card>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <!-- Thai sản -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <x-ui.card class="border-left-pink">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-pink text-uppercase mb-1">
+                                Thai sản
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ number_format($stats['maternity_employees'] ?? 0) }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-baby fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>

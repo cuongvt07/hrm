@@ -22,4 +22,10 @@ class CaiDatHeThong extends Model
     {
         return $query->where('ten_cai_dat', 'hoat_dong');
     }
+
+    // Quan hệ với CaiDatItem
+    public function cai_dat_item()
+    {
+        return $this->hasMany(CaiDatItem::class, 'danh_muc_id', 'id');
+    }
 }

@@ -21,7 +21,7 @@ class NhanVienController extends Controller
 {
     public function index(Request $request)
     {
-        $query = NhanVien::query()->with(['phongBan', 'chucVu']);
+        $query = NhanVien::query()->with(['phongBan', 'chucVu','taiKhoan']);
 
         // Lọc search
         if ($request->filled('search')) {
@@ -70,7 +70,7 @@ class NhanVienController extends Controller
 
     public function show(NhanVien $nhanVien)
     {
-        $nhanVien->load(['phongBan', 'chucVu', 'taiKhoan', 'hopDongLaoDong', 'thongTinLienHe', 'thongTinGiaDinh', 'tepTin', 'thongTinGiayTo.tepTin', 'thongTinLuong', 'quanLyTrucTiep', 'capDuoi', 'baoHiem']);
+        $nhanVien->load(['phongBan', 'chucVu', 'taiKhoan', 'hopDongLaoDong', 'thongTinLienHe', 'thongTinGiaDinh', 'tepTin', 'thongTinGiayTo.tepTin', 'thongTinLuong', 'quanLyTrucTiep', 'capDuoi', 'baoHiem', 'taiKhoan']);
 
         // Lấy danh sách khen thưởng/kỷ luật (cá nhân + tập thể)
         require_once app_path('Helpers/KhenThuongKyLuatHelper.php');
