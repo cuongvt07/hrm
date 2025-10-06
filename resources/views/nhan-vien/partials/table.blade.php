@@ -56,12 +56,12 @@
                     </td>
                     <td>{{ $nhanViens->firstItem() + $index }}</td>
                     <td>
-                        <span class="fw-bold text-primary">{{ $nhanVien->ma_nhanvien }}</span>
+                        <span class="fw-bold text-dark">{{ $nhanVien->ma_nhanvien }}</span>
                     </td>
                     <td>
                         <div class="d-flex align-items-center">
                             <div>
-                                <div class="fw-bold">{{ $nhanVien->ho }} {{ $nhanVien->ten }}</div>
+                                <div class="fw-bold text-dark">{{ $nhanVien->ho }} {{ $nhanVien->ten }}</div>
                             </div>
                         </div>
                     </td>
@@ -82,28 +82,28 @@
                     </td>
                     <td>
                         @if($nhanVien->ngay_sinh)
-                            {{ \Carbon\Carbon::parse($nhanVien->ngay_sinh)->format('d/m/Y') }}
-                            <br><small class="text-muted">({{ \Carbon\Carbon::parse($nhanVien->ngay_sinh)->age }} tuổi)</small>
+                            <span class="text-dark">{{ \Carbon\Carbon::parse($nhanVien->ngay_sinh)->format('d/m/Y') }}</span>
+                            <br><small class="text-dark">({{ \Carbon\Carbon::parse($nhanVien->ngay_sinh)->age }} tuổi)</small>
                         @else
-                            <span class="text-muted">-</span>
+                            <span class="text-dark">-</span>
                         @endif
                     </td>
                     <td>
                         @if($nhanVien->so_dien_thoai)
-                            <a href="tel:{{ $nhanVien->so_dien_thoai }}" class="text-decoration-none">
+                            <a href="tel:{{ $nhanVien->so_dien_thoai }}" class="text-decoration-none text-dark">
                                 {{ $nhanVien->so_dien_thoai }}
                             </a>
                         @else
-                            <span class="text-muted">-</span>
+                            <span class="text-dark">-</span>
                         @endif
                     </td>
                     <td>
                         @if($nhanVien->email)
-                            <a href="mailto:{{ $nhanVien->email }}" class="text-decoration-none">
+                            <a href="mailto:{{ $nhanVien->email }}" class="text-decoration-none text-dark">
                                 {{ $nhanVien->email }}
                             </a>
                         @else
-                            <span class="text-muted">-</span>
+                            <span class="text-dark">-</span>
                         @endif
                     </td>
                     <td>

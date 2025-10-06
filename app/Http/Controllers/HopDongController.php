@@ -178,7 +178,10 @@ class HopDongController extends Controller
         }
 
         // Chỉ lấy hợp đồng có ngày kết thúc lớn hơn 1 tháng kể từ thời điểm hiện tại
-        $query->whereDate('ngay_ket_thuc', '>', now()->addMonth());
+        $query->where(function($q) {
+            $q->whereNull('ngay_ket_thuc') // hợp đồng không xác định thời hạn
+            ->orWhereDate('ngay_ket_thuc', '>', now()->addMonth()); // hợp đồng còn hạn > 1 tháng
+        });
 
         $hopDongs = $query->orderBy('ngay_ket_thuc', 'desc')->paginate(20);
         $nhanViens = NhanVien::dangLamViec()->get();

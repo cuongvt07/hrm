@@ -521,7 +521,7 @@
                                                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                                                     <span class="fw-bold">
                                                                         <span class="fw-bold">Chức vụ:</span>
-                                                                        <span class="text-primary">{{ $qt->chucVu->ten_chuc_vu ?? '' }}</span>
+                                                                        <span class="text-dark">{{ $qt->chucVu->ten_chuc_vu ?? '' }}</span>
                                                                     </span>
                                                                 </div>
                                                                 <div class="d-flex justify-content-between align-items-center mb-1">
@@ -555,29 +555,29 @@
                                                                     <div class="row">
                                                                         <div class="col-md-6">
                                                                             <div class="mb-2">
-                                                                                <strong class="text-primary">Số hợp đồng:</strong>
+                                                                                <strong class="text-dark">Số hợp đồng:</strong>
                                                                                 <span class="ms-2">{{ $hopDong->so_hop_dong }}</span>
                                                                             </div>
                                                                             <div class="mb-2">
-                                                                                <strong class="text-primary">Ngày ký:</strong>
+                                                                                <strong class="text-dark">Ngày ký:</strong>
                                                                                 <span class="ms-2">{{ $hopDong->ngay_ky ? \Carbon\Carbon::parse($hopDong->ngay_ky)->format('d/m/Y') : '-' }}</span>
                                                                             </div>
                                                                             <div class="mb-2">
-                                                                                <strong class="text-primary">Ngày bắt đầu:</strong>
+                                                                                <strong class="text-dark">Ngày bắt đầu:</strong>
                                                                                 <span class="ms-2">{{ $hopDong->ngay_bat_dau ? \Carbon\Carbon::parse($hopDong->ngay_bat_dau)->format('d/m/Y') : '-' }}</span>
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-md-6">
                                                                             <div class="mb-2">
-                                                                                <strong class="text-primary">Ngày kết thúc:</strong>
+                                                                                <strong class="text-dark">Ngày kết thúc:</strong>
                                                                                 <span class="ms-2">{{ $hopDong->ngay_ket_thuc ? \Carbon\Carbon::parse($hopDong->ngay_ket_thuc)->format('d/m/Y') : '-' }}</span>
                                                                             </div>
                                                                             <div class="mb-2">
-                                                                                <strong class="text-primary">Loại hợp đồng:</strong>
+                                                                                <strong class="text-dark">Loại hợp đồng:</strong>
                                                                                 <span class="ms-2">{{ $hopDong->loai_hop_dong }}</span>
                                                                             </div>
                                                                             <div class="mb-2">
-                                                                                <strong class="text-primary">Trạng thái:</strong>
+                                                                                <strong class="text-dark">Trạng thái:</strong>
                                                                                 <span class="ms-2">
                                                                                     @php
                                                                                         $contractStatusConfig = [

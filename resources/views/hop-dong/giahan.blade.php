@@ -17,7 +17,7 @@
                 </li>
             </ul>
         </div>
-        <form action="{{ route('hop-dong.giahan.store') }}" method="POST">
+        <form action="{{ route('hop-dong.giahan.store') }}" method="POST" id="giaHanForm">
             @csrf
             <input type="hidden" name="hopdong_cu_id" value="{{ $hopDongCu->id }}">
             <div class="card-body">
@@ -38,7 +38,7 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="loai_hop_dong" class="form-label">Loại hợp đồng</label>
-                                <select name="loai_hop_dong" id="loai_hop_dong" class="form-select">
+                                <select name="loai_hop_dong" id="loai_hop_dong" class="form-select" onchange="handleLoaiHopDongChange()">
                                     <option value="">-- Chọn loại hợp đồng --</option>
                                     <option value="thu_viec" {{ old('loai_hop_dong', $hopDongCu->loai_hop_dong) == 'thu_viec' ? 'selected' : '' }}>Thử việc</option>
                                     <option value="xac_dinh_thoi_han" {{ old('loai_hop_dong', $hopDongCu->loai_hop_dong) == 'xac_dinh_thoi_han' ? 'selected' : '' }}>Hợp đồng xác
@@ -50,9 +50,9 @@
                             <div class="col-md-3">
                                 <label for="ngay_bat_dau" class="form-label">Ngày có hiệu lực</label>
                                 <input type="date" name="ngay_bat_dau" id="ngay_bat_dau" class="form-control"
-                                    value="{{ old('ngay_bat_dau') }}">
+                                    value="{{ old('ngay_bat_dau') }}" required>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3" id="ngay_ket_thuc_group">
                                 <label for="ngay_ket_thuc" class="form-label">Ngày hết hạn</label>
                                 <input type="date" name="ngay_ket_thuc" id="ngay_ket_thuc" class="form-control"
                                     value="{{ old('ngay_ket_thuc') }}">
@@ -101,7 +101,7 @@
                                     <option value="tai_ki" {{ old('trang_thai_ky', $hopDongCu->trang_thai_ky) == 'tai_ki' ? 'selected' : '' }}>Gia hạn</option>
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3" id="thoi_han_group">
                                 <label for="thoi_han" class="form-label">Thời hạn hợp đồng (năm)</label>
                                 <select name="thoi_han" id="thoi_han" class="form-select">
                                     <option value="">-- Chọn thời hạn --</option>
@@ -168,7 +168,6 @@
     </div>
 @endsection
 
-@push('scripts')
     <script>
         // Khi submit form, lưu các phụ cấp đã chọn vào input hidden
         document.addEventListener('DOMContentLoaded', function () {
@@ -193,3 +192,41 @@
             }
         });
     </script>
+    <script>
+    function handleLoaiHopDongChange() {
+        const loaiHopDong = document.getElementById('loai_hop_dong').value;
+        const ngayKetThucGroup = document.getElementById('ngay_ket_thuc_group');
+        const thoiHanGroup = document.getElementById('thoi_han_group');
+        const ngayKetThucInput = document.getElementById('ngay_ket_thuc');
+        const thoiHanInput = document.getElementById('thoi_han');
+
+        if (loaiHopDong === 'khong_xac_dinh_thoi_han') {
+            // Ẩn nhóm ngày kết thúc & thời hạn
+            ngayKetThucGroup.style.display = 'none';
+            thoiHanGroup.style.display = 'none';
+
+            // Xoá giá trị và bỏ required
+            ngayKetThucInput.value = '';
+            thoiHanInput.value = '';
+            ngayKetThucInput.removeAttribute('required');
+            thoiHanInput.removeAttribute('required');
+
+            // Disable để người dùng không nhập được
+            ngayKetThucInput.setAttribute('disabled', 'disabled');
+            thoiHanInput.setAttribute('disabled', 'disabled');
+        } else {
+            // Hiển thị lại khi chọn loại khác
+            ngayKetThucGroup.style.display = 'block';
+            thoiHanGroup.style.display = 'block';
+            ngayKetThucInput.removeAttribute('disabled');
+            thoiHanInput.removeAttribute('disabled');
+            ngayKetThucInput.setAttribute('required', 'required');
+            thoiHanInput.setAttribute('required', 'required');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        handleLoaiHopDongChange();
+        document.getElementById('loai_hop_dong').addEventListener('change', handleLoaiHopDongChange);
+    });
+</script>

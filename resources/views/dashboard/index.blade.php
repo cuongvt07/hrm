@@ -161,7 +161,7 @@
 
         <!-- Biểu đồ biến động nhân sự -->
         <div class="col-xl-6 col-lg-12 mb-4">
-            <x-ui.card title="Biểu đồ biến động nhân sự (Tăng/Giảm)">
+            <x-ui.card title="Biểu đồ biến động nhân sự">
                 <div class="chart-bar pt-4 pb-2">
                     <canvas id="staffChangeChart"></canvas>
                 </div>

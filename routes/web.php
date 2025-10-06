@@ -62,14 +62,13 @@ Route::middleware('auth')->group(function () {
     });
 
     // Quản lý hợp đồng
-    Route::prefix('hop-dong')->group(function () {
-        Route::get('sap-het-han', [HopDongController::class, 'sapHetHan'])->name('hop-dong.saphethan');
-        Route::get('{id}/gia-han', [HopDongController::class, 'giaHanForm'])->name('hop-dong.giahan.form');
-        Route::post('{id}/gia-han', [HopDongController::class, 'giaHan'])->name('hop-dong.giahan');
-        Route::get('{id}/view', [HopDongController::class, 'view'])->name('hop-dong.view');
-        Route::post('bulk-update-status', [HopDongController::class, 'bulkUpdateStatus'])->name('hop-dong.bulk-update-status');
-    });
     Route::resource('hop-dong', HopDongController::class);
+    Route::get('hop-dong/{id}/view', [HopDongController::class, 'view'])->name('hop-dong.view');
+    Route::get('hop-dong-sap-het-han', [HopDongController::class, 'sapHetHan'])->name('hop-dong.saphethan');
+    Route::get('hop-dong/{id}/gia-han', [HopDongController::class, 'giaHanForm'])->name('hop-dong.giahan.form');
+    Route::post('hop-dong/gia-han', [HopDongController::class, 'giaHanStore'])->name('hop-dong.giahan.store');
+    // Bulk update trạng thái hợp đồng
+    Route::post('hop-dong/bulk-update-status', [HopDongController::class, 'bulkUpdateStatus'])->name('hop-dong.bulk-update-status');
 
     // Báo cáo
     Route::prefix('bao-cao')->name('bao-cao.')->group(function () {
@@ -105,31 +104,26 @@ Route::middleware('auth')->group(function () {
     // Cài đặt hệ thống
     Route::prefix('cai-dat')->name('cai-dat.')->group(function () {
         Route::get('/', [\App\Http\Controllers\CaiDatHeThongController::class, 'index'])->name('index');
-        Route::post('/update', [\App\Http\Controllers\CaiDatHeThongController::class, 'update'])->name('update');
-        Route::post('/store', [\App\Http\Controllers\CaiDatHeThongController::class, 'store'])->name('store');
+        Route::post('/', [\App\Http\Controllers\CaiDatHeThongController::class, 'store'])->name('store');
+        Route::put('/{item}', [\App\Http\Controllers\CaiDatHeThongController::class, 'update'])->name('update');
         Route::delete('/{item}', [\App\Http\Controllers\CaiDatHeThongController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('cai-dat-item')->name('cai-dat-item.')->group(function () {
-        Route::post('/{danhMucId}/store', [\App\Http\Controllers\CaiDatItemController::class, 'store'])->name('store');
+        Route::post('/{danh_muc_id}', [\App\Http\Controllers\CaiDatItemController::class, 'store'])->name('store');
         Route::put('/{item}', [\App\Http\Controllers\CaiDatItemController::class, 'update'])->name('update');
         Route::delete('/{item}', [\App\Http\Controllers\CaiDatItemController::class, 'destroy'])->name('destroy');
     });
 
     // Quản lý chế độ
     Route::prefix('che-do')->name('che-do.')->group(function () {
+        // Khen thưởng
         Route::get('/khen-thuong', [CheDoController::class, 'khenThuongIndex'])->name('khen-thuong.index');
-        Route::post('/khen-thuong', [CheDoController::class, 'khenThuongStore'])->name('khen-thuong.store');
+        // Kỷ luật
         Route::get('/ky-luat', [CheDoController::class, 'kyLuatIndex'])->name('ky-luat.index');
-        Route::post('/ky-luat', [CheDoController::class, 'kyLuatStore'])->name('ky-luat.store');
-        
         // Các route chung
-        Route::prefix('khen-thuong-ky-luat')->name('khen-thuong-ky-luat.')->group(function () {
-            Route::get('/create', [CheDoController::class, 'khenThuongKyLuatCreate'])->name('create');
-            Route::post('/', [CheDoController::class, 'khenThuongKyLuatStore'])->name('store');
-            Route::get('/{id}', [CheDoController::class, 'khenThuongKyLuatShow'])->name('show');
-            Route::get('/khen-thuong', [CheDoController::class, 'khenThuongIndex'])->name('khen-thuong.index');
-            Route::get('/ky-luat', [CheDoController::class, 'kyLuatIndex'])->name('ky-luat.index');
-        });
+        Route::get('/khen-thuong-ky-luat/create', [CheDoController::class, 'khenThuongKyLuatCreate'])->name('khen-thuong-ky-luat.create');
+        Route::get('/khen-thuong-ky-luat/{id}', [CheDoController::class, 'khenThuongKyLuatShow'])->name('khen-thuong-ky-luat.show');
+        Route::post('/khen-thuong-ky-luat', [CheDoController::class, 'khenThuongKyLuatStore'])->name('khen-thuong-ky-luat.store');
     });
 });
