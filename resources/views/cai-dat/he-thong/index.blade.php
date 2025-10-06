@@ -42,10 +42,17 @@
         <div class="col-md-9">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <span><i class="fas fa-folder-open"></i>
-                        {{ isset($danhMucModel) ? $danhMucModel->ten_cai_dat : ($danhMucs->count() ? $danhMucs->last() : 'Chưa chọn danh mục') }}</span>
-                    @if(isset($danhMucModel) && $danhMucModel->mo_ta)
-                        <span class="text-muted small ms-3">{{ $danhMucModel->mo_ta }}</span>
+                    <div class="d-flex align-items-center gap-3">
+                        <span><i class="fas fa-folder-open"></i>
+                            {{ isset($danhMucModel) ? $danhMucModel->ten_cai_dat : ($danhMucs->count() ? $danhMucs->last() : 'Chưa chọn danh mục') }}</span>
+                        @if(isset($danhMucModel) && $danhMucModel->mo_ta)
+                            <span class="text-muted small">{{ $danhMucModel->mo_ta }}</span>
+                        @endif
+                    </div>
+                    @if(isset($danhMucModel))
+                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteDanhMuc('{{ $danhMucModel->id }}')">
+                            <i class="fas fa-trash"></i> Xóa danh mục
+                        </button>
                     @endif
                 </div>
                 <div class="card-body">
@@ -107,6 +114,36 @@
     </div>
     @push('scripts')
         <script>
+        // Xóa danh mục
+        function deleteDanhMuc(id) {
+            if (!confirm('Bạn có chắc chắn muốn xóa danh mục này? Tất cả các items trong danh mục này cũng sẽ bị xóa.')) {
+                return;
+            }
+            
+            fetch(`{{ url('cai-dat') }}/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (window.HRM && typeof HRM.showSuccess === 'function') {
+                        HRM.showSuccess(data.message || 'Xóa danh mục thành công!');
+                    } else {
+                        alert(data.message || 'Xóa danh mục thành công!');
+                    }
+                    window.location.href = "{{ route('cai-dat.index') }}";
+                } else {
+                    alert(data.message || 'Lỗi khi xóa danh mục!');
+                }
+            })
+            .catch(() => alert('Lỗi mạng!'));
+        }
+
         // Tự động sinh slug cho danh mục
         function toSlug(str) {
             str = str.toLowerCase();

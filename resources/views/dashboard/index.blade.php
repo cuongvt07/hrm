@@ -197,7 +197,7 @@
                             </div>
                             <div class="flex-shrink-0">
                                 <x-ui.badge type="warning" size="sm">
-                                    {{ optional($contract->ngay_ket_thuc)->diffInDays(now()) ?? 0 }} ngày
+                                    {{ intval(optional($contract->ngay_ket_thuc)->diffInDays(now()) ?? 0) }} ngày
                                 </x-ui.badge>
                             </div>
                         </div>

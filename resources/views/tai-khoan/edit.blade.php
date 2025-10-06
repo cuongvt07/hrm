@@ -18,11 +18,29 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Phòng ban</label>
-                            <input type="text" class="form-control" value="{{ $taiKhoan->nhanVien->phongBan->ten ?? '-' }}" disabled>
+                            <select class="form-select @error('phong_ban_id') is-invalid @enderror" name="phong_ban_id">
+                                @foreach(\App\Models\PhongBan::all() as $phongBan)
+                                    <option value="{{ $phongBan->id }}" {{ $taiKhoan->nhanVien->phong_ban_id == $phongBan->id ? 'selected' : '' }}>
+                                        {{ $phongBan->ten_phong_ban }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('phong_ban_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Chức vụ</label>
-                            <input type="text" class="form-control" value="{{ $taiKhoan->nhanVien->chucVu->ten ?? '-' }}" disabled>
+                            <select class="form-select @error('chuc_vu_id') is-invalid @enderror" name="chuc_vu_id">
+                                @foreach(\App\Models\ChucVu::all() as $chucVu)
+                                    <option value="{{ $chucVu->id }}" {{ $taiKhoan->nhanVien->chuc_vu_id == $chucVu->id ? 'selected' : '' }}>
+                                        {{ $chucVu->ten_chuc_vu }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('chuc_vu_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="mb-3">

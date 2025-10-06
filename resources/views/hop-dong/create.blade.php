@@ -8,9 +8,6 @@
                 <button class="nav-link active" id="tab-chitiet" data-bs-toggle="tab" data-bs-target="#chitiet" type="button" role="tab" aria-controls="chitiet" aria-selected="true">Chi tiết hợp đồng</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tab-baohiem" data-bs-toggle="tab" data-bs-target="#baohiem" type="button" role="tab" aria-controls="baohiem" aria-selected="false">Thông tin bảo hiểm</button>
-            </li>
-            <li class="nav-item" role="presentation">
                 <button class="nav-link" id="tab-phucloi" data-bs-toggle="tab" data-bs-target="#phucloi" type="button" role="tab" aria-controls="phucloi" aria-selected="false">Phụ cấp & phúc lợi</button>
             </li>
         </ul>

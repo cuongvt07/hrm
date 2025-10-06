@@ -101,20 +101,31 @@ class TaiKhoanController extends Controller
             'vai_tro' => 'required|in:quan_tri,nhan_su,quan_ly,nhan_vien',
             'trang_thai' => 'required|in:hoat_dong,khong_hoat_dong',
             'mat_khau' => 'nullable|min:6',
+            'phong_ban_id' => 'required|exists:phong_ban,id',
+            'chuc_vu_id' => 'required|exists:chuc_vu,id',
         ]);
 
-        $data = [
-            'email' => $request->email,
-            'vai_tro' => $request->vai_tro,
-            'trang_thai' => $request->trang_thai,
-        ];
+        DB::transaction(function() use ($request, $taiKhoan) {
+            // Cập nhật thông tin tài khoản
+            $data = [
+                'email' => $request->email,
+                'vai_tro' => $request->vai_tro,
+                'trang_thai' => $request->trang_thai,
+            ];
 
-        // Chỉ cập nhật mật khẩu nếu có nhập mới
-        if ($request->filled('mat_khau')) {
-            $data['mat_khau'] = Hash::make($request->mat_khau);
-        }
+            // Chỉ cập nhật mật khẩu nếu có nhập mới
+            if ($request->filled('mat_khau')) {
+                $data['mat_khau'] = Hash::make($request->mat_khau);
+            }
 
-        $taiKhoan->update($data);
+            $taiKhoan->update($data);
+
+            // Cập nhật thông tin nhân viên
+            $taiKhoan->nhanVien->update([
+                'phong_ban_id' => $request->phong_ban_id,
+                'chuc_vu_id' => $request->chuc_vu_id,
+            ]);
+        });
 
         return redirect()->route('tai-khoan.index')
             ->with('success', 'Cập nhật tài khoản thành công.');

@@ -67,7 +67,7 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('hop-dong.saphethan') ? 'active' : '' }}" href="{{ route('hop-dong.saphethan') }}">
-                                <i class="fas fa-exclamation-triangle text-warning"></i> Hợp đồng sắp hết hạn
+                                <i class="fas fa-exclamation-triangle"></i> Hợp đồng sắp hết hạn
                             </a>
                         </li>
                     </ul>
@@ -126,12 +126,6 @@
                             <a class="nav-link {{ request()->routeIs('bao-cao.nhan-su.*') ? 'active' : '' }}" 
                                href="{{ route('bao-cao.nhan-su.index') }}">
                                 <i class="fas fa-users"></i> Phòng ban nhân sự
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('bao-cao.hop-dong.*') ? 'active' : '' }}" 
-                               href="{{ route('bao-cao.hop-dong.index') }}">
-                                <i class="fas fa-file-contract"></i> Hợp đồng nhân sự
                             </a>
                         </li>
                         <li class="nav-item">

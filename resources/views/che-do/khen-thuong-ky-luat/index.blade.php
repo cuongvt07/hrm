@@ -25,7 +25,9 @@
             <input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Tiêu đề, số quyết định...">
         </div>
         <div class="col-auto">
-            <button class="btn btn-sm btn-secondary">Lọc</button>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i> Tìm kiếm
+            </button>
         </div>
     </form>
     {{-- Bộ lọc (nếu có) --}}

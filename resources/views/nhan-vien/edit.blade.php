@@ -64,7 +64,7 @@
                                                 <label for="anh_dai_dien"
                                                     class="btn btn-sm btn-outline-primary position-absolute"
                                                     style="bottom: 0; right: 0;">
-                                                    <!-- ...existing code... -->
+                                                    <i class="fas fa-camera"></i>
                                                 </label>
                                                 <input type="file" id="anh_dai_dien" name="anh_dai_dien" class="d-none"
                                                     accept="image/*" onchange="previewAvatar(this)">
@@ -672,56 +672,92 @@
                                                     </div>
 
                                                     <!-- Bảng giấy tờ -->
-                                                    <div id="myFileTableContainer">
-                                                        <div class="table-responsive">
-                                                            <table class="table table-striped" id="myFileTable">
-                                                                <thead>
+                                                    <div id="myFileTableContainer" class="card shadow-sm border-0 rounded-3">
+                                                        <div class="card-header bg-white py-2">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <h6 class="mb-0 text-dark">
+                                                                    Danh sách giấy tờ
+                                                                </h6>
+                                                                <div class="text-muted small">
+                                                                    Tổng số: {{ $nhanVien->GiayToTuyThan->count() }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="table-responsive" style="max-height: 340px; overflow-y: auto;">
+                                                            <table class="table table-hover align-middle mb-0" id="myFileTable" style="font-size: 0.97rem;">
+                                                                <thead class="bg-light">
                                                                     <tr>
-                                                                        <th>Loại giấy tờ</th>
-                                                                        <td>Tên</td>
-                                                                        <th>Số giấy tờ</th>
-                                                                        <th>Ngày cấp</th>
-                                                                        <th>Ngày hết hạn</th>
-                                                                        <th>Nơi cấp</th>
-                                                                        <th>Tệp đính kèm</th>
-                                                                        <th>Thao tác</th>
+                                                                        <th class="px-3 py-2">Loại giấy tờ</th>
+                                                                        <th class="px-3 py-2">Tên</th>
+                                                                        <th class="px-3 py-2">Số giấy tờ</th>
+                                                                        <th class="px-3 py-2">Ngày cấp</th>
+                                                                        <th class="px-3 py-2">Ngày hết hạn</th>
+                                                                        <th class="px-3 py-2">Nơi cấp</th>
+                                                                        <th class="px-3 py-2">Tệp đính kèm</th>
+                                                                        <th class="px-3 py-2">Thao tác</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     @foreach($nhanVien->GiayToTuyThan as $idx => $file)
                                                                         <tr>
-                                                                            <td>{{ $file->loai_giay_to }}</td>
-                                                                            <td>{{ $file->ghi_chu }}</td>
-                                                                            <td>{{ $file->so_giay_to }}</td>
-                                                                            <td>{{ $file->ngay_cap }}</td>
-                                                                            <td>{{ $file->ngay_het_han }}</td>
-                                                                            <td>{{ $file->noi_cap }}</td>
-
-                                                                            <td>
-                                                                                {{-- Input chọn file mới --}}
-                                                                                <input type="file" 
-                                                                                    name="giay_to[{{ $idx }}][tep_tin]" 
-                                                                                    accept=".pdf,image/*" 
-                                                                                    class="form-control form-control-sm"
-                                                                                    onchange="showFileName(this, {{ $idx }})">
-
-                                                                                {{-- Nếu có file cũ thì hiển thị link --}}
-                                                                                @if(!empty($file->tepTin))
-                                                                                    <div class="mt-1">
-                                                                                        <small class="text-muted">
-                                                                                            File hiện tại: 
-                                                                                            <a href="{{ asset('storage/' . $file->tepTin->duong_dan_tep) }}" 
-                                                                                            target="_blank">
-                                                                                            {{ $file->tepTin->ten_tep }}
-                                                                                            </a>
-                                                                                        </small>
-                                                                                    </div>
-                                                                                    {{-- Giữ lại tep_tin_id để khi không upload file mới thì còn file cũ --}}
-                                                                                    <input type="hidden" name="giay_to[{{ $idx }}][tep_tin_id]" value="{{ $file->tep_tin_id }}">
+                                                                            <td class="px-4">
+                                                                                <div class="d-flex align-items-center">
+                                                                                    <i class="fas fa-file-alt text-primary me-2"></i>
+                                                                                    <span>{{ ucfirst(str_replace('_', ' ', $file->loai_giay_to)) }}</span>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td class="px-4">{{ $file->ghi_chu }}</td>
+                                                                            <td class="px-4">
+                                                                                <span class="badge bg-light text-dark">
+                                                                                    {{ $file->so_giay_to }}
+                                                                                </span>
+                                                                            </td>
+                                                                            <td class="px-4">
+                                                                                @if($file->ngay_cap)
+                                                                                    <span class="text-muted">
+                                                                                        <i class="far fa-calendar-alt me-1"></i>
+                                                                                        {{ \Carbon\Carbon::parse($file->ngay_cap)->format('d/m/Y') }}
+                                                                                    </span>
                                                                                 @endif
+                                                                            </td>
+                                                                            <td class="px-4">
+                                                                                @if($file->ngay_het_han)
+                                                                                    <span class="text-muted">
+                                                                                        <i class="far fa-calendar-times me-1"></i>
+                                                                                        {{ \Carbon\Carbon::parse($file->ngay_het_han)->format('d/m/Y') }}
+                                                                                    </span>
+                                                                                @endif
+                                                                            </td>
+                                                                            <td class="px-4">{{ $file->noi_cap }}</td>
+                                                                            <td class="px-4">
+                                                                                <div class="upload-section">
+                                                                                    <div class="custom-file-upload mb-2">
+                                                                                        <label for="file-{{ $idx }}" class="btn btn-outline-primary btn-sm w-100">
+                                                                                            <i class="fas fa-upload me-1"></i> Chọn file
+                                                                                        </label>
+                                                                                        <input type="file" 
+                                                                                            id="file-{{ $idx }}"
+                                                                                            name="giay_to[{{ $idx }}][tep_tin]" 
+                                                                                            accept=".pdf,image/*" 
+                                                                                            class="d-none"
+                                                                                            onchange="showFileName(this, {{ $idx }})">
+                                                                                    </div>
 
-                                                                                {{-- Chỗ hiển thị preview tên file mới --}}
-                                                                                <small id="file-name-{{ $idx }}" class="text-primary"></small>
+                                                                                    @if(!empty($file->tepTin))
+                                                                                        <div class="current-file">
+                                                                                            <a href="{{ asset('storage/' . $file->tepTin->duong_dan_tep) }}" 
+                                                                                                class="btn btn-link btn-sm text-decoration-none p-0"
+                                                                                                target="_blank">
+                                                                                                <i class="fas fa-file-download me-1"></i>
+                                                                                                {{ $file->tepTin->ten_tep }}
+                                                                                            </a>
+                                                                                        </div>
+                                                                                        <input type="hidden" name="giay_to[{{ $idx }}][tep_tin_id]" value="{{ $file->tep_tin_id }}">
+                                                                                    @endif
+
+                                                                                <div class="selected-file mt-1">
+                                                                                    <small id="file-name-{{ $idx }}" class="text-primary"></small>
+                                                                                </div>
 
                                                                                 {{-- Hidden fields giữ dữ liệu cũ --}}
                                                                                 <input type="hidden" name="giay_to[{{ $idx }}][id]" value="{{ $file->id }}">
@@ -733,8 +769,12 @@
                                                                                 <input type="hidden" name="giay_to[{{ $idx }}][ghi_chu]" value="{{ $file->ghi_chu }}">
                                                                             </td>
 
-                                                                            <td>
-                                                                                <button type="button" class="btn btn-sm btn-outline-danger delete-my-file">Xóa</button>
+                                                                            <td class="px-4">
+                                                                                <div class="d-flex gap-1">
+                                                                                    <button type="button" class="btn btn-outline-danger btn-sm delete-my-file">
+                                                                                        <i class="fas fa-trash-alt"></i>
+                                                                                    </button>
+                                                                                </div>
                                                                             </td>
                                                                         </tr>
                                                                     @endforeach

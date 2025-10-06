@@ -49,7 +49,7 @@
                                                 <label for="anh_dai_dien"
                                                     class="btn btn-sm btn-outline-primary position-absolute"
                                                     style="bottom: 0; right: 0;">
-                                                    <!-- ...existing code... -->
+                                                    <i class="fas fa-camera"></i>
                                                 </label>
                                                 <input type="file" id="anh_dai_dien" name="anh_dai_dien" class="d-none"
                                                     accept="image/*" onchange="previewAvatar(this)">

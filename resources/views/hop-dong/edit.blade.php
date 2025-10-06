@@ -52,7 +52,18 @@
                     <div class="mb-3">
                         <label for="tep_tin_hop_dong" class="form-label">Tài liệu hợp đồng (ảnh, doc, excel, pdf)</label>
                         <input type="file" name="tep_tin_hop_dong[]" id="tep_tin_hop_dong" class="form-control" accept=".jpg,.jpeg,.png,.gif,.bmp,.pdf,.doc,.docx,.xls,.xlsx" multiple>
-                        <small class="text-muted">Có thể chọn nhiều file. Định dạng: ảnh, pdf, doc, excel.</small>
+                        <div class="d-flex align-items-center gap-2 mt-1">
+                            <small class="text-muted">Có thể chọn nhiều file. Định dạng: ảnh, pdf, doc, excel.</small>
+                            @if($hopDong->tepTin && count($hopDong->tepTin))
+                                <span class="ms-2">
+                                    @foreach($hopDong->tepTin as $file)
+                                        <a href="{{ asset('storage/' . $file->duong_dan_tep) }}" target="_blank" class="badge bg-light text-dark border me-1">
+                                            <i class="fas fa-paperclip me-1"></i>{{ $file->ten_tep ?? basename($file->duong_dan_tep) }}
+                                        </a>
+                                    @endforeach
+                                </span>
+                            @endif
+                        </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">

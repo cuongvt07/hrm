@@ -153,4 +153,29 @@ class CheDoController extends Controller
                 ->with('success', 'Tạo quyết định thành công!');
         }
     }
+
+    public function khenThuongKyLuatUpdate(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'loai' => 'required|in:khen_thuong,ky_luat',
+            'so_quyet_dinh' => 'nullable|string|max:100',
+            'ngay_quyet_dinh' => 'required|date',
+            'tieu_de' => 'required|string|max:200',
+            'mo_ta' => 'nullable|string',
+            'gia_tri' => 'nullable|numeric|min:0',
+            'nguoi_quyet_dinh' => 'nullable|string|max:200',
+            'trang_thai' => 'nullable|in:chua_thuc_hien,dang_thuc_hien,hoan_thanh',
+        ]);
+
+        $khenThuongKyLuat = KhenThuongKyLuat::findOrFail($id);
+        $khenThuongKyLuat->update($validated);
+
+        if ($khenThuongKyLuat->loai === 'ky_luat') {
+            return redirect()->route('che-do.ky-luat.index')
+                ->with('success', 'Cập nhật quyết định thành công!');
+        } else {
+            return redirect()->route('che-do.khen-thuong.index')
+                ->with('success', 'Cập nhật quyết định thành công!');
+        }
+    }
 }

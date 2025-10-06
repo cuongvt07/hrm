@@ -59,4 +59,10 @@ class HopDongLaoDong extends Model
                     ->where('ngay_ket_thuc', '<=', now()->addDays($days))
                     ->where('ngay_ket_thuc', '>', now());
     }
+
+    // Quan hệ với tệp tin hợp đồng
+    public function tepTin()
+    {
+        return $this->hasMany(\App\Models\TepTin::class, 'hop_dong_id', 'id')->where('loai_tep', 'hop_dong');
+    }
 }

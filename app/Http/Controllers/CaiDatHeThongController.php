@@ -62,13 +62,35 @@ class CaiDatHeThongController extends Controller
         return back()->with('success', 'Cập nhật item thành công!');
     }
 
-    // Xóa item
+    // Xóa danh mục và tất cả items liên quan
     public function destroy(CaiDatHeThong $item)
     {
-        $item->delete();
-        if (request()->ajax()) {
-            return response()->json(['success' => true, 'message' => 'Xóa item thành công!']);
+        try {
+            \DB::transaction(function() use ($item) {
+                // Xóa tất cả các items thuộc danh mục
+                CaiDatItem::where('danh_muc_id', $item->id)->delete();
+                
+                // Xóa danh mục
+                $item->delete();
+            });
+
+            if (request()->ajax()) {
+                return response()->json([
+                    'success' => true, 
+                    'message' => 'Xóa danh mục và các items thành công!'
+                ]);
+            }
+            
+            return back()->with('success', 'Xóa danh mục và các items thành công!');
+        } catch (\Exception $e) {
+            if (request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Lỗi khi xóa danh mục: ' . $e->getMessage()
+                ], 500);
+            }
+            
+            return back()->with('error', 'Lỗi khi xóa danh mục: ' . $e->getMessage());
         }
-        return back()->with('success', 'Xóa item thành công!');
     }
 }

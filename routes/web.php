@@ -125,5 +125,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/khen-thuong-ky-luat/create', [CheDoController::class, 'khenThuongKyLuatCreate'])->name('khen-thuong-ky-luat.create');
         Route::get('/khen-thuong-ky-luat/{id}', [CheDoController::class, 'khenThuongKyLuatShow'])->name('khen-thuong-ky-luat.show');
         Route::post('/khen-thuong-ky-luat', [CheDoController::class, 'khenThuongKyLuatStore'])->name('khen-thuong-ky-luat.store');
+        Route::put('/khen-thuong-ky-luat/{id}', [CheDoController::class, 'khenThuongKyLuatUpdate'])->name('khen-thuong-ky-luat.update');
     });
 });

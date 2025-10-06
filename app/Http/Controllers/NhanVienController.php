@@ -249,8 +249,18 @@ class NhanVienController extends Controller
                 unset($validated['ngay_sinh_nv']);
             }
 
+
             // Update employee data
             $nhanVien->update($validated);
+
+            // Nếu trạng thái là 'nghi_viec' thì cập nhật tất cả hợp đồng về 'het_hieu_luc'
+            if (($validated['trang_thai'] ?? null) === 'nghi_viec') {
+                if (method_exists($nhanVien, 'hopDongLaoDong')) {
+                    $nhanVien->hopDongLaoDong()->update(['trang_thai' => 'het_hieu_luc']);
+                } else {
+                    \App\Models\HopDongLaoDong::where('nhan_vien_id', $nhanVien->id)->update(['trang_thai' => 'het_hieu_luc']);
+                }
+            }
 
             // Update or create bảo hiểm
             $baoHiemData = array_filter([
@@ -520,9 +530,9 @@ class NhanVienController extends Controller
     public function addDocument(Request $request, NhanVien $nhanVien)
     {
         $validated = $request->validate([
-            'loai_tep' => 'required|string|in:giay_to_tuy_than,chung_chi,hop_dong,khac',
-            'ten_tep' => 'required|string|max:255',
-            'tep_tin' => 'required|file|max:10240' // 10MB max
+            'loai_tep' => 'nullable|string|in:giay_to_tuy_than,chung_chi,hop_dong,khac,bang_cap,chung_nhan',
+            'ten_tep' => 'nullable|string|max:255',
+            'tep_tin' => 'nullable|file|max:10240' // 10MB max
         ]);
 
         if ($request->hasFile('tep_tin')) {
@@ -643,5 +653,39 @@ class NhanVienController extends Controller
             'success' => true,
             'message' => 'Đã chuyển trạng thái nghỉ việc cho các nhân viên đã chọn!'
         ]);
+    }
+
+    public function export(Request $request)
+    {
+        $query = NhanVien::query()->with(['phongBan', 'chucVu']);
+
+        // Lọc search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw("CONCAT(ho, ' ', ten) LIKE ?", ["%$search%"])
+                    ->orWhere('ma_nhan_vien', 'like', "%$search%")
+                    ->orWhere('email', 'like', "%$search%")
+                    ->orWhere('so_dien_thoai', 'like', "%$search%");
+            });
+        }
+
+        // Lọc phòng ban
+        if ($request->filled('phong_ban_id')) {
+            $query->where('phong_ban_id', $request->phong_ban_id);
+        }
+
+        // Lọc chức vụ
+        if ($request->filled('chuc_vu_id')) {
+            $query->where('chuc_vu_id', $request->chuc_vu_id);
+        }
+
+        // Lọc trạng thái
+        if ($request->filled('trang_thai')) {
+            $query->where('trang_thai', $request->trang_thai);
+        }
+
+        $export = new \App\Exports\NhanVienExport($query);
+        return \Maatwebsite\Excel\Facades\Excel::download($export, 'danh-sach-nhan-vien-' . date('Y-m-d') . '.xlsx');
     }
 }
