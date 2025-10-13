@@ -258,10 +258,18 @@
                                                                     <select class="form-select" id="phong_ban_id"
                                                                         name="phong_ban_id">
                                                                         <option value="">Chọn phòng ban</option>
-                                                                        @foreach($phongBans as $phongBan)
-                                                                            <option value="{{ $phongBan->id }}">
-                                                                                {{ $phongBan->ten_phong_ban }}</option>
-                                                                        @endforeach
+                                                                        @php
+                                                                            function renderPhongBanOptions($phongBans, $level = 0) {
+                                                                                foreach ($phongBans as $phongBan) {
+                                                                                    $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $level);
+                                                                                    echo '<option value="' . $phongBan->id . '">' . $indent . e($phongBan->ten_phong_ban) . '</option>';
+                                                                                    if (!empty($phongBan->phongBanCon) && count($phongBan->phongBanCon)) {
+                                                                                        renderPhongBanOptions($phongBan->phongBanCon, $level + 1);
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        @endphp
+                                                                        @php renderPhongBanOptions($phongBans); @endphp
                                                                     </select>
                                                                 </div>
                                                                 <div class="mb-3">

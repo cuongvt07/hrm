@@ -74,9 +74,18 @@
                     <label class="form-label">Chọn phòng ban áp dụng</label>
                     <select id="selectPhongBan" class="form-select">
                         <option value="" disabled selected>-- Chọn phòng ban --</option>
-                        @foreach($phongBans as $pb)
-                            <option value="{{ $pb->id }}">{{ $pb->ten_phong_ban }}</option>
-                        @endforeach
+                        @php
+                            function renderPhongBanOptions($phongBans, $level = 0) {
+                                foreach ($phongBans as $pb) {
+                                    $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $level);
+                                    echo '<option value="' . $pb->id . '">' . $indent . e($pb->ten_phong_ban) . '</option>';
+                                    if (!empty($pb->phongBanCon) && count($pb->phongBanCon)) {
+                                        renderPhongBanOptions($pb->phongBanCon, $level + 1);
+                                    }
+                                }
+                            }
+                        @endphp
+                        @php renderPhongBanOptions($phongBans); @endphp
                     </select>
                     <div id="previewPhongBan" class="mt-2"></div>
                 </div>

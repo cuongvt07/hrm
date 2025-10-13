@@ -49,6 +49,24 @@
                 </a>
             </li>
 
+            <!-- Quản lý phòng ban -->
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('phong-ban.*') ? 'active' : '' }}" 
+                   href="{{ route('phong-ban.index') }}" title="Quản lý phòng ban">
+                    <i class="fas fa-sitemap"></i>
+                    <span class="nav-text">Phòng ban</span>
+                </a>
+            </li>
+
+            <!-- Quản lý chức vụ -->
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('chuc-vu.*') ? 'active' : '' }}" 
+                   href="{{ route('chuc-vu.index') }}" title="Quản lý chức vụ">
+                    <i class="fas fa-user-tie"></i>
+                    <span class="nav-text">Chức vụ</span>
+                </a>
+            </li>
+
             <!-- Dropdown Quản lý hợp đồng -->
             @php
                 $contractActive = request()->routeIs('hop-dong.*') || request()->routeIs('hop-dong.saphethan');

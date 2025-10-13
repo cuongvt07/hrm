@@ -11,6 +11,8 @@ use App\Http\Controllers\NhanVienController;
 use App\Http\Controllers\TaiKhoanController;
 use App\Http\Controllers\QuaTrinhCongTacController;
 use App\Http\Controllers\GiayToTuyThanController;
+use App\Http\Controllers\PhongBanController;
+use App\Http\Controllers\ChucVuController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -127,4 +129,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/khen-thuong-ky-luat', [CheDoController::class, 'khenThuongKyLuatStore'])->name('khen-thuong-ky-luat.store');
         Route::put('/khen-thuong-ky-luat/{id}', [CheDoController::class, 'khenThuongKyLuatUpdate'])->name('khen-thuong-ky-luat.update');
     });
+
+    // Quản lý phòng ban và chức vụ
+    Route::resource('phong-ban', PhongBanController::class);
+    Route::resource('chuc-vu', ChucVuController::class);
 });

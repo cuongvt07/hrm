@@ -399,7 +399,16 @@
                                                             <div class="col-12">
                                                                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                                                                     <strong class="text-dark">Phòng ban:</strong>
-                                                                    <span class="fw-bold">{{ $nhanVien->phongBan ? $nhanVien->phongBan->ten_phong_ban : '-' }}</span>
+                                                                    <span class="fw-bold">
+                                                                        @if($nhanVien->phongBan)
+                                                                            {{ $nhanVien->phongBan->ten_phong_ban }}
+                                                                            @if($nhanVien->phongBan->phongBanCha)
+                                                                                <span class="text-muted small">(thuộc: {{ $nhanVien->phongBan->phongBanCha->ten_phong_ban }})</span>
+                                                                            @endif
+                                                                        @else
+                                                                            -
+                                                                        @endif
+                                                                    </span>
                                                                 </div>
                                                             </div>
                                                             <div class="col-12">

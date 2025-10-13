@@ -65,7 +65,9 @@ class CheDoController extends Controller
     public function khenThuongKyLuatCreate()
     {
         $nhanViens = NhanVien::dangLamViec()->get();
-        $phongBans = PhongBan::all();
+        $phongBans = PhongBan::with('phongBanCon')
+            ->whereNull('phong_ban_cha_id')
+            ->get();
         
         return view('che-do.khen-thuong-ky-luat.create', compact('nhanViens', 'phongBans'));
     }
@@ -125,11 +127,20 @@ class CheDoController extends Controller
                     }
                 }
             } elseif ($validated['loai_doi_tuong'] === 'phong_ban') {
+                // Hàm lấy tất cả id phòng ban con
+                function getAllPhongBanIds($phongBanId) {
+                    $ids = [$phongBanId];
+                    $conIds = \App\Models\PhongBan::where('phong_ban_cha_id', $phongBanId)->pluck('id');
+                    foreach ($conIds as $cid) {
+                        $ids = array_merge($ids, getAllPhongBanIds($cid));
+                    }
+                    return $ids;
+                }
                 foreach ($validated['doi_tuong_ap_dung'] as $phongBanId) {
-                    $nhanViens = \App\Models\NhanVien::where('phong_ban_id', $phongBanId)
+                    $allPhongBanIds = getAllPhongBanIds($phongBanId);
+                    $nhanViens = \App\Models\NhanVien::whereIn('phong_ban_id', $allPhongBanIds)
                         ->whereNotIn('trang_thai', ['nghi_viec', 'khac'])
                         ->pluck('id');
-                        dd($nhanViens);
                     foreach ($nhanViens as $nvId) {
                         if (class_exists('App\\Models\\TepTin')) {
                             \App\Models\TepTin::create([

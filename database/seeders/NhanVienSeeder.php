@@ -16,8 +16,8 @@ class NhanVienSeeder extends Seeder
     public function run(): void
     {
         $faker = Faker::create('vi_VN');
-        
-        $phongBans = PhongBan::all();
+
+        $phongBans = PhongBan::with('phongBanCon')->whereNull('phong_ban_cha_id')->get();
         $chucVus = ChucVu::all();
         
         for ($i = 1; $i <= 50; $i++) {

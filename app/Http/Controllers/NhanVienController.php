@@ -62,7 +62,9 @@ class NhanVienController extends Controller
             ]);
         }
 
-        $phongBans = PhongBan::all();
+                $phongBans = PhongBan::with('phongBanCon')
+            ->whereNull('phong_ban_cha_id')
+            ->get();
         $chucVus = ChucVu::all();
 
         return view('nhan-vien.index', compact('nhanViens', 'phongBans', 'chucVus'));
@@ -75,15 +77,25 @@ class NhanVienController extends Controller
         // Lấy danh sách khen thưởng/kỷ luật (cá nhân + tập thể)
         require_once app_path('Helpers/KhenThuongKyLuatHelper.php');
         $ktkl = getKhenThuongKyLuatForNhanVien($nhanVien);
-        $khenThuong = $ktkl['khenThuong'];
-        $kyLuat = $ktkl['kyLuat'];
+        $khenThuong = collect($ktkl['khenThuong'])->filter(function($item) use ($nhanVien) {
+            if ($item->loai_doi_tuong == 'phong_ban') {
+                return $item->phong_ban_id == $nhanVien->phong_ban_id;
+            }
+            return true;
+        });
+        $kyLuat = collect($ktkl['kyLuat'])->filter(function($item) use ($nhanVien) {
+            if ($item->loai_doi_tuong == 'phong_ban') {
+                return $item->phong_ban_id == $nhanVien->phong_ban_id;
+            }
+            return true;
+        });
 
         return view('nhan-vien.show', compact('nhanVien', 'khenThuong', 'kyLuat'));
     }
 
     public function create()
     {
-        $phongBans = PhongBan::all();
+    $phongBans = PhongBan::with('phongBanCon')->whereNull('phong_ban_cha_id')->get();
         $chucVus = ChucVu::all();
         $lastId = NhanVien::max('id') ?? 0;
         $nextCode = 'NV' . str_pad($lastId + 1, 4, '0', STR_PAD_LEFT);
@@ -612,7 +624,9 @@ class NhanVienController extends Controller
     public function edit(NhanVien $nhanVien)
     {
         $nhanVien->load(['thongTinLienHe', 'thongTinGiaDinh', 'tepTin']);
-        $phongBans = PhongBan::all();
+                $phongBans = PhongBan::with('phongBanCon')
+            ->whereNull('phong_ban_cha_id')
+            ->get();
         $chucVus = ChucVu::all();
 
         // Always provide all managers, but optionally filter if needed
