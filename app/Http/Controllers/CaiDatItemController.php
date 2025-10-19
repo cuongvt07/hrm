@@ -46,6 +46,6 @@ class CaiDatItemController extends Controller
     public function destroy(CaiDatItem $item)
     {
         $item->delete();
-        return response()->json(['success' => true, 'message' => 'Xóa item thành công!']);
+        return back()->with('success', 'Xóa danh mục và các items thành công!');
     }
 }

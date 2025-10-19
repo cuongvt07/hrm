@@ -19,6 +19,6 @@ class CaiDatItem extends Model
 
     public function danhMuc()
     {
-        return $this->belongsTo(CaiDatDanhMuc::class, 'danh_muc_id');
+        return $this->belongsTo(CaiDatHeThong::class, 'danh_muc_id');
     }
 }

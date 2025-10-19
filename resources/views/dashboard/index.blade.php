@@ -186,7 +186,7 @@
                             <div class="flex-grow-1">
                                 <h6 class="mb-1">
                                     @if(isset($contract->nhanVien) && $contract->nhanVien)
-                                        <a href="{{ route('nhan-vien.show', $contract->nhanVien->id) }}" class="text-decoration-underline text-primary">{{ $contract->nhanVien->ho_ten }}</a>
+                                        <a href="{{ route('hop-dong.giahan.form', $contract->id) }}" class="text-decoration-underline text-primary">{{ $contract->nhanVien->ho_ten }}</a>
                                     @else
                                         N/A
                                     @endif

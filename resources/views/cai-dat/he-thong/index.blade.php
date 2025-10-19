@@ -81,7 +81,7 @@
                                             <td>
                                                 <button type="button" class="btn btn-sm btn-success btn-save-item"
                                                     data-id="{{ $item->id }}">Lưu</button>
-                                                <form method="POST" action="" style="display:inline-block">
+                                                <form method="POST" action="{{ route('cai-dat-item.destroy', $item->id) }}" style="display:inline-block">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button class="btn btn-sm btn-danger"
