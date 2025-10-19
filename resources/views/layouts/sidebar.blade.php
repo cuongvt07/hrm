@@ -40,32 +40,6 @@
                 </a>
             </li>
 
-            <!-- Quản lý tài khoản -->
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('tai-khoan.*') ? 'active' : '' }}" 
-                   href="{{ route('tai-khoan.index') }}" title="Quản lý tài khoản">
-                    <i class="fas fa-user-cog"></i>
-                    <span class="nav-text">Tài khoản</span>
-                </a>
-            </li>
-
-            <!-- Quản lý phòng ban -->
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('phong-ban.*') ? 'active' : '' }}" 
-                   href="{{ route('phong-ban.index') }}" title="Quản lý phòng ban">
-                    <i class="fas fa-sitemap"></i>
-                    <span class="nav-text">Phòng ban</span>
-                </a>
-            </li>
-
-            <!-- Quản lý chức vụ -->
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('chuc-vu.*') ? 'active' : '' }}" 
-                   href="{{ route('chuc-vu.index') }}" title="Quản lý chức vụ">
-                    <i class="fas fa-user-tie"></i>
-                    <span class="nav-text">Chức vụ</span>
-                </a>
-            </li>
 
             <!-- Dropdown Quản lý hợp đồng -->
             @php
@@ -163,12 +137,39 @@
             </li>
             <!-- Divider -->
             <hr class="sidebar-divider">
-            <!-- Cài đặt hệ thống -->
+            <!-- Dropdown Cài đặt hệ thống -->
+            @php
+                $caiDatActive = request()->routeIs('cai-dat.*') || request()->routeIs('phong-ban.*') || request()->routeIs('tai-khoan.*') || request()->routeIs('chuc-vu.*');
+            @endphp
             <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('cai-dat.*') ? 'active' : '' }}" href="{{ route('cai-dat.index') }}">
-                    <i class="fas fa-cogs"></i>
-                    <span class="nav-text">Cài đặt hệ thống</span>
+                <a class="nav-link d-flex justify-content-between align-items-center {{ $caiDatActive ? 'active' : '' }}" data-bs-toggle="collapse" href="#caiDatDropdown" role="button" aria-expanded="{{ $caiDatActive ? 'true' : 'false' }}" aria-controls="caiDatDropdown">
+                    <span><i class="fas fa-cogs"></i> <span class="nav-text">Cài đặt hệ thống</span></span>
+                    <i class="fas fa-chevron-down ms-2"></i>
                 </a>
+                <div class="collapse {{ $caiDatActive ? 'show' : '' }}" id="caiDatDropdown">
+                    <ul class="nav flex-column ms-1">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('cai-dat.*') ? 'active' : '' }}" href="{{ route('cai-dat.index') }}">
+                                <i class="fas fa-sliders-h"></i> Cài đặt chung
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('phong-ban.*') ? 'active' : '' }}" href="{{ route('phong-ban.index') }}">
+                                <i class="fas fa-building"></i> Phòng ban
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('tai-khoan.*') ? 'active' : '' }}" href="{{ route('tai-khoan.index') }}">
+                                <i class="fas fa-user"></i> Tài khoản
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('chuc-vu.*') ? 'active' : '' }}" href="{{ route('chuc-vu.index') }}">
+                                <i class="fas fa-user-tie"></i> Chức vụ
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
         </ul>
     </nav>
