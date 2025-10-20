@@ -81,12 +81,8 @@
                                             <td>
                                                 <button type="button" class="btn btn-sm btn-success btn-save-item"
                                                     data-id="{{ $item->id }}">Lưu</button>
-                                                <form method="POST" action="{{ route('cai-dat-item.destroy', $item->id) }}" style="display:inline-block">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="btn btn-sm btn-danger"
-                                                        onclick="return confirm('Xóa item này?')">Xóa</button>
-                                                </form>
+                                                <button type="button" class="btn btn-sm btn-danger btn-delete-item"
+                                                    data-id="{{ $item->id }}">Xóa</button>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -184,6 +180,39 @@
                                 }
                             } else {
                                 alert(data.message || 'Lỗi!');
+                            }
+                        })
+                        .catch(() => alert('Lỗi mạng!'));
+                });
+            });
+
+            // Xóa item
+            document.querySelectorAll('.btn-delete-item').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    if (!confirm('Bạn có chắc muốn xóa item này?')) {
+                        return;
+                    }
+                    const id = btn.getAttribute('data-id');
+                    fetch(`{{ url('cai-dat-item') }}/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                if (window.HRM && typeof HRM.showSuccess === 'function') {
+                                    HRM.showSuccess(data.message || 'Xóa item thành công!');
+                                } else {
+                                    alert(data.message || 'Xóa item thành công!');
+                                }
+                                // Reload về đúng danh mục đang mở
+                                window.location.href = "{{ route('cai-dat.index') }}?danh_muc={{ isset($danhMucModel) ? $danhMucModel->ten_cai_dat : '' }}";
+                            } else {
+                                alert(data.message || 'Lỗi khi xóa item!');
                             }
                         })
                         .catch(() => alert('Lỗi mạng!'));

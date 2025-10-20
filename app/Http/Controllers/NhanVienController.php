@@ -77,18 +77,9 @@ class NhanVienController extends Controller
         // Lấy danh sách khen thưởng/kỷ luật (cá nhân + tập thể)
         require_once app_path('Helpers/KhenThuongKyLuatHelper.php');
         $ktkl = getKhenThuongKyLuatForNhanVien($nhanVien);
-        $khenThuong = collect($ktkl['khenThuong'])->filter(function($item) use ($nhanVien) {
-            if ($item->loai_doi_tuong == 'phong_ban') {
-                return $item->phong_ban_id == $nhanVien->phong_ban_id;
-            }
-            return true;
-        });
-        $kyLuat = collect($ktkl['kyLuat'])->filter(function($item) use ($nhanVien) {
-            if ($item->loai_doi_tuong == 'phong_ban') {
-                return $item->phong_ban_id == $nhanVien->phong_ban_id;
-            }
-            return true;
-        });
+        // Không filter lại, lấy toàn bộ khen thưởng/kỷ luật đã được helper xử lý
+        $khenThuong = $ktkl['khenThuong'];
+        $kyLuat = $ktkl['kyLuat'];
 
         return view('nhan-vien.show', compact('nhanVien', 'khenThuong', 'kyLuat'));
     }
@@ -143,7 +134,11 @@ class NhanVienController extends Controller
                 'lien_he_khan_cap_quan_he' => 'nullable|string|max:50',
                 'lien_he_khan_cap_dien_thoai' => 'nullable|string|max:20',
                 'temp_family_members' => 'nullable|string',
-                'quan_ly_truc_tiep_id' => 'nullable|exists:nhanvien,id'
+                'quan_ly_truc_tiep_id' => 'nullable|exists:nhanvien,id',
+                // Thông tin lương
+                'so_tai_khoan' => 'nullable|string|max:50',
+                'ten_ngan_hang' => 'nullable|string|max:100',
+                'chi_nhanh_ngan_hang' => 'nullable|string|max:100',
             ]);
 
             if ($request->hasFile('anh_dai_dien')) {
@@ -168,6 +163,56 @@ class NhanVienController extends Controller
                 'so_the_bhyt' => $request->so_the_bhyt,
             ];
             BaoHiem::create($baoHiemData);
+
+            // Lưu thông tin liên hệ
+            $contactData = array_filter([
+                'nhan_vien_id' => $nhanVien->id,
+                'dien_thoai_di_dong' => $request->dien_thoai_di_dong,
+                'dien_thoai_co_quan' => $request->dien_thoai_co_quan,
+                'dien_thoai_nha_rieng' => $request->dien_thoai_nha_rieng,
+                'dien_thoai_khac' => $request->dien_thoai_khac,
+                'email_co_quan' => $request->email_co_quan,
+                'email_ca_nhan' => $request->email_ca_nhan,
+                'dia_chi_thuong_tru' => $request->dia_chi_thuong_tru,
+                'dia_chi_hien_tai' => $request->dia_chi_hien_tai,
+                'lien_he_khan_cap_ten' => $request->lien_he_khan_cap_ten,
+                'lien_he_khan_cap_quan_he' => $request->lien_he_khan_cap_quan_he,
+                'lien_he_khan_cap_dien_thoai' => $request->lien_he_khan_cap_dien_thoai
+            ]);
+            if (!empty($contactData) && count($contactData) > 1) {
+                ThongTinLienHe::create($contactData);
+            }
+
+            // Lưu thông tin lương
+            $salaryData = array_filter([
+                'nhan_vien_id' => $nhanVien->id,
+                'so_tai_khoan' => $request->so_tai_khoan,
+                'ten_ngan_hang' => $request->ten_ngan_hang,
+                'chi_nhanh_ngan_hang' => $request->chi_nhanh_ngan_hang
+            ]);
+            if (!empty($salaryData) && count($salaryData) > 1) {
+                ThongTinLuong::create($salaryData);
+            }
+
+            // Lưu thông tin gia đình
+            if ($request->filled('temp_family_members')) {
+                $familyMembers = json_decode($request->temp_family_members, true);
+                if (is_array($familyMembers)) {
+                    foreach ($familyMembers as $member) {
+                        ThongTinGiaDinh::create([
+                            'nhan_vien_id' => $nhanVien->id,
+                            'quan_he' => $member['quan_he'] ?? null,
+                            'ho_ten' => $member['ho_ten'] ?? null,
+                            'ngay_sinh' => $member['ngay_sinh'] ?? null,
+                            'nghe_nghiep' => $member['nghe_nghiep'] ?? null,
+                            'dia_chi_lien_he' => $member['dia_chi_lien_he'] ?? null,
+                            'dien_thoai' => $member['dien_thoai'] ?? null,
+                            'la_nguoi_phu_thuoc' => $member['la_nguoi_phu_thuoc'] ?? false,
+                            'ghi_chu' => $member['ghi_chu'] ?? null
+                        ]);
+                    }
+                }
+            }
 
             if ($request->ajax()) {
                 return response()->json([
@@ -623,8 +668,22 @@ class NhanVienController extends Controller
 
     public function edit(NhanVien $nhanVien)
     {
-        $nhanVien->load(['thongTinLienHe', 'thongTinGiaDinh', 'tepTin']);
-                $phongBans = PhongBan::with('phongBanCon')
+        $nhanVien->load([
+            'thongTinLienHe', 
+            'thongTinGiaDinh', 
+            'tepTin',
+            'thongTinLuong',
+            'baoHiem',
+            'quaTrinhCongTac.chucVu',
+            'quaTrinhCongTac.phongBan',
+            'thongTinGiayTo.tepTin',
+            'phongBan',
+            'chucVu',
+            'hopDongLaoDong',
+            'taiKhoan'
+        ]);
+        
+        $phongBans = PhongBan::with('phongBanCon')
             ->whereNull('phong_ban_cha_id')
             ->get();
         $chucVus = ChucVu::all();

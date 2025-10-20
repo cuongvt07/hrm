@@ -222,7 +222,7 @@
                                                                 <thead class="table-light">
                                                                     <tr>
                                                                         <th>Quyết định</th>
-                                                                        <th>Ngày</th>
+                                                                        <th>Trạng thái</th>
                                                                         <th>Khen thưởng</th>
                                                                         <th>Mô tả</th>
                                                                         <th>Giá trị</th>
@@ -233,7 +233,27 @@
                                                                 @foreach($khenThuong as $item)
                                                                     <tr>
                                                                         <td>{{ $item->khenThuongKyLuat->so_quyet_dinh ?? '-' }}</td>
-                                                                        <td>{{ $item->khenThuongKyLuat->ngay_quyet_dinh ? \Carbon\Carbon::parse($item->khenThuongKyLuat->ngay_quyet_dinh)->format('d/m/Y') : '-' }}</td>
+                                                                        <td>
+                                                                            @php
+                                                                                $status = $item->khenThuongKyLuat->trang_thai ?? null;
+                                                                            @endphp
+                                                                            @switch($status)
+                                                                                @case('chua_thuc_hien')
+                                                                                    <span class="badge bg-secondary">Chưa thực hiện</span>
+                                                                                    @break
+                                                                                @case('dang_thuc_hien')
+                                                                                    <span class="badge bg-warning">Đang thực hiện</span>
+                                                                                    @break
+                                                                                @case('hoan_thanh')
+                                                                                    <span class="badge bg-success">Hoàn thành</span>
+                                                                                    @break
+                                                                                @case('huy')
+                                                                                    <span class="badge bg-danger">Hủy</span>
+                                                                                    @break
+                                                                                @default
+                                                                                    <span class="badge bg-secondary">Không xác định</span>
+                                                                            @endswitch
+                                                                        </td>
                                                                         <td>{{ $item->khenThuongKyLuat->tieu_de ?? '-' }}</td>
                                                                         <td>{{ $item->khenThuongKyLuat->mo_ta ?? '-' }}</td>
                                                                         <td>{{ $item->khenThuongKyLuat->gia_tri ? number_format($item->khenThuongKyLuat->gia_tri) : '-' }}</td>
@@ -267,7 +287,7 @@
                                                                 <thead class="table-light">
                                                                     <tr>
                                                                         <th>Quyết định</th>
-                                                                        <th>Ngày</th>
+                                                                        <th>Trạng thái</th>
                                                                         <th>Kỷ luật</th>
                                                                         <th>Mô tả</th>
                                                                         <th>Giá trị</th>
@@ -278,7 +298,27 @@
                                                                 @foreach($kyLuat as $item)
                                                                     <tr>
                                                                         <td>{{ $item->khenThuongKyLuat->so_quyet_dinh ?? '-' }}</td>
-                                                                        <td>{{ $item->khenThuongKyLuat->ngay_quyet_dinh ? \Carbon\Carbon::parse($item->khenThuongKyLuat->ngay_quyet_dinh)->format('d/m/Y') : '-' }}</td>
+                                                                        <td>
+                                                                            @php
+                                                                                $status = $item->khenThuongKyLuat->trang_thai ?? null;
+                                                                            @endphp
+                                                                            @switch($status)
+                                                                                @case('chua_thuc_hien')
+                                                                                    <span class="badge bg-secondary">Chưa thực hiện</span>
+                                                                                    @break
+                                                                                @case('dang_thuc_hien')
+                                                                                    <span class="badge bg-warning">Đang thực hiện</span>
+                                                                                    @break
+                                                                                @case('hoan_thanh')
+                                                                                    <span class="badge bg-success">Hoàn thành</span>
+                                                                                    @break
+                                                                                @case('huy')
+                                                                                    <span class="badge bg-danger">Hủy</span>
+                                                                                    @break
+                                                                                @default
+                                                                                    <span class="badge bg-secondary">Không xác định</span>
+                                                                            @endswitch
+                                                                        </td>
                                                                         <td>{{ $item->khenThuongKyLuat->tieu_de ?? '-' }}</td>
                                                                         <td>{{ $item->khenThuongKyLuat->mo_ta ?? '-' }}</td>
                                                                         <td>{{ $item->khenThuongKyLuat->gia_tri ? number_format($item->khenThuongKyLuat->gia_tri) : '-' }}</td>

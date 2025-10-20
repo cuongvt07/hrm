@@ -407,19 +407,6 @@
                                                                         id="dien_thoai_di_dong" name="dien_thoai_di_dong">
                                                                 </div>
                                                                 <div class="mb-3">
-                                                                    <label for="dien_thoai_co_quan" class="form-label">Điện
-                                                                        thoại cơ quan</label>
-                                                                    <input type="text" class="form-control"
-                                                                        id="dien_thoai_co_quan" name="dien_thoai_co_quan">
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label for="dien_thoai_nha_rieng"
-                                                                        class="form-label">Điện thoại nhà riêng</label>
-                                                                    <input type="text" class="form-control"
-                                                                        id="dien_thoai_nha_rieng"
-                                                                        name="dien_thoai_nha_rieng">
-                                                                </div>
-                                                                <div class="mb-3">
                                                                     <label for="dien_thoai_khac" class="form-label">Điện
                                                                         thoại khác</label>
                                                                     <input type="text" class="form-control"

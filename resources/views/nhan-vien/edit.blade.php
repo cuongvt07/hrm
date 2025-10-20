@@ -143,6 +143,10 @@
                                                     <button class="nav-link" id="insurance-tab" data-bs-toggle="tab"
                                                         data-bs-target="#insurance" type="button" role="tab">Thông tin bảo hiểm</button>
                                                 </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="documents-tab" data-bs-toggle="tab"
+                                                        data-bs-target="#documents" type="button" role="tab">Tài liệu</button>
+                                                </li>
                                         </ul>
 
                                         <div class="tab-content" id="employeeTabContent">
@@ -858,6 +862,56 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Documents Tab -->
+                                                <div class="tab-pane fade" id="documents" role="tabpanel">
+                                                    <div class="card border-0 shadow-sm">
+                                                        <div class="card-header bg-primary text-white">
+                                                            <h5 class="mb-0">Tài liệu đính kèm</h5>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            @if($nhanVien->tepTin && $nhanVien->tepTin->count() > 0)
+                                                                <div class="table-responsive">
+                                                                    <table class="table table-hover">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Loại tệp</th>
+                                                                                <th>Tên tệp</th>
+                                                                                <th>Ngày tải lên</th>
+                                                                                <th>Thao tác</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            @foreach($nhanVien->tepTin as $file)
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <span class="badge bg-secondary">{{ $file->loai_tep ?? 'Khác' }}</span>
+                                                                                </td>
+                                                                                <td>{{ $file->ten_tep }}</td>
+                                                                                <td>{{ \Carbon\Carbon::parse($file->created_at)->format('d/m/Y H:i') }}</td>
+                                                                                <td>
+                                                                                    @if($file->duong_dan_tep)
+                                                                                        <a href="{{ asset('storage/' . $file->duong_dan_tep) }}" 
+                                                                                           class="btn btn-sm btn-primary" 
+                                                                                           target="_blank">
+                                                                                            <i class="fas fa-eye"></i> Xem
+                                                                                        </a>
+                                                                                    @endif
+                                                                                </td>
+                                                                            </tr>
+                                                                            @endforeach
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            @else
+                                                                <div class="text-center py-5">
+                                                                    <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                                                                    <p class="text-muted fs-5">Chưa có tài liệu nào được upload</p>
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 </div>

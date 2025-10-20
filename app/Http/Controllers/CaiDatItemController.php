@@ -45,7 +45,26 @@ class CaiDatItemController extends Controller
     // Xóa item
     public function destroy(CaiDatItem $item)
     {
-        $item->delete();
-        return back()->with('success', 'Xóa danh mục và các items thành công!');
+        try {
+            $item->delete();
+            
+            if (request()->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Xóa item thành công!'
+                ]);
+            }
+            
+            return back()->with('success', 'Xóa item thành công!');
+        } catch (\Exception $e) {
+            if (request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Lỗi khi xóa item: ' . $e->getMessage()
+                ], 500);
+            }
+            
+            return back()->with('error', 'Lỗi khi xóa item: ' . $e->getMessage());
+        }
     }
 }
