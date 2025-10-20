@@ -159,13 +159,13 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('tai-khoan.*') ? 'active' : '' }}" href="{{ route('tai-khoan.index') }}">
-                                <i class="fas fa-user"></i> Tài khoản
+                            <a class="nav-link {{ request()->routeIs('chuc-vu.*') ? 'active' : '' }}" href="{{ route('chuc-vu.index') }}">
+                                <i class="fas fa-user-tie"></i> Chức vụ
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('chuc-vu.*') ? 'active' : '' }}" href="{{ route('chuc-vu.index') }}">
-                                <i class="fas fa-user-tie"></i> Chức vụ
+                            <a class="nav-link {{ request()->routeIs('tai-khoan.*') ? 'active' : '' }}" href="{{ route('tai-khoan.index') }}">
+                                <i class="fas fa-user"></i> Tài khoản
                             </a>
                         </li>
                     </ul>

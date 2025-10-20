@@ -101,8 +101,8 @@ class TaiKhoanController extends Controller
             'vai_tro' => 'required|in:quan_tri,nhan_su,quan_ly,nhan_vien',
             'trang_thai' => 'required|in:hoat_dong,khong_hoat_dong',
             'mat_khau' => 'nullable|min:6',
-            'phong_ban_id' => 'required|exists:phong_ban,id',
-            'chuc_vu_id' => 'required|exists:chuc_vu,id',
+            'phong_ban_id' => 'nullable|exists:phong_ban,id',
+            'chuc_vu_id' => 'nullable|exists:chuc_vu,id',
         ]);
 
         DB::transaction(function() use ($request, $taiKhoan) {
@@ -120,11 +120,19 @@ class TaiKhoanController extends Controller
 
             $taiKhoan->update($data);
 
-            // Cập nhật thông tin nhân viên
-            $taiKhoan->nhanVien->update([
-                'phong_ban_id' => $request->phong_ban_id,
-                'chuc_vu_id' => $request->chuc_vu_id,
-            ]);
+            // Cập nhật thông tin nhân viên (nếu có)
+            if ($request->filled('phong_ban_id') || $request->filled('chuc_vu_id')) {
+                $nhanVienData = [];
+                if ($request->filled('phong_ban_id')) {
+                    $nhanVienData['phong_ban_id'] = $request->phong_ban_id;
+                }
+                if ($request->filled('chuc_vu_id')) {
+                    $nhanVienData['chuc_vu_id'] = $request->chuc_vu_id;
+                }
+                if (!empty($nhanVienData)) {
+                    $taiKhoan->nhanVien->update($nhanVienData);
+                }
+            }
         });
 
         return redirect()->route('tai-khoan.index')

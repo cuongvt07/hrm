@@ -36,7 +36,7 @@
             <table class="table table-bordered table-hover mb-0">
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th>STT</th>
                         {{-- <th>Loại</th> --}} 
                         <th>Số quyết định</th>
                         <th>Tiêu đề</th>
@@ -50,7 +50,7 @@
                 <tbody>
                     @foreach($khenThuongKyLuats as $item)
                         <tr>
-                            <td>{{ $item->id }}</td>
+                                <td>{{ $loop->iteration }}</td>
                             {{-- <td>
                                 @if($item->loai === 'khen_thuong')
                                     <span class="badge bg-success">Khen thưởng</span>
