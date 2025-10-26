@@ -11,8 +11,22 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // Trước khi tính toán dashboard, cập nhật trạng thái các hợp đồng đã hết hạn
+        try {
+            \App\Models\HopDongLaoDong::whereNotNull('ngay_ket_thuc')
+                ->whereDate('ngay_ket_thuc', '<', now())
+                ->where('trang_thai', '!=', 'het_hieu_luc')
+                ->update(['trang_thai' => 'het_hieu_luc']);
+        } catch (\Exception $e) {
+            // Nếu có lỗi, ghi log và tiếp tục (không nên phá vỡ giao diện dashboard)
+            \Log::error('Error updating expired contracts status on dashboard load: ' . $e->getMessage());
+        }
+
         // Thống kê tổng quan
-        $expiringContractsQuery = HopDongLaoDong::with(['nhanVien.phongBan', 'nhanVien.chucVu'])->sapHetHan(30);
+        // Lọc chỉ lấy những hợp đồng đang có trạng thái 'hieu_luc' (đang hiệu lực)
+        $expiringContractsQuery = HopDongLaoDong::with(['nhanVien.phongBan', 'nhanVien.chucVu'])
+            ->sapHetHan(30)
+            ->where('trang_thai', 'hieu_luc');
         $stats = [
             'total_employees' => NhanVien::count(),
             'active_employees' => NhanVien::dangLamViec()->count(),

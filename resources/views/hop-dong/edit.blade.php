@@ -165,6 +165,30 @@
                     </div>
                 </div>
                 <div class="tab-pane fade" id="phucap" role="tabpanel" aria-labelledby="tab-phucap">
+                    <h5 class="mb-3">Danh sách phúc lợi công ty</h5>
+                    @if(isset($phucLoiItems) && $phucLoiItems->count())
+                        <div class="table-responsive mb-4">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 30%">Tên phúc lợi</th>
+                                        <th>Mô tả</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($phucLoiItems as $item)
+                                        <tr>
+                                            <td>{{ $item->ten_item }}</td>
+                                            <td>{{ $item->mo_ta }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="text-muted">Chưa có phúc lợi nào được cấu hình.</div>
+                    @endif
+
                     <h5 class="mb-3">Chọn phụ cấp áp dụng cho hợp đồng</h5>
                     <div class="mb-3 d-none">
                         @php
@@ -247,5 +271,121 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+</script>
+<script>
+    // Handle loai hop dong change in edit form: hide/show ngay_ket_thuc and thoi_han and populate thoi_han options
+    function populateThoiHanOptionsEdit(selectEl, loai) {
+        if (!selectEl) return;
+        const prev = selectEl.value;
+        selectEl.innerHTML = '';
+        const optDefault = document.createElement('option');
+        optDefault.value = '';
+        optDefault.text = '-- Chọn thời hạn --';
+        selectEl.appendChild(optDefault);
+        if (loai === 'Thử việc') {
+            for (let i = 1; i <= 12; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.text = i + ' tháng';
+                selectEl.appendChild(opt);
+            }
+        } else {
+            for (let i = 1; i <= 10; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.text = i + ' năm';
+                selectEl.appendChild(opt);
+            }
+        }
+        if (prev) {
+            selectEl.value = prev;
+            if (selectEl.value !== prev) selectEl.value = '';
+        }
+    }
+
+    function isFixedTermEdit(loai) {
+        if (!loai) return false;
+        return loai.indexOf('xac_dinh') !== -1 || loai.indexOf('Hợp đồng xác định thời hạn') !== -1;
+    }
+
+    function computeNgayKetThucEdit() {
+        const loai = document.getElementById('loai_hop_dong') ? document.getElementById('loai_hop_dong').value : '';
+        const ngayBatDau = document.getElementById('ngay_bat_dau') ? document.getElementById('ngay_bat_dau').value : '';
+        const thoiHan = document.getElementById('thoi_han') ? document.getElementById('thoi_han').value : '';
+        const ngayKetThucInput = document.getElementById('ngay_ket_thuc');
+        if (!ngayKetThucInput) return;
+
+        if (ngayBatDau && thoiHan) {
+            const d = new Date(ngayBatDau);
+            if (isNaN(d.getTime())) { ngayKetThucInput.value = ''; return; }
+            if (loai === 'Thử việc') {
+                d.setMonth(d.getMonth() + parseInt(thoiHan, 10));
+                d.setDate(d.getDate() - 1);
+            } else if (isFixedTermEdit(loai)) {
+                d.setFullYear(d.getFullYear() + parseInt(thoiHan, 10));
+                d.setDate(d.getDate() - 1);
+            } else {
+                d.setFullYear(d.getFullYear() + parseInt(thoiHan, 10));
+                d.setDate(d.getDate() - 1);
+            }
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            ngayKetThucInput.value = `${yyyy}-${mm}-${dd}`;
+        } else {
+            ngayKetThucInput.value = '';
+        }
+    }
+
+    function handleLoaiHopDongChangeEdit() {
+        const loaiHopDong = document.getElementById('loai_hop_dong').value;
+        const ngayKetThucGroup = document.getElementById('ngay_ket_thuc') ? document.getElementById('ngay_ket_thuc').closest('.col-md-3') : null;
+        const thoiHanGroup = document.getElementById('thoi_han') ? document.getElementById('thoi_han').closest('.mb-3') : null;
+        const ngayKetThucInput = document.getElementById('ngay_ket_thuc');
+        const thoiHanInput = document.getElementById('thoi_han');
+        if (!ngayKetThucInput || !thoiHanInput) return;
+
+        if (loaiHopDong === 'Hợp đồng không xác định thời hạn') {
+            if (ngayKetThucGroup) ngayKetThucGroup.style.display = 'none';
+            if (thoiHanGroup) thoiHanGroup.style.display = 'none';
+            ngayKetThucInput.value = '';
+            thoiHanInput.value = '';
+            ngayKetThucInput.removeAttribute('required');
+            thoiHanInput.removeAttribute('required');
+            ngayKetThucInput.setAttribute('disabled', 'disabled');
+            thoiHanInput.setAttribute('disabled', 'disabled');
+        } else {
+            if (ngayKetThucGroup) ngayKetThucGroup.style.display = '';
+            if (thoiHanGroup) thoiHanGroup.style.display = '';
+            ngayKetThucInput.removeAttribute('disabled');
+            thoiHanInput.removeAttribute('disabled');
+            if (loaiHopDong === 'Hợp đồng xác định thời hạn' || loaiHopDong === 'Thử việc') {
+                ngayKetThucInput.setAttribute('required', 'required');
+                thoiHanInput.setAttribute('required', 'required');
+            } else {
+                ngayKetThucInput.removeAttribute('required');
+                thoiHanInput.removeAttribute('required');
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const loaiSel = document.getElementById('loai_hop_dong');
+        const thoiHanEl = document.getElementById('thoi_han');
+        const ngayBatDauEl = document.getElementById('ngay_bat_dau');
+        if (loaiSel && thoiHanEl) {
+            populateThoiHanOptionsEdit(thoiHanEl, loaiSel.value);
+            loaiSel.addEventListener('change', function() {
+                populateThoiHanOptionsEdit(thoiHanEl, loaiSel.value);
+                handleLoaiHopDongChangeEdit();
+                computeNgayKetThucEdit();
+            });
+        }
+        if (thoiHanEl) thoiHanEl.addEventListener('change', computeNgayKetThucEdit);
+        if (ngayBatDauEl) ngayBatDauEl.addEventListener('change', computeNgayKetThucEdit);
+        // initialize
+        handleLoaiHopDongChangeEdit();
+        computeNgayKetThucEdit();
+    });
 </script>
 @endpush

@@ -4,6 +4,12 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Danh sách hợp đồng sắp hết hạn</h5>
+        <div>
+            {{-- Export CSV button, preserve current query string filters --}}
+            <a href="{{ route('hop-dong.saphethan.export') }}{{ request()->getQueryString() ? ('?' . request()->getQueryString()) : '' }}" class="btn btn-sm btn-outline-success">
+                <i class="fas fa-file-excel"></i> Xuất Excel
+            </a>
+        </div>
     </div>
     {{-- Bộ lọc --}}
     <x-filters.contract-filter :nhanViens="$nhanViens" />

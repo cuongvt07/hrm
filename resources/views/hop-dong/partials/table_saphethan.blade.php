@@ -26,16 +26,7 @@
                     <td>{{ $hopDong->nhanVien->ho_ten ?? '-' }}</td>
                     <td>{{ $hopDong->vi_tri_cong_viec ?? ($hopDong->nhanVien->chucVu->ten_chuc_vu ?? '-') }}</td>
                     <td>{{ $hopDong->don_vi_ky_hd ?? ($hopDong->nhanVien->phongBan->ten_phong_ban ?? '-') }}</td>
-                    <td>
-                        @if($hopDong->loai_hop_dong === 'thu_viec')
-                            <span class="badge bg-info text-dark">Thử việc</span>
-                        @elseif($hopDong->loai_hop_dong === 'xac_dinh_thoi_han')
-                            <span class="badge bg-primary">Xác định thời hạn</span>
-                        @elseif($hopDong->loai_hop_dong === 'khong_xac_dinh_thoi_han')
-                            <span class="badge bg-success">Không xác định thời hạn</span>
-                        @else
-                            <span class="badge bg-secondary">-</span>
-                    </td>
+                    <td>{{ $hopDong->loai_hop_dong ?? '-' }}</td>
                     <td>{{ $hopDong->thoi_han ? $hopDong->thoi_han . ' tháng' : '-' }}</td>
                     <td>{{ $hopDong->ngay_bat_dau ? $hopDong->ngay_bat_dau->format('d/m/Y') : '-' }}</td>
                     <td>{{ $hopDong->ngay_ket_thuc ? $hopDong->ngay_ket_thuc->format('d/m/Y') : '-' }}</td>

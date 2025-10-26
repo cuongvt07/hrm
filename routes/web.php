@@ -67,8 +67,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('hop-dong', HopDongController::class);
     Route::get('hop-dong/{id}/view', [HopDongController::class, 'view'])->name('hop-dong.view');
     Route::get('hop-dong-sap-het-han', [HopDongController::class, 'sapHetHan'])->name('hop-dong.saphethan');
+    Route::get('hop-dong-sap-het-han/export', [HopDongController::class, 'exportSapHetHan'])->name('hop-dong.saphethan.export');
     Route::get('hop-dong/{id}/gia-han', [HopDongController::class, 'giaHanForm'])->name('hop-dong.giahan.form');
     Route::post('hop-dong/gia-han', [HopDongController::class, 'giaHanStore'])->name('hop-dong.giahan.store');
+    // Chấm dứt hợp đồng
+    Route::post('hop-dong/{id}/terminate', [HopDongController::class, 'terminate'])->name('hop-dong.terminate');
     // Bulk update trạng thái hợp đồng
     Route::post('hop-dong/bulk-update-status', [HopDongController::class, 'bulkUpdateStatus'])->name('hop-dong.bulk-update-status');
 

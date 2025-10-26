@@ -54,9 +54,9 @@
                     <label for="ngay_bat_dau" class="form-label">Ngày bắt đầu</label>
                     <input type="date" name="ngay_bat_dau" id="ngay_bat_dau" class="form-control">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3" id="ngay_ket_thuc_group">
                     <label for="ngay_ket_thuc" class="form-label">Ngày kết thúc</label>
-                    <input type="date" name="ngay_ket_thuc" id="ngay_ket_thuc" class="form-control">
+                    <input type="date" name="ngay_ket_thuc" id="ngay_ket_thuc" class="form-control bg-light" readonly style="pointer-events:none;">
                 </div>
             </div>
 
@@ -98,7 +98,7 @@
                     <option value="tai_ki" {{ old('trang_thai_ky') == 'tai_ki' ? 'selected' : '' }}>Gia hạn</option>
                 </select>
             </div>
-            <div class="mb-3">
+            <div class="mb-3" id="thoi_han_group">
                 <label for="thoi_han" class="form-label">Thời hạn hợp đồng</label>
                 <select name="thoi_han" id="thoi_han" class="form-select">
                     <option value="">-- Chọn thời hạn --</option>
@@ -239,6 +239,144 @@ document.addEventListener('DOMContentLoaded', function() {
                 $('#so_hop_dong').val('');
             }
         });
+    });
+</script>
+<script>
+    function handleLoaiHopDongChangeCreate() {
+        const loaiHopDong = document.getElementById('loai_hop_dong').value;
+        const ngayKetThucGroup = document.getElementById('ngay_ket_thuc_group');
+        const thoiHanGroup = document.getElementById('thoi_han_group');
+        const ngayKetThucInput = document.getElementById('ngay_ket_thuc');
+        const thoiHanInput = document.getElementById('thoi_han');
+
+        if (!ngayKetThucGroup || !thoiHanGroup || !ngayKetThucInput || !thoiHanInput) return;
+
+        if (loaiHopDong === 'Hợp đồng không xác định thời hạn') {
+            // hide and disable
+            ngayKetThucGroup.style.display = 'none';
+            thoiHanGroup.style.display = 'none';
+            ngayKetThucInput.value = '';
+            thoiHanInput.value = '';
+            ngayKetThucInput.removeAttribute('required');
+            thoiHanInput.removeAttribute('required');
+            ngayKetThucInput.setAttribute('disabled', 'disabled');
+            thoiHanInput.setAttribute('disabled', 'disabled');
+        } else {
+            // show and enable
+            ngayKetThucGroup.style.display = 'block';
+            thoiHanGroup.style.display = 'block';
+            ngayKetThucInput.removeAttribute('disabled');
+            thoiHanInput.removeAttribute('disabled');
+            // make required for typical fixed-term contracts
+            if (loaiHopDong === 'Hợp đồng xác định thời hạn' || loaiHopDong === 'Thử việc') {
+                ngayKetThucInput.setAttribute('required', 'required');
+                thoiHanInput.setAttribute('required', 'required');
+            } else {
+                ngayKetThucInput.removeAttribute('required');
+                thoiHanInput.removeAttribute('required');
+            }
+        }
+    }
+
+    // Populate thoi_han options depending on loai: if 'Thử việc' -> months 1..12, else years 1..10
+    function populateThoiHanOptions(selectEl, loai) {
+        if (!selectEl) return;
+        const prev = selectEl.value;
+        selectEl.innerHTML = '';
+        const optDefault = document.createElement('option');
+        optDefault.value = '';
+        optDefault.text = '-- Chọn thời hạn --';
+        selectEl.appendChild(optDefault);
+        if (loai === 'Thử việc') {
+            for (let i = 1; i <= 12; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.text = i + ' tháng';
+                selectEl.appendChild(opt);
+            }
+        } else {
+            for (let i = 1; i <= 10; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.text = i + ' năm';
+                selectEl.appendChild(opt);
+            }
+        }
+        // restore previous value if exists
+        if (prev) {
+            selectEl.value = prev;
+            // if prev doesn't match, leave it blank
+            if (selectEl.value !== prev) selectEl.value = '';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const sel = document.getElementById('loai_hop_dong');
+        if (sel) {
+            handleLoaiHopDongChangeCreate();
+            sel.addEventListener('change', handleLoaiHopDongChangeCreate);
+        }
+    });
+</script>
+<script>
+    function isFixedTerm(loai) {
+        if (!loai) return false;
+        return loai.indexOf('xac_dinh') !== -1 || loai.indexOf('Hợp đồng xác định thời hạn') !== -1;
+    }
+
+    function computeNgayKetThucCreate() {
+        const loai = document.getElementById('loai_hop_dong') ? document.getElementById('loai_hop_dong').value : '';
+        const ngayBatDau = document.getElementById('ngay_bat_dau') ? document.getElementById('ngay_bat_dau').value : '';
+        const thoiHan = document.getElementById('thoi_han') ? document.getElementById('thoi_han').value : '';
+        const ngayKetThucInput = document.getElementById('ngay_ket_thuc');
+        if (!ngayKetThucInput) return;
+
+        if (ngayBatDau && thoiHan) {
+            const d = new Date(ngayBatDau);
+            if (isNaN(d.getTime())) {
+                ngayKetThucInput.value = '';
+                return;
+            }
+            // If probation (Thử việc), thoi_han is in months
+            if (loai === 'Thử việc') {
+                d.setMonth(d.getMonth() + parseInt(thoiHan, 10));
+                d.setDate(d.getDate() - 1);
+            } else if (isFixedTerm(loai)) {
+                // fixed-term: thoi_han is in years
+                d.setFullYear(d.getFullYear() + parseInt(thoiHan, 10));
+                d.setDate(d.getDate() - 1);
+            } else {
+                // For other contract types, default to years
+                d.setFullYear(d.getFullYear() + parseInt(thoiHan, 10));
+                d.setDate(d.getDate() - 1);
+            }
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            ngayKetThucInput.value = `${yyyy}-${mm}-${dd}`;
+        } else {
+            // clear if not applicable
+            ngayKetThucInput.value = '';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const thoiHanEl = document.getElementById('thoi_han');
+        const ngayBatDauEl = document.getElementById('ngay_bat_dau');
+        if (thoiHanEl) thoiHanEl.addEventListener('change', computeNgayKetThucCreate);
+        if (ngayBatDauEl) ngayBatDauEl.addEventListener('change', computeNgayKetThucCreate);
+        // run once on load
+        // populate thoi_han options according to current loai
+        const loaiSel = document.getElementById('loai_hop_dong');
+        if (loaiSel) {
+            populateThoiHanOptions(document.getElementById('thoi_han'), loaiSel.value);
+            loaiSel.addEventListener('change', function() {
+                populateThoiHanOptions(document.getElementById('thoi_han'), loaiSel.value);
+                handleLoaiHopDongChangeCreate();
+                computeNgayKetThucCreate();
+            });
+        }
+        computeNgayKetThucCreate();
     });
 </script>
 @endpush

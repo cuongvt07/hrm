@@ -95,7 +95,17 @@
         </div>
         <div class="mb-3">
             <label class="form-label">Thời hạn hợp đồng</label>
-            <input type="text" class="form-control bg-light" value="{{ $hopDong->thoi_han }}" readonly>
+            @php
+                $thoiHanLabel = '';
+                if ($hopDong->thoi_han) {
+                    if (isset($hopDong->loai_hop_dong) && $hopDong->loai_hop_dong === 'Thử việc') {
+                        $thoiHanLabel = $hopDong->thoi_han . ' tháng';
+                    } else {
+                        $thoiHanLabel = $hopDong->thoi_han . ' năm';
+                    }
+                }
+            @endphp
+            <input type="text" class="form-control bg-light" value="{{ $thoiHanLabel }}" readonly>
         </div>
         <div class="mb-3">
             <label class="form-label">Ghi chú</label>

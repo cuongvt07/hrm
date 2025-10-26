@@ -5,7 +5,7 @@
 @section('content')
 @php
     $statusConfig = [
-        'nhan_vien_chinh_thuc' => ['class' => 'success', 'text' => 'Đang làm việc'],
+        'nhan_vien_chinh_thuc' => ['class' => 'success', 'text' => 'Nhân viên chính thức'],
         'thu_viec' => ['class' => 'warning', 'text' => 'Thử việc'],
         'thai_san' => ['class' => 'info', 'text' => 'Thai sản'],
         'nghi_viec' => ['class' => 'danger', 'text' => 'Đã nghỉ việc'],
@@ -441,9 +441,29 @@
                                                                     <strong class="text-dark">Phòng ban:</strong>
                                                                     <span class="fw-bold">
                                                                         @if($nhanVien->phongBan)
-                                                                            {{ $nhanVien->phongBan->ten_phong_ban }}
+                                                                            {{-- Show top-level department as "Phòng ban" (if this department has a parent, display the parent here) --}}
                                                                             @if($nhanVien->phongBan->phongBanCha)
-                                                                                <span class="text-muted small">(thuộc: {{ $nhanVien->phongBan->phongBanCha->ten_phong_ban }})</span>
+                                                                                {{ $nhanVien->phongBan->phongBanCha->ten_phong_ban }}
+                                                                            @else
+                                                                                {{ $nhanVien->phongBan->ten_phong_ban }}
+                                                                            @endif
+                                                                        @else
+                                                                            -
+                                                                        @endif
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                                                    <strong class="text-dark">Bộ phận:</strong>
+                                                                    <span class="fw-bold">
+                                                                        @if($nhanVien->phongBan)
+                                                                            {{-- If this department has a parent, treat the current department as the "Bộ phận" (sub-unit) --}}
+                                                                            @if($nhanVien->phongBan->phongBanCha)
+                                                                                {{ $nhanVien->phongBan->ten_phong_ban }}
+                                                                            @else
+                                                                                {{-- No sub-department configured --}}
+                                                                                <span class="text-muted">-</span>
                                                                             @endif
                                                                         @else
                                                                             -
@@ -561,32 +581,39 @@
 
                                             <div>
                                                 <h5 class="mb-2 fw-bold" style="background:none;padding:0;margin-bottom:8px;">Quá trình công tác</h5>
-                                                <div class="timeline-qtct" style="position:relative;">
-                                                    @forelse($nhanVien->quaTrinhCongTac as $qt)
-                                                    <div class="timeline-item mb-4" style="position:relative;padding-left:32px;">
-                                                        <span class="timeline-dot" style="position:absolute;left:0;top:35px;width:16px;height:16px;background:#0d6efd;border-radius:50%;border:2px solid #fff;"></span>
-                                                        <div class="card border-0 shadow-sm" style="background:#f8f9fa;">
-                                                            <div class="card-body py-2 px-3">
-                                                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                                                    <span class="fw-bold">
-                                                                        <span class="fw-bold">Chức vụ:</span>
-                                                                        <span class="text-dark">{{ $qt->chucVu->ten_chuc_vu ?? '' }}</span>
-                                                                    </span>
-                                                                </div>
-                                                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                                                    <span class="fw-bold">Phòng ban:</span>
-                                                                    <span class="fw-bold">{{ $qt->phongBan->ten_phong_ban ?? '' }}</span>
-                                                                    <span class="text-muted small ms-auto">{{ $qt->ngay_bat_dau }} - {{ $qt->ngay_ket_thuc ?? '...' }}</span>
-                                                                </div>
-                                                                <div class="mb-1"><span class="fw-bold">Mô tả:</span> {{ $qt->mo_ta }}</div>
-                                                            </div>
-                                                        </div>
+                                                @if($nhanVien->quaTrinhCongTac && $nhanVien->quaTrinhCongTac->count() > 0)
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered mb-0">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Từ ngày</th>
+                                                                            <th>Phòng ban</th>
+                                                                            <th>Vị trí công việc</th>
+                                                                            <th>Lương cơ bản</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach($nhanVien->quaTrinhCongTac as $qt)
+@php
+    $data = json_decode($qt->mo_ta ?? '', true);
+    $viTri = $data['vi_tri'] ?? '-';
+    $luong = isset($data['luong']) ? number_format($data['luong'], 0, ',', '.') . ' VNĐ' : '-';
+@endphp
+
+
+                                                                            <tr>
+                                                                                <td class="align-middle">{{ $qt->ngay_bat_dau ? \Carbon\Carbon::parse($qt->ngay_bat_dau)->format('d/m/Y') : '-' }}</td>
+                                                                                <td class="align-middle">{{ optional($qt->phongBan)->ten_phong_ban ?? '-' }}</td>
+                                                                                <td class="align-middle">{{ $viTri }}</td>
+                                                                                <td class="align-middle">{{ $luong }}</td>
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                        </table>
                                                     </div>
-                                                    @empty
+                                                @else
                                                     <div class="text-center text-muted py-3">Chưa có dữ liệu</div>
-                                                    @endforelse
-                                                    <div style="position:absolute;left:8px;top:0;bottom:0;width:2px;background:#dee2e6;"></div>
-                                                </div>
+                                                @endif
                                             </div>
                                         </div>
 

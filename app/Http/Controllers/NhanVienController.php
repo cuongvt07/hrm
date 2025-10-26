@@ -49,10 +49,8 @@ class NhanVienController extends Controller
             $query->where('trang_thai', $request->trang_thai);
         }
 
-        $statusOrder = ['nhan_vien_chinh_thuc', 'thu_viec', 'thai_san', 'nghi_viec', 'khac'];
         $nhanViens = $query
-            ->orderByRaw("FIELD(trang_thai, '" . implode("','", $statusOrder) . "')")
-            ->orderBy('created_at', 'desc')
+            ->orderBy('ma_nhanvien', 'desc')
             ->paginate(10);
 
         if ($request->ajax()) {

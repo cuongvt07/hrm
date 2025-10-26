@@ -38,7 +38,17 @@
                 <td>
                     {{ $hopDong->loai_hop_dong }}
                 </td>
-                <td>{{ $hopDong->thoi_han ? $hopDong->thoi_han . ' tháng' : '-' }}</td>
+                @php
+                    $thoiHanLabel = '-';
+                    if ($hopDong->thoi_han) {
+                        if (isset($hopDong->loai_hop_dong) && $hopDong->loai_hop_dong === 'Thử việc') {
+                            $thoiHanLabel = $hopDong->thoi_han . ' tháng';
+                        } else {
+                            $thoiHanLabel = $hopDong->thoi_han . ' năm';
+                        }
+                    }
+                @endphp
+                <td>{{ $thoiHanLabel }}</td>
                 <td>{{ $hopDong->ngay_ket_thuc ? $hopDong->ngay_ket_thuc->format('d/m/Y') : '-' }}</td>
                 <td>
                     @if($hopDong->trang_thai_ky === 'duyet')

@@ -5,7 +5,7 @@
 <div class="container-fluid">
     <!-- Tiêu đề -->
     <div class="d-flex justify-content-between align-items-center">
-        <h1 class="h3 mb-2 text-gray-800">Báo cáo khen thưởng</h1>
+        <h5 class="mb-0">Báo cáo khen thưởng</h5>
     </div>
 
     <!-- Filter -->

@@ -79,9 +79,16 @@ class NhanVien extends Model
     }
 
     // Quan hệ với hợp đồng lao động
-    public function hopDongLaoDong(): HasMany
+    public function hopDongLaoDong(bool $onlyHieuLuc = true): HasMany
     {
-        return $this->hasMany(HopDongLaoDong::class, 'nhan_vien_id');
+        $query = $this->hasMany(HopDongLaoDong::class, 'nhan_vien_id')
+                      ->orderByDesc('ngay_bat_dau');
+
+        if ($onlyHieuLuc) {
+            $query->where('hieu_luc', 1);
+        }
+
+        return $query;
     }
 
     // Quan hệ với giấy tờ tùy thân
@@ -128,7 +135,7 @@ class NhanVien extends Model
     // Scope cho nhân viên đang làm việc
     public function scopeDangLamViec($query)
     {
-        return $query->where('trang_thai', 'nhan_vien_chinh_thuc');
+        return $query->whereIn('trang_thai', ['nhan_vien_chinh_thuc', 'thu_viec', 'thai_san']);
     }
 
     public function thongTinGiayTo(): HasMany

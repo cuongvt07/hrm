@@ -53,11 +53,13 @@ class HopDongLaoDong extends Model
     }
 
     // Scope cho hợp đồng sắp hết hạn
+    // Trả về hợp đồng có `ngay_ket_thuc` không rỗng và nhỏ hơn hoặc bằng (<=) giới hạn ngày (now + $days)
+    // Bao gồm cả hợp đồng đã hết hạn (để thống nhất hiển thị giữa các màn hình).
     public function scopeSapHetHan($query, $days = 30)
     {
-        return $query->where('trang_thai', 'hieu_luc')
-                    ->where('ngay_ket_thuc', '<=', now()->addDays($days))
-                    ->where('ngay_ket_thuc', '>', now());
+        $limit = now()->addDays($days);
+        return $query->whereNotNull('ngay_ket_thuc')
+                     ->whereDate('ngay_ket_thuc', '<=', $limit);
     }
 
     // Quan hệ với tệp tin hợp đồng

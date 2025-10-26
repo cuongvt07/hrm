@@ -40,11 +40,9 @@
                                 <label for="loai_hop_dong" class="form-label">Loại hợp đồng</label>
                                 <select name="loai_hop_dong" id="loai_hop_dong" class="form-select" onchange="handleLoaiHopDongChange()">
                                     <option value="">-- Chọn loại hợp đồng --</option>
-                                    <option value="thu_viec" {{ old('loai_hop_dong', $hopDongCu->loai_hop_dong) == 'thu_viec' ? 'selected' : '' }}>Thử việc</option>
-                                    <option value="xac_dinh_thoi_han" {{ old('loai_hop_dong', $hopDongCu->loai_hop_dong) == 'xac_dinh_thoi_han' ? 'selected' : '' }}>Hợp đồng xác
-                                        định thời hạn</option>
-                                    <option value="khong_xac_dinh_thoi_han" {{ old('loai_hop_dong', $hopDongCu->loai_hop_dong) == 'khong_xac_dinh_thoi_han' ? 'selected' : '' }}>Hợp đồng
-                                        không xác định thời hạn</option>
+                                    <option value="Thử việc" {{ old('loai_hop_dong') == 'Thử việc' ? 'selected' : '' }}>Thử việc</option>
+                                    <option value="Hợp đồng xác định thời hạn" {{ old('loai_hop_dong') == 'Hợp đồng xác định thời hạn' ? 'selected' : '' }}>Hợp đồng xác định thời hạn</option>
+                                    <option value="Hợp đồng không xác định thời hạn" {{ old('loai_hop_dong') == 'Hợp đồng không xác định thời hạn' ? 'selected' : '' }}>Hợp đồng không xác định thời hạn</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
@@ -54,8 +52,8 @@
                             </div>
                             <div class="col-md-3" id="ngay_ket_thuc_group">
                                 <label for="ngay_ket_thuc" class="form-label">Ngày hết hạn</label>
-                                <input type="date" name="ngay_ket_thuc" id="ngay_ket_thuc" class="form-control"
-                                    value="{{ old('ngay_ket_thuc') }}">
+                                <input type="date" name="ngay_ket_thuc" id="ngay_ket_thuc" class="form-control bg-light"
+                                    value="{{ old('ngay_ket_thuc') }}" readonly style="pointer-events:none;">
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -118,6 +116,30 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="phucap" role="tabpanel" aria-labelledby="tab-phucap">
+                        <h5 class="mb-3">Danh sách phúc lợi công ty</h5>
+                        @if(isset($phucLoiItems) && $phucLoiItems->count())
+                            <div class="table-responsive mb-4">
+                                <table class="table table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width: 30%">Tên phúc lợi</th>
+                                            <th>Mô tả</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($phucLoiItems as $item)
+                                            <tr>
+                                                <td>{{ $item->ten_item }}</td>
+                                                <td>{{ $item->mo_ta }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="text-muted">Chưa có phúc lợi nào được cấu hình.</div>
+                        @endif
+
                         <h5 class="mb-3">Chọn phụ cấp áp dụng cho hợp đồng</h5>
                         <div class="mb-3 d-none">
                             @php
@@ -199,34 +221,134 @@
         const thoiHanGroup = document.getElementById('thoi_han_group');
         const ngayKetThucInput = document.getElementById('ngay_ket_thuc');
         const thoiHanInput = document.getElementById('thoi_han');
+        const thoiHanLabel = thoiHanGroup ? thoiHanGroup.querySelector('label') : null;
 
-        if (loaiHopDong === 'khong_xac_dinh_thoi_han') {
-            // Ẩn nhóm ngày kết thúc & thời hạn
+        if (!ngayKetThucGroup || !thoiHanGroup || !ngayKetThucInput || !thoiHanInput) return;
+
+        // If contract is indefinite, hide and disable thoi_han and ngay_ket_thuc
+        if (loaiHopDong === 'Hợp đồng không xác định thời hạn') {
             ngayKetThucGroup.style.display = 'none';
             thoiHanGroup.style.display = 'none';
 
-            // Xoá giá trị và bỏ required
             ngayKetThucInput.value = '';
             thoiHanInput.value = '';
             ngayKetThucInput.removeAttribute('required');
             thoiHanInput.removeAttribute('required');
 
-            // Disable để người dùng không nhập được
             ngayKetThucInput.setAttribute('disabled', 'disabled');
             thoiHanInput.setAttribute('disabled', 'disabled');
+            if (thoiHanLabel) thoiHanLabel.textContent = 'Thời hạn hợp đồng';
         } else {
-            // Hiển thị lại khi chọn loại khác
+            // show and enable
             ngayKetThucGroup.style.display = 'block';
             thoiHanGroup.style.display = 'block';
             ngayKetThucInput.removeAttribute('disabled');
             thoiHanInput.removeAttribute('disabled');
+
+            // for Thử việc -> months, otherwise years
+            if (loaiHopDong === 'Thử việc') {
+                if (thoiHanLabel) thoiHanLabel.textContent = 'Thời hạn hợp đồng (tháng)';
+                populateThoiHanOptionsGiaHan(thoiHanInput, 'Thử việc');
+            } else {
+                if (thoiHanLabel) thoiHanLabel.textContent = 'Thời hạn hợp đồng (năm)';
+                populateThoiHanOptionsGiaHan(thoiHanInput, 'nam');
+            }
+
             ngayKetThucInput.setAttribute('required', 'required');
             thoiHanInput.setAttribute('required', 'required');
         }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        handleLoaiHopDongChange();
-        document.getElementById('loai_hop_dong').addEventListener('change', handleLoaiHopDongChange);
+            // initialize options & handlers
+            const loaiSel = document.getElementById('loai_hop_dong');
+            const thoiHanEl = document.getElementById('thoi_han');
+            if (loaiSel && thoiHanEl) {
+                // populate initial options according to current loai
+                populateThoiHanOptionsGiaHan(thoiHanEl, loaiSel.value === 'Thử việc' ? 'Thử việc' : 'nam');
+                handleLoaiHopDongChange();
+                loaiSel.addEventListener('change', function() {
+                    handleLoaiHopDongChange();
+                    computeNgayKetThucGiaHan();
+                });
+            } else {
+                handleLoaiHopDongChange();
+            }
+    });
+</script>
+    <script>
+        // Populate thoi_han select for gia hạn: months for 'Thử việc', years otherwise
+        function populateThoiHanOptionsGiaHan(selectEl, loai) {
+            if (!selectEl) return;
+            const prev = selectEl.value;
+            selectEl.innerHTML = '';
+            const optDefault = document.createElement('option');
+            optDefault.value = '';
+            optDefault.text = '-- Chọn thời hạn --';
+            selectEl.appendChild(optDefault);
+            if (loai === 'Thử việc') {
+                for (let i = 1; i <= 12; i++) {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.text = i + ' tháng';
+                    selectEl.appendChild(opt);
+                }
+            } else {
+                for (let i = 1; i <= 10; i++) {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.text = i + ' năm';
+                    selectEl.appendChild(opt);
+                }
+            }
+            if (prev) {
+                selectEl.value = prev;
+                if (selectEl.value !== prev) selectEl.value = '';
+            }
+        }
+    </script>
+<script>
+    function isFixedTermGiaHan(loai) {
+        if (!loai) return false;
+        return loai.indexOf('xac_dinh') !== -1 || loai.indexOf('Hợp đồng xác định thời hạn') !== -1;
+    }
+
+    function computeNgayKetThucGiaHan() {
+        const loaiEl = document.getElementById('loai_hop_dong');
+        const loai = loaiEl ? loaiEl.value : '';
+        const ngayBatDauEl = document.getElementById('ngay_bat_dau');
+        const thoiHanEl = document.getElementById('thoi_han');
+        const ngayKetThucEl = document.getElementById('ngay_ket_thuc');
+        if (!ngayKetThucEl) return;
+
+        const ngayBatDau = ngayBatDauEl ? ngayBatDauEl.value : '';
+        const thoiHan = thoiHanEl ? thoiHanEl.value : '';
+
+        if (isFixedTermGiaHan(loai) && ngayBatDau && thoiHan) {
+            const d = new Date(ngayBatDau);
+            if (isNaN(d.getTime())) {
+                ngayKetThucEl.value = '';
+                return;
+            }
+            d.setFullYear(d.getFullYear() + parseInt(thoiHan, 10));
+            d.setDate(d.getDate() - 1);
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            ngayKetThucEl.value = `${yyyy}-${mm}-${dd}`;
+        } else {
+            ngayKetThucEl.value = '';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const thoiHanEl = document.getElementById('thoi_han');
+        const ngayBatDauEl = document.getElementById('ngay_bat_dau');
+        if (thoiHanEl) thoiHanEl.addEventListener('change', computeNgayKetThucGiaHan);
+        if (ngayBatDauEl) ngayBatDauEl.addEventListener('change', computeNgayKetThucGiaHan);
+        // also compute when the contract type changes (handleLoaiHopDongChange calls on change already)
+        const loaiEl = document.getElementById('loai_hop_dong');
+        if (loaiEl) loaiEl.addEventListener('change', computeNgayKetThucGiaHan);
+        computeNgayKetThucGiaHan();
     });
 </script>

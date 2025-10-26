@@ -117,7 +117,7 @@
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('bao-cao.nhan-su.*') ? 'active' : '' }}" 
                                href="{{ route('bao-cao.nhan-su.index') }}">
-                                <i class="fas fa-users"></i> Phòng ban nhân sự
+                                <i class="fas fa-users"></i> Nhân sự và hợp đồng
                             </a>
                         </li>
                         <li class="nav-item">
