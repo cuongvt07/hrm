@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use App\Models\BaoHiem;
+use App\Models\QuaTrinhCongTac;
 
 class NhanVienController extends Controller
 {
@@ -392,22 +393,96 @@ class NhanVienController extends Controller
                 }
             }
 
-            // Handle new work history rows (quá trình công tác)
-            if ($request->has('cong_tac_temp') && is_array($request->cong_tac_temp)) {
-                foreach ($request->cong_tac_temp as $row) {
-                    if (empty($row['chucvu_id']) || empty($row['phongban_id']) || empty($row['ngay_bat_dau'])) {
-                        continue;
-                    }
-                    \App\Models\QuaTrinhCongTac::create([
-                        'nhanvien_id' => $nhanVien->id,
-                        'chucvu_id' => $row['chucvu_id'],
-                        'phongban_id' => $row['phongban_id'],
-                        'mo_ta' => $row['mo_ta'] ?? null,
-                        'ngay_bat_dau' => $row['ngay_bat_dau'],
-                        'ngay_ket_thuc' => $row['ngay_ket_thuc'] ?? null,
-                    ]);
-                }
+// ====== Thêm mới các dòng công tác ======
+if ($request->filled('cong_tac_existing') && is_array($request->cong_tac_existing)) {
+    foreach ($request->cong_tac_existing as $index => $id) {
+        $chucvuId    = $request->cong_tac_existing_chucvu[$index] ?? null;
+        $phongbanId  = $request->cong_tac_existing_phongban[$index] ?? null;
+        $ngayBatDau  = $request->cong_tac_existing_ngay_bat_dau[$index] ?? null;
+        $ngayKetThuc = $request->cong_tac_existing_ngay_ket_thuc[$index] ?? null;
+        $moTaRaw     = $request->cong_tac_existing_mo_ta[$index] ?? null;
+
+        // 🧠 Chuẩn hóa mo_ta về JSON chuẩn
+        $moTaJson = null;
+        if ($moTaRaw) {
+            $decoded = json_decode($moTaRaw, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $moTaJson = json_encode([
+                    'vi_tri' => $decoded['vi_tri'] ?? '',
+                    'luong'  => $decoded['luong'] ?? '',
+                ], JSON_UNESCAPED_UNICODE);
+            } else {
+                $moTaJson = json_encode([
+                    'vi_tri' => $moTaRaw,
+                    'luong'  => ''
+                ], JSON_UNESCAPED_UNICODE);
             }
+        } else {
+            $viTri = $request->cong_tac_existing_vi_tri[$index] ?? '';
+            $luong = $request->cong_tac_existing_luong[$index] ?? '';
+            $moTaJson = json_encode([
+                'vi_tri' => $viTri,
+                'luong'  => $luong
+            ], JSON_UNESCAPED_UNICODE);
+        }
+
+        // ✅ Log thử để kiểm tra
+        \Log::info("Update công tác #{$id}", [
+            'chucvu_id' => $chucvuId,
+            'phongban_id' => $phongbanId,
+            'mo_ta' => $moTaJson,
+            'ngay_bat_dau' => $ngayBatDau,
+            'ngay_ket_thuc' => $ngayKetThuc,
+        ]);
+
+        // ✅ Thực hiện cập nhật
+        QuaTrinhCongTac::where('id', $id)->update([
+            'chucvu_id'     => $chucvuId,
+            'phongban_id'   => $phongbanId,
+            'mo_ta'         => $moTaJson,
+            'ngay_bat_dau'  => $ngayBatDau,
+            'ngay_ket_thuc' => $ngayKetThuc,
+        ]);
+    }
+}
+        // 🔹 Thêm mới các dòng công tác
+        if ($request->has('cong_tac_temp') && is_array($request->cong_tac_temp)) {
+            foreach ($request->cong_tac_temp as $row) {
+                if (empty($row['chucvu_id']) || empty($row['phongban_id']) || empty($row['ngay_bat_dau'])) {
+                    continue;
+                }
+
+                $moTaJson = null;
+                if (isset($row['mo_ta'])) {
+                    if (is_array($row['mo_ta'])) {
+                        $moTaJson = json_encode([
+                            'vi_tri' => $row['mo_ta']['vi_tri'] ?? '',
+                            'luong'  => $row['mo_ta']['luong'] ?? '',
+                        ], JSON_UNESCAPED_UNICODE);
+                    } elseif (is_string($row['mo_ta'])) {
+                        $decoded = json_decode($row['mo_ta'], true);
+                        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                            $moTaJson = json_encode([
+                                'vi_tri' => $decoded['vi_tri'] ?? '',
+                                'luong'  => $decoded['luong'] ?? '',
+                            ], JSON_UNESCAPED_UNICODE);
+                        } else {
+                            $moTaJson = json_encode(['vi_tri' => $row['mo_ta'], 'luong' => ''], JSON_UNESCAPED_UNICODE);
+                        }
+                    }
+                }
+
+                QuaTrinhCongTac::create([
+                    'nhanvien_id'   => $nhanVien->id,
+                    'chucvu_id'     => $row['chucvu_id'],
+                    'phongban_id'   => $row['phongban_id'],
+                    'mo_ta'         => $moTaJson,
+                    'ngay_bat_dau'  => $row['ngay_bat_dau'],
+                    'ngay_ket_thuc' => $row['ngay_ket_thuc'] ?? null,
+                ]);
+            }
+        }
+
 
             // Xóa các quá trình công tác theo id gửi lên từ cong_tac_delete[]
             if ($request->has('cong_tac_delete') && is_array($request->cong_tac_delete)) {
@@ -680,6 +755,12 @@ class NhanVienController extends Controller
             'hopDongLaoDong',
             'taiKhoan'
         ]);
+
+        foreach ($nhanVien->quaTrinhCongTac as $qtc) {
+            if (is_string($qtc->mo_ta)) {
+                $qtc->mo_ta = json_decode($qtc->mo_ta, true);
+            }
+        }
         
         $phongBans = PhongBan::with('phongBanCon')
             ->whereNull('phong_ban_cha_id')

@@ -579,42 +579,62 @@
                                             </div>
 
 
-                                            <div>
-                                                <h5 class="mb-2 fw-bold" style="background:none;padding:0;margin-bottom:8px;">Quá trình công tác</h5>
-                                                @if($nhanVien->quaTrinhCongTac && $nhanVien->quaTrinhCongTac->count() > 0)
-                                                    <div class="table-responsive">
-                                                        <table class="table table-bordered mb-0">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th>Từ ngày</th>
-                                                                            <th>Phòng ban</th>
-                                                                            <th>Vị trí công việc</th>
-                                                                            <th>Lương cơ bản</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        @foreach($nhanVien->quaTrinhCongTac as $qt)
-@php
-    $data = json_decode($qt->mo_ta ?? '', true);
-    $viTri = $data['vi_tri'] ?? '-';
-    $luong = isset($data['luong']) ? number_format($data['luong'], 0, ',', '.') . ' VNĐ' : '-';
-@endphp
+<div>
+    <h5 class="mb-2 fw-bold" style="background:none;padding:0;margin-bottom:8px;">Quá trình công tác</h5>
 
+    @if($nhanVien->quaTrinhCongTac && $nhanVien->quaTrinhCongTac->count() > 0)
+        <div class="table-responsive">
+            <table class="table table-bordered mb-0 align-middle">
+                <thead>
+                    <tr class="text-center">
+                        <th>Chức vụ</th>
+                        <th>Phòng ban</th>
+                        <th>Mô tả (Vị trí - Lương cơ bản)</th>
+                        <th>Từ ngày - Đến ngày</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($nhanVien->quaTrinhCongTac as $qt)
+                        @php
+                            // Giải mã mô tả nếu là chuỗi JSON hợp lệ
+                            $moTaData = [];
+                            if (!empty($qt->mo_ta)) {
+                                $decoded = json_decode($qt->mo_ta, true);
+                                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                    $moTaData = $decoded;
+                                }
+                            }
 
-                                                                            <tr>
-                                                                                <td class="align-middle">{{ $qt->ngay_bat_dau ? \Carbon\Carbon::parse($qt->ngay_bat_dau)->format('d/m/Y') : '-' }}</td>
-                                                                                <td class="align-middle">{{ optional($qt->phongBan)->ten_phong_ban ?? '-' }}</td>
-                                                                                <td class="align-middle">{{ $viTri }}</td>
-                                                                                <td class="align-middle">{{ $luong }}</td>
-                                                                            </tr>
-                                                                        @endforeach
-                                                                    </tbody>
-                                                        </table>
-                                                    </div>
-                                                @else
-                                                    <div class="text-center text-muted py-3">Chưa có dữ liệu</div>
-                                                @endif
-                                            </div>
+                            $viTri = $moTaData['vi_tri'] ?? '-';
+                            $luong = isset($moTaData['luong']) && is_numeric($moTaData['luong'])
+                                ? number_format((float)$moTaData['luong'], 0, ',', '.')
+                                : ($moTaData['luong'] ?? '-');
+                        @endphp
+
+                        <tr>
+                            <td class="text-center">{{ optional($qt->chucVu)->ten_chuc_vu ?? '-' }}</td>
+                            <td class="text-center">{{ optional($qt->phongBan)->ten_phong_ban ?? '-' }}</td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <input type="text" class="form-control text-center" value="{{ $viTri }}" readonly>
+                                    <input type="text" class="form-control text-center" value="{{ $luong }}" readonly>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                {{ $qt->ngay_bat_dau ? \Carbon\Carbon::parse($qt->ngay_bat_dau)->format('d/m/Y') : '-' }}
+                                -
+                                {{ $qt->ngay_ket_thuc ? \Carbon\Carbon::parse($qt->ngay_ket_thuc)->format('d/m/Y') : '-' }}
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @else
+        <div class="text-center text-muted py-3">Chưa có dữ liệu</div>
+    @endif
+</div>
+
                                         </div>
 
                                         <!-- Contract Information -->

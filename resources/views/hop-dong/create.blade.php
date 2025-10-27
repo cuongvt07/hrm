@@ -224,7 +224,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Auto render số hợp đồng
+        // Auto render số hợp đồng. If employee already has an active contract, append a random suffix.
+        function generateRandomSuffix(len = 6) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let out = '';
+            for (let i = 0; i < len; i++) out += chars.charAt(Math.floor(Math.random() * chars.length));
+            return out;
+        }
+
         $('#nhan_vien_id').on('change', function() {
             var selected = $(this).find('option:selected');
             var text = selected.text();
@@ -234,7 +241,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 maNV = text.split('-').pop().trim();
             }
             if (maNV) {
-                $('#so_hop_dong').val('HĐ_' + maNV);
+                let base = 'HĐ_' + maNV;
+                // Call backend to see if this employee already has active contracts
+                fetch("{{ url('hop-dong/check-employee') }}/" + selected.val())
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.count && data.count > 0) {
+                            // append random suffix
+                            $('#so_hop_dong').val(base + '_' + generateRandomSuffix());
+                        } else {
+                            $('#so_hop_dong').val(base);
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error checking employee contracts', err);
+                        // fallback to simple base value
+                        $('#so_hop_dong').val(base);
+                    });
             } else {
                 $('#so_hop_dong').val('');
             }

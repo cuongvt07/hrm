@@ -341,6 +341,19 @@ class HopDongController extends Controller
             return response()->json(['success' => false, 'message' => 'Lỗi khi chấm dứt hợp đồng.'], 500);
         }
     }
+
+    /**
+     * AJAX helper: check if an employee has existing active contracts
+     */
+    public function checkEmployeeContracts($id)
+    {
+        $count = HopDongLaoDong::where('nhan_vien_id', $id)->where('trang_thai', 'hieu_luc')->count();
+        $latest = HopDongLaoDong::where('nhan_vien_id', $id)->orderBy('created_at', 'desc')->first();
+        return response()->json([
+            'count' => $count,
+            'latest_so_hop_dong' => $latest ? $latest->so_hop_dong : null,
+        ]);
+    }
     
     public function index(Request $request)
     {
@@ -452,6 +465,30 @@ class HopDongController extends Controller
                 'trang_thai_ky' => 'nullable|string|max:50',
                 'thoi_han' => 'nullable|integer',
             ]);
+
+                // If nhan_vien_id provided, check for existing active contracts and mark them as expired
+                if (!empty($validated['nhan_vien_id'])) {
+                    $existingActive = HopDongLaoDong::where('nhan_vien_id', $validated['nhan_vien_id'])
+                        ->where('trang_thai', 'hieu_luc')
+                        ->get();
+
+                    if ($existingActive->count() > 0) {
+                        // mark previous active contracts as expired
+                        HopDongLaoDong::where('nhan_vien_id', $validated['nhan_vien_id'])
+                            ->where('trang_thai', 'hieu_luc')
+                            ->update(['trang_thai' => 'het_hieu_luc']);
+
+                        // ensure new so_hop_dong is unique by appending a random suffix if provided
+                        if (!empty($validated['so_hop_dong'])) {
+                            $validated['so_hop_dong'] .= '_' . strtoupper(Str::random(6));
+                        } else {
+                            // fallback generate from employee code
+                            $nvTmp = NhanVien::find($validated['nhan_vien_id']);
+                            $ma = $nvTmp ? ($nvTmp->ma_nhanvien ?? '') : '';
+                            $validated['so_hop_dong'] = 'HĐ_' . ($ma ? $ma : strtoupper(Str::random(6))) . '_' . strtoupper(Str::random(6));
+                        }
+                    }
+                }
 
             // Validate file upload nếu có file
             if ($request->hasFile('tep_tin_hop_dong')) {
@@ -586,8 +623,10 @@ class HopDongController extends Controller
                             'nhanvien_id' => $hopDong->nhan_vien_id,
                             'chucvu_id' => ($nv ? $nv->chuc_vu_id : null),
                             'phongban_id' => ($nv ? $nv->phong_ban_id : null),
-                            'mo_ta' => 'Mức lương: ' . ($hopDong->luong_co_ban !== null ? number_format((float)$hopDong->luong_co_ban, 0, ',', '.') : ''),
-                            'ngay_bat_dau' => $hopDong->ngay_bat_dau ?? null,
+                            'mo_ta' => json_encode([
+                                'vi_tri' => $hopDongMoi->vi_tri_cong_viec ?? '',
+                                'luong'  => $hopDongMoi->luong_co_ban ?? '',
+                            ]),                            'ngay_bat_dau' => $hopDong->ngay_bat_dau ?? null,
                             'ngay_ket_thuc' => $hopDong->ngay_ket_thuc ?? null,
                         ]);
                     } catch (\Exception $e) {

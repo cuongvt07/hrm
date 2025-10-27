@@ -330,7 +330,24 @@
                                                                                     @endforeach
                                                                                 </select>
                                                                             </td>
-                                                                            <td><input type="text" name="cong_tac_existing_mo_ta[]" class="form-control" value="{{ $qt->mo_ta }}"></td>
+                                                                            <td>
+                                                                                <div class="d-flex gap-2">
+                                                                                    @php
+                                                                                        $moTaArr = [];
+                                                                                        try {
+                                                                                            $moTaArr = is_string($qt->mo_ta) ? json_decode($qt->mo_ta, true) ?? [] : (is_array($qt->mo_ta) ? $qt->mo_ta : []);
+                                                                                        } catch (\Throwable $e) {
+                                                                                            $moTaArr = [];
+                                                                                        }
+                                                                                    @endphp
+                                                                                    <input type="text" class="form-control existing_vi_tri" placeholder="Vị trí" value="{{ $moTaArr['vi_tri'] ?? '' }}">
+                                                                                    <input type="text" class="form-control existing_luong" placeholder="Lương" value="{{ $moTaArr['luong'] ?? '' }}">
+                                                                                </div>
+                                                                                @php
+                                                                                    $moTaValue = is_array($qt->mo_ta) ? json_encode($qt->mo_ta, JSON_UNESCAPED_UNICODE) : ($qt->mo_ta ?? '');
+                                                                                @endphp
+                                                                                <input type="hidden" name="cong_tac_existing_mo_ta[]" class="cong_tac_existing_mo_ta_hidden" value="{{ $moTaValue }}">
+                                                                            </td>
                                                                             <td>
                                                                                 <div class="d-flex gap-2">
                                                                                     <input type="date" name="cong_tac_existing_ngay_bat_dau[]" class="form-control" value="{{ $qt->ngay_bat_dau }}">
@@ -363,7 +380,10 @@
                                                                                 </select>
                                                                             </td>
                                                                             <td>
-                                                                                <input type="text" id="new_mo_ta" class="form-control" placeholder="Mô tả">
+                                                                                <div class="d-flex gap-2">
+                                                                                    <input type="text" id="new_vi_tri" class="form-control" placeholder="Vị trí">
+                                                                                    <input type="text" id="new_luong" class="form-control" placeholder="Lương">
+                                                                                </div>
                                                                             </td>
                                                                             <td>
                                                                                 <div class="d-flex gap-2">
@@ -393,7 +413,7 @@
                                                                     <div class="col-md-3">
                                                                         <div class="mb-3">
                                                                             <label for="luong_co_ban" class="form-label">Lương cơ bản</label>
-                                                                            <input type="text" class="form-control bg-light" id="luong_co_ban" name="luong_co_ban" value="{{ optional($nhanVien->thongTinLuong) && optional($nhanVien->thongTinLuong)->luong_co_ban ? number_format(optional($nhanVien->thongTinLuong)->luong_co_ban, 0, ',', '.') : '' }}" readonly>
+                                                                            <input type="text" class="form-control bg-light" id="luong_co_ban" name="luong_co_ban" value="{{ optional($nhanVien->thongTinLuong) && optional($nhanVien->thongTinLuong)->luong_co_ban ? number_format((float) optional($nhanVien->thongTinLuong)->luong_co_ban, 0, ',', '.') : '' }}" readonly>
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-3">
@@ -958,7 +978,7 @@
             let tempCongTac = [];
 
             // Hàm render lại bảng quá trình công tác mới
-            function renderCongTacTable() {
+                    function renderCongTacTable() {
                 const $tbody = $('#congTacTableBody');
                 $tbody.find('.temp-cong-tac-row').remove();
                 // Re-render all temp rows with correct data-idx
@@ -966,11 +986,24 @@
                     const row = tempCongTac[i];
                     const chucvuText = $('#new_chucvu_id option[value="' + row.chucvu_id + '"]').text();
                     const phongbanText = $('#new_phongban_id option[value="' + row.phongban_id + '"]').text();
+                    // try to render mo_ta which is stored as JSON {vi_tri, luong}
+                    let moTaDisplay = '';
+                    try {
+                        if (row.mo_ta) {
+                            const parsed = typeof row.mo_ta === 'string' ? JSON.parse(row.mo_ta) : row.mo_ta;
+                            if (parsed) {
+                                moTaDisplay = (parsed.vi_tri || '') + (parsed.luong ? (' / ' + parsed.luong) : '');
+                            }
+                        }
+                    } catch (e) {
+                        moTaDisplay = row.mo_ta || '';
+                    }
+
                     $tbody.append(`
                         <tr class="temp-cong-tac-row">
                             <td>${chucvuText}</td>
                             <td>${phongbanText}</td>
-                            <td>${row.mo_ta || ''}</td>
+                            <td>${moTaDisplay}</td>
                             <td>${row.ngay_bat_dau} / ${row.ngay_ket_thuc || '...'}</td>
                             <td>
                                 <button type="button" class="btn btn-sm btn-danger delete-temp-cong-tac" data-idx="${i}">Xóa</button>
@@ -984,7 +1017,9 @@
             $('#addCongTacRow').click(function () {
                 const chucvu_id = $('#new_chucvu_id').val();
                 const phongban_id = $('#new_phongban_id').val();
-                const mo_ta = $('#new_mo_ta').val();
+                const vi_tri = $('#new_vi_tri').val();
+                const luong = $('#new_luong').val();
+                const mo_ta = JSON.stringify({ vi_tri: vi_tri || '', luong: luong || '' });
                 const ngay_bat_dau = $('#new_ngay_bat_dau').val();
                 const ngay_ket_thuc = $('#new_ngay_ket_thuc').val();
 
@@ -1000,7 +1035,8 @@
                 // reset input
                 $('#new_chucvu_id').val('');
                 $('#new_phongban_id').val('');
-                $('#new_mo_ta').val('');
+                $('#new_vi_tri').val('');
+                $('#new_luong').val('');
                 $('#new_ngay_bat_dau').val('');
                 $('#new_ngay_ket_thuc').val('');
             });
@@ -1015,6 +1051,24 @@
 
             // Submit form
             $('#employeeForm').submit(function (e) {
+                // Before submit: assemble existing mô tả fields into hidden JSON values
+// Trước khi submit: ghi lại mô tả đúng định dạng JSON
+$('.cong_tac_existing_mo_ta_hidden').each(function () {
+    const $hidden = $(this);
+    const $tr = $hidden.closest('tr');
+
+    const vi_tri = $tr.find('.existing_vi_tri').val()?.trim() || '';
+    const luong = $tr.find('.existing_luong').val()?.trim() || '';
+
+    // Ghi đè luôn, không parse linh tinh
+    $hidden.val(JSON.stringify({
+        vi_tri: vi_tri,
+        luong: luong
+    }));
+});
+
+
+
                 // Xóa input cũ
                 $('input[name^="cong_tac_temp"]').remove();
 

@@ -68,6 +68,8 @@ Route::middleware('auth')->group(function () {
     Route::get('hop-dong/{id}/view', [HopDongController::class, 'view'])->name('hop-dong.view');
     Route::get('hop-dong-sap-het-han', [HopDongController::class, 'sapHetHan'])->name('hop-dong.saphethan');
     Route::get('hop-dong-sap-het-han/export', [HopDongController::class, 'exportSapHetHan'])->name('hop-dong.saphethan.export');
+    // AJAX: check if employee already has active contracts
+    Route::get('hop-dong/check-employee/{id}', [HopDongController::class, 'checkEmployeeContracts'])->name('hop-dong.check-employee');
     Route::get('hop-dong/{id}/gia-han', [HopDongController::class, 'giaHanForm'])->name('hop-dong.giahan.form');
     Route::post('hop-dong/gia-han', [HopDongController::class, 'giaHanStore'])->name('hop-dong.giahan.store');
     // Chấm dứt hợp đồng
