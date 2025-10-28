@@ -79,13 +79,12 @@ class NhanVien extends Model
     }
 
     // Quan hệ với hợp đồng lao động
-    public function hopDongLaoDong(bool $onlyHieuLuc = true): HasMany
+    public function hopDongLaoDong(bool $onlyHieuLuc = false): HasMany
     {
-        $query = $this->hasMany(HopDongLaoDong::class, 'nhan_vien_id');
-
-        // Ưu tiên trạng thái 'hieu_luc' lên trước, sau đó sắp xếp theo ngày_bat_dau giảm dần
-        $query->orderByRaw("CASE WHEN trang_thai = 'hieu_luc' THEN 0 ELSE 1 END")
-              ->orderByDesc('ngay_bat_dau');
+        $query = $this->hasMany(HopDongLaoDong::class, 'nhan_vien_id')
+            // Ưu tiên trạng thái 'hieu_luc' lên đầu, sau đó sắp xếp theo ngay_bat_dau giảm dần
+            ->orderByRaw("CASE WHEN trang_thai = 'hieu_luc' THEN 0 ELSE 1 END")
+            ->orderByDesc('ngay_bat_dau');
 
         if ($onlyHieuLuc) {
             $query->where('trang_thai', 'hieu_luc');
