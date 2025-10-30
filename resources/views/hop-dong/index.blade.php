@@ -42,6 +42,15 @@
                 loadData(e.target.closest("a").href);
             }
         });
+
+        // Nếu có alert thành công (sau khi thêm/sửa/xóa/gia hạn), tự động reload table qua Ajax
+        const alertSuccess = document.querySelector('.alert-success');
+        if (alertSuccess) {
+            // Đợi DOM render xong, trigger submit filter để reload table
+            setTimeout(function() {
+                if (form) form.dispatchEvent(new Event('submit', {cancelable: true, bubbles: true}));
+            }, 500); // delay nhẹ để alert hiển thị trước
+        }
     });
 </script>
 @endpush
