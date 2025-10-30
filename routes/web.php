@@ -138,4 +138,7 @@ Route::middleware('auth')->group(function () {
     // Quản lý phòng ban và chức vụ
     Route::resource('phong-ban', PhongBanController::class);
     Route::resource('chuc-vu', ChucVuController::class);
+
+        // Cập nhật trạng thái hợp đồng hết hạn (chạy ngầm sau login)
+    Route::post('hop-dong/update-expired', [HopDongController::class, 'updateExpiredContracts'])->name('hop-dong.update-expired');
 });

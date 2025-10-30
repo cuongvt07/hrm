@@ -68,6 +68,22 @@
     
     <!-- Custom JavaScript -->
     <script>
+        // Cập nhật trạng thái hợp đồng hết hạn khi load trang
+        window.addEventListener('load', function() {
+            // Chỉ chạy nếu phần nội dung chính tồn tại (user đã login)
+            if (document.querySelector('.main-content')) {
+                fetch("{{ route('hop-dong.update-expired') }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    }
+                }).catch(() => {
+                    // Im lặng nếu có lỗi
+                });
+            }
+        });
+
         // Global functions
         window.HRM = {
             // Show loading spinner

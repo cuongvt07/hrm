@@ -15,43 +15,63 @@ class BaoCaoController extends Controller
         return view('bao-cao.index');
     }
 
-    public function nhanSu()
+    public function nhanSu(Request $request)
     {
-        // Thống kê nhân sự theo phòng ban
-        $departmentStats = PhongBan::withCount('nhanViens')
-            ->orderBy('nhan_vien_count', 'desc')
-            ->get();
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
 
-        // Thống kê theo giới tính
-        $genderStats = NhanVien::selectRaw('gioi_tinh, COUNT(*) as count')
+        // Filter nhân viên theo ngày thử việc nếu có
+        $nhanVienQuery = NhanVien::query();
+        if ($fromDate) {
+            $nhanVienQuery->whereDate('ngay_thu_viec', '>=', $fromDate);
+        }
+        if ($toDate) {
+            $nhanVienQuery->whereDate('ngay_thu_viec', '<=', $toDate);
+        }
+
+        // Thống kê nhân sự theo phòng ban (áp dụng filter)
+        $departmentStats = PhongBan::withCount(['nhanViens' => function($q) use ($fromDate, $toDate) {
+            if ($fromDate) $q->whereDate('ngay_thu_viec', '>=', $fromDate);
+            if ($toDate) $q->whereDate('ngay_thu_viec', '<=', $toDate);
+        }])
+        ->orderBy('nhan_vien_count', 'desc')
+        ->get();
+
+        // Thống kê theo giới tính (áp dụng filter)
+        $genderStats = (clone $nhanVienQuery)
+            ->selectRaw('gioi_tinh, COUNT(*) as count')
             ->groupBy('gioi_tinh')
             ->get();
 
-        // Thống kê theo trạng thái
-        $statusStats = NhanVien::selectRaw('trang_thai, COUNT(*) as count')
+        // Thống kê theo trạng thái (áp dụng filter)
+        $statusStats = (clone $nhanVienQuery)
+            ->selectRaw('trang_thai, COUNT(*) as count')
             ->groupBy('trang_thai')
             ->get();
 
-        // Thống kê theo độ tuổi
-        $ageStats = NhanVien::selectRaw('
-            CASE 
-                WHEN TIMESTAMPDIFF(YEAR, ngay_sinh, CURDATE()) < 25 THEN "Dưới 25"
-                WHEN TIMESTAMPDIFF(YEAR, ngay_sinh, CURDATE()) BETWEEN 25 AND 35 THEN "25-35"
-                WHEN TIMESTAMPDIFF(YEAR, ngay_sinh, CURDATE()) BETWEEN 36 AND 45 THEN "36-45"
-                WHEN TIMESTAMPDIFF(YEAR, ngay_sinh, CURDATE()) BETWEEN 46 AND 55 THEN "46-55"
-                ELSE "Trên 55"
-            END as age_group,
-            COUNT(*) as count
-        ')
-        ->whereNotNull('ngay_sinh')
-        ->groupBy('age_group')
-        ->get();
+        // Thống kê theo độ tuổi (áp dụng filter)
+        $ageStats = (clone $nhanVienQuery)
+            ->selectRaw('
+                CASE 
+                    WHEN TIMESTAMPDIFF(YEAR, ngay_sinh, CURDATE()) < 25 THEN "Dưới 25"
+                    WHEN TIMESTAMPDIFF(YEAR, ngay_sinh, CURDATE()) BETWEEN 25 AND 35 THEN "25-35"
+                    WHEN TIMESTAMPDIFF(YEAR, ngay_sinh, CURDATE()) BETWEEN 36 AND 45 THEN "36-45"
+                    WHEN TIMESTAMPDIFF(YEAR, ngay_sinh, CURDATE()) BETWEEN 46 AND 55 THEN "46-55"
+                    ELSE "Trên 55"
+                END as age_group,
+                COUNT(*) as count
+            ')
+            ->whereNotNull('ngay_sinh')
+            ->groupBy('age_group')
+            ->get();
 
         return view('bao-cao.nhan-su', compact(
             'departmentStats',
             'genderStats',
             'statusStats',
-            'ageStats'
+            'ageStats',
+            'fromDate',
+            'toDate'
         ));
     }
 

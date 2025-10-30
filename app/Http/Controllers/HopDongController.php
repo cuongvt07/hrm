@@ -397,11 +397,16 @@ class HopDongController extends Controller
             $query->where('trang_thai', $request->trang_thai);
         }
 
-        // Chỉ lấy hợp đồng có ngày kết thúc lớn hơn 1 tháng kể từ thời điểm hiện tại
-        $query->where(function($q) {
-            $q->whereNull('ngay_ket_thuc') // hợp đồng không xác định thời hạn
-            ->orWhereDate('ngay_ket_thuc', '>', now()->addMonth()); // hợp đồng còn hạn > 1 tháng
-        });
+            $query->where(function($q) {
+                $q->where('trang_thai', 'het_hieu_luc')
+                  ->orWhere(function($sub) {
+                      $sub->where('trang_thai', 'hieu_luc')
+                          ->where(function($w) {
+                              $w->whereNull('ngay_ket_thuc')
+                                ->orWhereDate('ngay_ket_thuc', '>', now()->addDays(30));
+                          });
+                  });
+            });
 
         $hopDongs = $query->orderBy('ngay_ket_thuc', 'desc')->paginate(20);
         $nhanViens = NhanVien::dangLamViec()->get();
@@ -682,5 +687,17 @@ class HopDongController extends Controller
             'success' => true,
             'message' => "Đã cập nhật trạng thái cho {$updated} hợp đồng."
         ]);
+    }
+
+        /**
+     * Cập nhật trạng thái hợp đồng hết hạn (chạy ngầm sau login)
+     */
+    public function updateExpiredContracts()
+    {
+        \App\Models\HopDongLaoDong::whereNotNull('ngay_ket_thuc')
+            ->whereDate('ngay_ket_thuc', '<', now())
+            ->where('trang_thai', 'hieu_luc')
+            ->update(['trang_thai' => 'het_hieu_luc']);
+        return response()->json(['success' => true]);
     }
 }

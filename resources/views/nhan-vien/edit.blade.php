@@ -250,13 +250,13 @@
                                                                     <label for="ngay_vao_lam" class="form-label">Ngày vào
                                                                         làm</label>
                                                                     <input type="date" class="form-control" id="ngay_vao_lam"
-                                                                        name="ngay_vao_lam" value="{{ $nhanVien->ngay_vao_lam }}">
+                                                                        name="ngay_vao_lam" value="{{ $nhanVien->ngay_vao_lam ? \Carbon\Carbon::parse($nhanVien->ngay_vao_lam)->format('Y-m-d') : '' }}">
                                                                 </div>
                                                                 <div class="mb-3">
                                                                     <label for="ngay_thu_viec" class="form-label">Ngày thử
                                                                         việc</label>
                                                                     <input type="date" class="form-control" id="ngay_thu_viec"
-                                                                        name="ngay_thu_viec" value="{{ $nhanVien->ngay_thu_viec }}">
+                                                                        name="ngay_thu_viec" value="{{ $nhanVien->ngay_thu_viec ? \Carbon\Carbon::parse($nhanVien->ngay_thu_viec)->format('Y-m-d') : '' }}">
                                                                 </div>
                                                             </div>
                                                         </div>

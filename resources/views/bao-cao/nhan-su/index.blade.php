@@ -22,13 +22,23 @@
             <form method="GET" action="{{ route('bao-cao.nhan-su.index') }}" class="d-flex flex-wrap align-items-end gap-3 justify-content-center">
                 <div>
                     <label class="form-label mb-1">Từ ngày</label>
-                    <input type="date" class="form-control" name="from_date"
+                    <input type="date" class="form-control" name="from_date" id="from_date"
                         value="{{ optional($fromDate)->format('Y-m-d') }}">
                 </div>
                 <div>
                     <label class="form-label mb-1">Đến ngày</label>
-                    <input type="date" class="form-control" name="to_date"
+                    <input type="date" class="form-control" name="to_date" id="to_date"
                         value="{{ optional($toDate)->format('Y-m-d') }}">
+                </div>
+                <div>
+                    <label class="form-label mb-1">Chọn nhanh</label>
+                    <select class="form-select" id="quick_range">
+                        <option value="">-- Chọn --</option>
+                        <option value="1m">1 tháng gần nhất</option>
+                        <option value="3m">3 tháng gần nhất</option>
+                        <option value="6m">6 tháng gần nhất</option>
+                        <option value="1y">1 năm gần nhất</option>
+                    </select>
                 </div>
                 <div>
                     <button type="submit" class="btn btn-primary">
@@ -123,6 +133,32 @@
 
 @push('scripts')
 <script>
+// Quick range for date filters
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('quick_range').addEventListener('change', function() {
+        const now = new Date();
+        let from = '';
+        let to = now.toISOString().slice(0,10);
+        if (this.value === '1m') {
+            const d = new Date(now); d.setMonth(d.getMonth() - 1);
+            from = d.toISOString().slice(0,10);
+        } else if (this.value === '3m') {
+            const d = new Date(now); d.setMonth(d.getMonth() - 3);
+            from = d.toISOString().slice(0,10);
+        } else if (this.value === '6m') {
+            const d = new Date(now); d.setMonth(d.getMonth() - 6);
+            from = d.toISOString().slice(0,10);
+        } else if (this.value === '1y') {
+            const d = new Date(now); d.setFullYear(d.getFullYear() - 1);
+            from = d.toISOString().slice(0,10);
+        } else {
+            from = '';
+            to = '';
+        }
+        document.getElementById('from_date').value = from;
+        document.getElementById('to_date').value = to;
+    });
+});
 const ctx = document.getElementById('staffChart').getContext('2d');
 new Chart(ctx, {
     type: 'bar',
