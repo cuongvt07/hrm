@@ -343,11 +343,11 @@ class HopDongController extends Controller
     }
 
     /**
-     * AJAX helper: check if an employee has existing active contracts
+     * AJAX helper: check if an employee has existing contracts (any status)
      */
     public function checkEmployeeContracts($id)
     {
-        $count = HopDongLaoDong::where('nhan_vien_id', $id)->where('trang_thai', 'hieu_luc')->count();
+        $count = HopDongLaoDong::where('nhan_vien_id', $id)->count();
         $latest = HopDongLaoDong::where('nhan_vien_id', $id)->orderBy('created_at', 'desc')->first();
         return response()->json([
             'count' => $count,
@@ -485,12 +485,15 @@ class HopDongController extends Controller
 
                         // ensure new so_hop_dong is unique by appending a random suffix if provided
                         if (!empty($validated['so_hop_dong'])) {
-                            $validated['so_hop_dong'] .= '_' . strtoupper(Str::random(6));
+                            // Chỉ thêm random suffix nếu số hợp đồng chưa có random suffix
+                            if (!preg_match('/_[A-Z0-9]{6}$/', $validated['so_hop_dong'])) {
+                                $validated['so_hop_dong'] .= '_' . strtoupper(Str::random(6));
+                            }
                         } else {
                             // fallback generate from employee code
                             $nvTmp = NhanVien::find($validated['nhan_vien_id']);
                             $ma = $nvTmp ? ($nvTmp->ma_nhanvien ?? '') : '';
-                            $validated['so_hop_dong'] = 'HĐ_' . ($ma ? $ma : strtoupper(Str::random(6))) . '_' . strtoupper(Str::random(6));
+                            $validated['so_hop_dong'] = 'HĐ_' . strtoupper($ma) . '_' . strtoupper(Str::random(6));
                         }
                     }
                 }
