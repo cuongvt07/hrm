@@ -1044,7 +1044,7 @@
                                                 <div class="card-body p-0">
                                                     <table class="table table-bordered mb-0">
                                                         <thead class="table-light">
-                                                            <tr>
+                                                            <tr class="text-center">
                                                                 <th>Loại giấy tờ</th>
                                                                 <th>Tên</th>
                                                                 <th>Số giấy tờ</th>
@@ -1067,6 +1067,9 @@
                                                                                 @break
                                                                             @case('bang_cap')
                                                                                 Bằng cấp
+                                                                                @break
+                                                                            @case('chung_nhan')
+                                                                                Chứng nhận
                                                                                 @break
                                                                             @case('khac')
                                                                                 Khác

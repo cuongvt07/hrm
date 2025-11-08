@@ -115,6 +115,18 @@ class HopDongController extends Controller
             });
         }
 
+        // Lọc theo phòng ban (bao gồm cả phòng ban con)
+        if ($request->filled('phong_ban_id')) {
+            $phongBanId = $request->phong_ban_id;
+            // Lấy tất cả phòng ban con
+            $phongBanCon = \App\Models\PhongBan::where('phong_ban_cha_id', $phongBanId)->pluck('id')->toArray();
+            $allPhongBanIds = array_merge([$phongBanId], $phongBanCon);
+            
+            $query->whereHas('nhanVien', function($q) use ($allPhongBanIds) {
+                $q->whereIn('phong_ban_id', $allPhongBanIds);
+            });
+        }
+
         // Lọc loại hợp đồng (text)
         if ($request->filled('loai_hop_dong')) {
             $query->where('loai_hop_dong', 'like', "%{$request->loai_hop_dong}%");
@@ -147,13 +159,14 @@ class HopDongController extends Controller
 
         $hopDongs = $query->orderBy('ngay_ket_thuc', 'desc')->paginate(20);
         $nhanViens = NhanVien::dangLamViec()->get();
+        $phongBans = \App\Models\PhongBan::with('phongBanCon')->whereNull('phong_ban_cha_id')->get();
 
         if ($request->ajax()) {
             $tableHtml = view('hop-dong.partials.table', compact('hopDongs', 'nhanViens'))->render();
             return response()->json(['table' => $tableHtml]);
         }
 
-        return view('hop-dong.saphethan', compact('hopDongs', 'nhanViens'));
+        return view('hop-dong.saphethan', compact('hopDongs', 'nhanViens', 'phongBans'));
     }
 
     /**
@@ -373,6 +386,18 @@ class HopDongController extends Controller
             });
         }
 
+        // Lọc theo phòng ban (bao gồm cả phòng ban con)
+        if ($request->filled('phong_ban_id')) {
+            $phongBanId = $request->phong_ban_id;
+            // Lấy tất cả phòng ban con
+            $phongBanCon = \App\Models\PhongBan::where('phong_ban_cha_id', $phongBanId)->pluck('id')->toArray();
+            $allPhongBanIds = array_merge([$phongBanId], $phongBanCon);
+            
+            $query->whereHas('nhanVien', function($q) use ($allPhongBanIds) {
+                $q->whereIn('phong_ban_id', $allPhongBanIds);
+            });
+        }
+
         // Lọc loại hợp đồng (text)
         if ($request->filled('loai_hop_dong')) {
             $query->where('loai_hop_dong', 'like', "%{$request->loai_hop_dong}%");
@@ -410,13 +435,14 @@ class HopDongController extends Controller
 
         $hopDongs = $query->orderBy('ngay_ket_thuc', 'desc')->paginate(20);
         $nhanViens = NhanVien::dangLamViec()->get();
+        $phongBans = \App\Models\PhongBan::with('phongBanCon')->whereNull('phong_ban_cha_id')->get();
 
         if ($request->ajax()) {
             $tableHtml = view('hop-dong.partials.table', compact('hopDongs', 'nhanViens'))->render();
             return response()->json(['table' => $tableHtml]);
         }
 
-        return view('hop-dong.index', compact('hopDongs', 'nhanViens'));
+        return view('hop-dong.index', compact('hopDongs', 'nhanViens', 'phongBans'));
     }
 
     public function show(HopDongLaoDong $hopDong)

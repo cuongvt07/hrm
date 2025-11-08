@@ -4,7 +4,7 @@
 <!-- Bulk update trạng thái -->
 <div class="d-flex align-items-center mb-2 gap-2 justify-content-end">
     <select id="bulkStatusSelect" class="form-select form-select-sm" style="width: 180px;">
-        <option value="">Chọn trạng thái cập nhật</option>
+        <option value="">Trạng thái</option>
         <option value="hieu_luc">Hiệu lực</option>
         <option value="het_hieu_luc">Hết hiệu lực</option>
     </select>

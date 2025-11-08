@@ -27,13 +27,20 @@
                     <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
                         <i class="fas fa-building me-1"></i> Phòng ban
                     </button>
-                    <div class="dropdown-menu p-2" style="min-width: 200px;">
-                        <select class="form-select form-select-sm" id="phong_ban_id" name="phong_ban_id" onchange="this.form.submit()">
+                    <div class="dropdown-menu p-2" style="min-width: 250px; max-height: 400px; overflow-y: auto;">
+                        <select class="form-select form-select-sm select-scrollable" id="phong_ban_id" name="phong_ban_id" onchange="this.form.submit()" size="8">
                             <option value="">Tất cả phòng ban</option>
                             @foreach($phongBans as $phongBan)
                                 <option value="{{ $phongBan->id }}" {{ $phong_ban_id == $phongBan->id ? 'selected' : '' }}>
                                     {{ $phongBan->ten_phong_ban }}
                                 </option>
+                                @if($phongBan->phongBanCon && $phongBan->phongBanCon->count() > 0)
+                                    @foreach($phongBan->phongBanCon as $phongBanCon)
+                                        <option value="{{ $phongBanCon->id }}" {{ $phong_ban_id == $phongBanCon->id ? 'selected' : '' }}>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;└─ {{ $phongBanCon->ten_phong_ban }}
+                                        </option>
+                                    @endforeach
+                                @endif
                             @endforeach
                         </select>
                     </div>
@@ -75,9 +82,6 @@
                             </option>
                             <option value="nghi_viec" {{ $trang_thai == 'nghi_viec' ? 'selected' : '' }}>
                                 <i class="fas fa-user-times text-danger"></i> Nghỉ việc
-                            </option>
-                            <option value="khac" {{ $trang_thai == 'khac' ? 'selected' : '' }}>
-                                <i class="fas fa-question-circle text-secondary"></i> Khác
                             </option>
                         </select>
                     </div>
@@ -168,6 +172,14 @@
 .dropdown-menu {
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.select-scrollable {
+    height: auto !important;
+    max-height: 350px;
+    overflow-y: auto;
+}
+.select-scrollable option {
+    padding: 0.5rem 0.75rem;
 }
 </style>
 

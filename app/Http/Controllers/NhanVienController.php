@@ -35,9 +35,14 @@ class NhanVienController extends Controller
             });
         }
 
-        // Lọc phòng ban
+        // Lọc phòng ban (bao gồm cả phòng ban con)
         if ($request->filled('phong_ban_id')) {
-            $query->where('phong_ban_id', $request->phong_ban_id);
+            $phongBanId = $request->phong_ban_id;
+            // Lấy tất cả phòng ban con
+            $phongBanCon = \App\Models\PhongBan::where('phong_ban_cha_id', $phongBanId)->pluck('id')->toArray();
+            $allPhongBanIds = array_merge([$phongBanId], $phongBanCon);
+            
+            $query->whereIn('phong_ban_id', $allPhongBanIds);
         }
 
         // Lọc chức vụ
@@ -721,8 +726,7 @@ if ($request->filled('cong_tac_existing') && is_array($request->cong_tac_existin
             'nhan_vien_chinh_thuc' => 'Đang làm việc',
             'thu_viec' => 'Thử việc',
             'thai_san' => 'Thai sản',
-            'nghi_viec' => 'Đã nghỉ việc',
-            'khac' => 'Khác'
+            'nghi_viec' => 'Đã nghỉ việc'
         ];
 
         return $statusMap[$status] ?? 'Khác';
@@ -822,9 +826,14 @@ if ($request->filled('cong_tac_existing') && is_array($request->cong_tac_existin
             });
         }
 
-        // Lọc phòng ban
+        // Lọc phòng ban (bao gồm cả phòng ban con)
         if ($request->filled('phong_ban_id')) {
-            $query->where('phong_ban_id', $request->phong_ban_id);
+            $phongBanId = $request->phong_ban_id;
+            // Lấy tất cả phòng ban con
+            $phongBanCon = \App\Models\PhongBan::where('phong_ban_cha_id', $phongBanId)->pluck('id')->toArray();
+            $allPhongBanIds = array_merge([$phongBanId], $phongBanCon);
+            
+            $query->whereIn('phong_ban_id', $allPhongBanIds);
         }
 
         // Lọc chức vụ

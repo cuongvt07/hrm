@@ -667,6 +667,7 @@
                                                                             <option value="giay_to_tuy_than">Giấy tờ tùy thân</option>
                                                                             <option value="chung_chi">Chứng chỉ</option>
                                                                             <option value="bang_cap">Bằng cấp</option>
+                                                                            <option value="chung_nhan">Chứng nhận</option>
                                                                             <option value="khac">Khác</option>
                                                                         </select>
                                                                     </div>
@@ -720,7 +721,7 @@
                                                         <div class="table-responsive" style="max-height: 340px; overflow-y: auto;">
                                                             <table class="table table-hover align-middle mb-0" id="myFileTable" style="font-size: 0.97rem;">
                                                                 <thead class="bg-light">
-                                                                    <tr>
+                                                                    <tr class="text-center">
                                                                         <th class="px-3 py-2">Loại giấy tờ</th>
                                                                         <th class="px-3 py-2">Tên</th>
                                                                         <th class="px-3 py-2">Số giấy tờ</th>
@@ -736,8 +737,27 @@
                                                                         <tr>
                                                                             <td class="px-4">
                                                                                 <div class="d-flex align-items-center">
-                                                                                    <i class="fas fa-file-alt text-primary me-2"></i>
-                                                                                    <span>{{ ucfirst(str_replace('_', ' ', $file->loai_giay_to)) }}</span>
+                                                                                    <span>
+                                                                                        @switch($file->loai_giay_to)
+                                                                                            @case('giay_to_tuy_than')
+                                                                                                Giấy tờ tùy thân
+                                                                                                @break
+                                                                                            @case('chung_chi')
+                                                                                                Chứng chỉ
+                                                                                                @break
+                                                                                            @case('bang_cap')
+                                                                                                Bằng cấp
+                                                                                                @break
+                                                                                            @case('chung_nhan')
+                                                                                                Chứng nhận
+                                                                                                @break
+                                                                                            @case('khac')
+                                                                                                Khác
+                                                                                                @break
+                                                                                            @default
+                                                                                                {{ ucfirst(str_replace('_', ' ', $file->loai_giay_to)) }}
+                                                                                        @endswitch
+                                                                                    </span>
                                                                                 </div>
                                                                             </td>
                                                                             <td class="px-4">{{ $file->ghi_chu }}</td>
@@ -749,7 +769,6 @@
                                                                             <td class="px-4">
                                                                                 @if($file->ngay_cap)
                                                                                     <span class="text-muted">
-                                                                                        <i class="far fa-calendar-alt me-1"></i>
                                                                                         {{ \Carbon\Carbon::parse($file->ngay_cap)->format('d/m/Y') }}
                                                                                     </span>
                                                                                 @endif
@@ -757,7 +776,6 @@
                                                                             <td class="px-4">
                                                                                 @if($file->ngay_het_han)
                                                                                     <span class="text-muted">
-                                                                                        <i class="far fa-calendar-times me-1"></i>
                                                                                         {{ \Carbon\Carbon::parse($file->ngay_het_han)->format('d/m/Y') }}
                                                                                     </span>
                                                                                 @endif

@@ -9,7 +9,7 @@
         </a>
     </div>
     {{-- Bộ lọc --}}
-    <x-filters.contract-filter :nhanViens="$nhanViens" />
+    <x-filters.contract-filter :nhanViens="$nhanViens" :phongBans="$phongBans" />
     <div class="card">
         <div class="card-body p-0" id="tableContainer">
             @include('hop-dong.partials.table')
@@ -51,6 +51,38 @@
                 if (form) form.dispatchEvent(new Event('submit', {cancelable: true, bubbles: true}));
             }, 500); // delay nhẹ để alert hiển thị trước
         }
+
+        // Event delegation cho nút Chấm dứt hợp đồng
+        document.body.addEventListener('click', function(e) {
+            const terminateBtn = e.target.closest('.btn-terminate-general');
+            if (terminateBtn) {
+                e.preventDefault();
+                if (!confirm('Xác nhận chấm dứt hợp đồng?')) return;
+                const id = terminateBtn.dataset.id;
+                fetch("{{ url('hop-dong') }}" + '/' + id + '/terminate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message || 'Chấm dứt hợp đồng thành công.');
+                        location.reload();
+                    } else {
+                        alert('Lỗi: ' + (data.message || 'Không thể chấm dứt hợp đồng.'));
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Lỗi khi thực hiện yêu cầu.');
+                });
+            }
+        });
     });
 </script>
 @endpush

@@ -12,7 +12,7 @@
         </div>
     </div>
     {{-- Bộ lọc --}}
-    <x-filters.contract-filter :nhanViens="$nhanViens" />
+    <x-filters.contract-filter :nhanViens="$nhanViens" :phongBans="$phongBans" />
     <div class="card-body p-0">
         @include('hop-dong.partials.table', ['specialStatus' => 'sap_het_han'])
     </div>
