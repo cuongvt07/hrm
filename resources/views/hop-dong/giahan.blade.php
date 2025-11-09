@@ -86,7 +86,7 @@
                                 <input type="text" name="vi_tri_cong_viec" id="vi_tri_cong_viec" class="form-control"
                                     value="{{ old('vi_tri_cong_viec', $hopDongCu->vi_tri_cong_viec) }}">
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3" style="display: none">
                                 <label for="don_vi_ky_hd" class="form-label">Đơn vị ký hợp đồng</label>
                                 <input type="text" name="don_vi_ky_hd" id="don_vi_ky_hd" class="form-control"
                                     value="{{ old('don_vi_ky_hd', $hopDongCu->don_vi_ky_hd) }}">

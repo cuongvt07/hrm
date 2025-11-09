@@ -12,8 +12,11 @@
             </li>
         </ul>
     </div>
-    <form action="{{ route('hop-dong.store') }}" method="POST">
+    <form action="{{ route('hop-dong.store') }}" method="POST" enctype="multipart/form-data" id="hopDongForm">
         @csrf
+        <!-- HIDDEN INPUT PHẢI Ở NGOÀI TAB CONTENT -->
+        <input type="hidden" name="phu_cap_ids" id="phu_cap_ids" value="">
+        
         <div class="card-body">
         <div class="tab-content" id="hopDongTabContent">
             <div class="tab-pane fade show active" id="chitiet" role="tabpanel" aria-labelledby="tab-chitiet">
@@ -86,10 +89,7 @@
                 <label for="vi_tri_cong_viec" class="form-label">Vị trí công việc</label>
                 <input type="text" name="vi_tri_cong_viec" id="vi_tri_cong_viec" class="form-control" value="{{ old('vi_tri_cong_viec') }}">
             </div>
-            <div class="mb-3 d-none">
-                <label for="phu_cap_ids" class="form-label">Phụ cấp (ẩn)</label>
-                <input type="hidden" name="phu_cap_ids" id="phu_cap_ids" value="">
-            </div>
+            
             <div class="mb-3">
                 <label for="trang_thai_ky" class="form-label">Trạng thái ký</label>
                 <select name="trang_thai_ky" id="trang_thai_ky" class="form-select">
@@ -142,7 +142,7 @@
                 @foreach($phuCapItems as $item)
                     <div class="col-md-4 mb-2">
                         <div class="form-check">
-                            <input class="form-check-input phu-cap-checkbox" type="checkbox" value="{{ $item->id }}" id="phuCap{{ $item->id }}">
+                            <input class="form-check-input phu-cap-checkbox" type="checkbox" value="{{ $item->id }}" id="phuCap{{ $item->id }}" data-name="{{ $item->ten_item }}">
                             <label class="form-check-label" for="phuCap{{ $item->id }}">
                                 {{ $item->ten_item }}
                                 @if($item->mo_ta)
@@ -158,6 +158,7 @@
             @endif
         </div>
         </div>
+        </div>
         <div class="card-footer text-end">
             <a href="{{ route('hop-dong.index') }}" class="btn btn-secondary">Quay lại</a>
             <button type="submit" class="btn btn-primary">Lưu hợp đồng</button>
@@ -167,105 +168,80 @@
 @endsection
 
 @push('scripts')
-<script>
-// Khi submit form, lưu các phụ cấp đã chọn vào input hidden
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
-    if (form) {
-        form.addEventListener('submit', function() {
-            const checked = Array.from(document.querySelectorAll('.phu-cap-checkbox:checked')).map(cb => cb.value);
-            document.getElementById('phu_cap_ids').value = JSON.stringify(checked);
-        });
-    }
-});
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.money-input').forEach(function(input) {
-            input.addEventListener('input', function(e) {
-                let value = input.value.replace(/\D/g, '');
-                if (value) {
-                    input.value = Number(value).toLocaleString('vi-VN');
-                } else {
-                    input.value = '';
-                }
-            });
-        });
-        // Khi submit form, loại bỏ dấu chấm
-        document.querySelectorAll('form').forEach(function(form) {
-            form.addEventListener('submit', function() {
-                form.querySelectorAll('.money-input').forEach(function(input) {
-                    input.value = input.value.replace(/\./g, '').replace(/,/g, '');
-                });
-            });
-        });
-    });
-</script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<!-- Nạp Select2 -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
-    $(document).ready(function() {
-        $('#nhan_vien_id').select2({
-            placeholder: "Chọn nhân viên",
-            allowClear: true,
-            width: '100%',
-            matcher: function(params, data) {
-                if ($.trim(params.term) === '') {
-                    return data;
-                }
-                var combinedText = (data.text || '') + ' ' + ($(data.element).data('search') || '');
-                if (combinedText.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
-                    return data;
-                }
-                return null;
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== SCRIPT KHỞI TẠO ===');
+    
+    // 1. Khởi tạo Select2
+    $('#nhan_vien_id').select2({
+        placeholder: "Chọn nhân viên",
+        allowClear: true,
+        width: '100%',
+        matcher: function(params, data) {
+            if ($.trim(params.term) === '') {
+                return data;
             }
-        });
-
-        // Auto render số hợp đồng. If employee already has an active contract, append a random suffix.
-        function generateRandomSuffix(len = 6) {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let out = '';
-            for (let i = 0; i < len; i++) out += chars.charAt(Math.floor(Math.random() * chars.length));
-            return out;
+            var combinedText = (data.text || '') + ' ' + ($(data.element).data('search') || '');
+            if (combinedText.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                return data;
+            }
+            return null;
         }
+    });
 
-        $('#nhan_vien_id').on('change', function() {
-            var selected = $(this).find('option:selected');
-            var text = selected.text();
-            var maNV = '';
-            // Tách mã nhân viên từ text "Họ Tên - MÃNV"
-            if (text.indexOf('-') > -1) {
-                maNV = text.split('-').pop().trim();
-            }
-            if (maNV) {
-                let base = 'HĐ_' + maNV;
-                // Call backend to see if this employee already has active contracts
-                fetch("{{ url('hop-dong/check-employee') }}/" + selected.val())
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data && data.count && data.count > 0) {
-                            // append random suffix
-                            $('#so_hop_dong').val(base + '_' + generateRandomSuffix());
-                        } else {
-                            $('#so_hop_dong').val(base);
-                        }
-                    })
-                    .catch(err => {
-                        console.error('Error checking employee contracts', err);
-                        // fallback to simple base value
+    // 2. Auto generate số hợp đồng
+    function generateRandomSuffix(len = 6) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let out = '';
+        for (let i = 0; i < len; i++) out += chars.charAt(Math.floor(Math.random() * chars.length));
+        return out;
+    }
+
+    $('#nhan_vien_id').on('change', function() {
+        var selected = $(this).find('option:selected');
+        var text = selected.text();
+        var maNV = '';
+        if (text.indexOf('-') > -1) {
+            maNV = text.split('-').pop().trim();
+        }
+        if (maNV) {
+            let base = 'HĐ_' + maNV;
+            fetch("{{ url('hop-dong/check-employee') }}/" + selected.val())
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.count && data.count > 0) {
+                        $('#so_hop_dong').val(base + '_' + generateRandomSuffix());
+                    } else {
                         $('#so_hop_dong').val(base);
-                    });
+                    }
+                })
+                .catch(err => {
+                    console.error('Error checking employee contracts', err);
+                    $('#so_hop_dong').val(base);
+                });
+        } else {
+            $('#so_hop_dong').val('');
+        }
+    });
+
+    // 3. Format money input
+    document.querySelectorAll('.money-input').forEach(function(input) {
+        input.addEventListener('input', function(e) {
+            let value = input.value.replace(/\D/g, '');
+            if (value) {
+                input.value = Number(value).toLocaleString('vi-VN');
             } else {
-                $('#so_hop_dong').val('');
+                input.value = '';
             }
         });
     });
-</script>
-<script>
-    function handleLoaiHopDongChangeCreate() {
+
+    // 4. Xử lý loại hợp đồng
+    function handleLoaiHopDongChange() {
         const loaiHopDong = document.getElementById('loai_hop_dong').value;
         const ngayKetThucGroup = document.getElementById('ngay_ket_thuc_group');
         const thoiHanGroup = document.getElementById('thoi_han_group');
@@ -275,7 +251,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!ngayKetThucGroup || !thoiHanGroup || !ngayKetThucInput || !thoiHanInput) return;
 
         if (loaiHopDong === 'Hợp đồng không xác định thời hạn') {
-            // hide and disable
             ngayKetThucGroup.style.display = 'none';
             thoiHanGroup.style.display = 'none';
             ngayKetThucInput.value = '';
@@ -285,12 +260,10 @@ document.addEventListener('DOMContentLoaded', function() {
             ngayKetThucInput.setAttribute('disabled', 'disabled');
             thoiHanInput.setAttribute('disabled', 'disabled');
         } else {
-            // show and enable
             ngayKetThucGroup.style.display = 'block';
             thoiHanGroup.style.display = 'block';
             ngayKetThucInput.removeAttribute('disabled');
             thoiHanInput.removeAttribute('disabled');
-            // make required for typical fixed-term contracts
             if (loaiHopDong === 'Hợp đồng xác định thời hạn' || loaiHopDong === 'Thử việc') {
                 ngayKetThucInput.setAttribute('required', 'required');
                 thoiHanInput.setAttribute('required', 'required');
@@ -301,7 +274,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Populate thoi_han options depending on loai: if 'Thử việc' -> months 1..12, else years 1..10
     function populateThoiHanOptions(selectEl, loai) {
         if (!selectEl) return;
         const prev = selectEl.value;
@@ -325,29 +297,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 selectEl.appendChild(opt);
             }
         }
-        // restore previous value if exists
         if (prev) {
             selectEl.value = prev;
-            // if prev doesn't match, leave it blank
             if (selectEl.value !== prev) selectEl.value = '';
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const sel = document.getElementById('loai_hop_dong');
-        if (sel) {
-            handleLoaiHopDongChangeCreate();
-            sel.addEventListener('change', handleLoaiHopDongChangeCreate);
-        }
-    });
-</script>
-<script>
     function isFixedTerm(loai) {
         if (!loai) return false;
         return loai.indexOf('xac_dinh') !== -1 || loai.indexOf('Hợp đồng xác định thời hạn') !== -1;
     }
 
-    function computeNgayKetThucCreate() {
+    function computeNgayKetThuc() {
         const loai = document.getElementById('loai_hop_dong') ? document.getElementById('loai_hop_dong').value : '';
         const ngayBatDau = document.getElementById('ngay_bat_dau') ? document.getElementById('ngay_bat_dau').value : '';
         const thoiHan = document.getElementById('thoi_han') ? document.getElementById('thoi_han').value : '';
@@ -360,16 +321,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 ngayKetThucInput.value = '';
                 return;
             }
-            // If probation (Thử việc), thoi_han is in months
             if (loai === 'Thử việc') {
                 d.setMonth(d.getMonth() + parseInt(thoiHan, 10));
                 d.setDate(d.getDate() - 1);
             } else if (isFixedTerm(loai)) {
-                // fixed-term: thoi_han is in years
                 d.setFullYear(d.getFullYear() + parseInt(thoiHan, 10));
                 d.setDate(d.getDate() - 1);
             } else {
-                // For other contract types, default to years
                 d.setFullYear(d.getFullYear() + parseInt(thoiHan, 10));
                 d.setDate(d.getDate() - 1);
             }
@@ -378,28 +336,100 @@ document.addEventListener('DOMContentLoaded', function() {
             const dd = String(d.getDate()).padStart(2, '0');
             ngayKetThucInput.value = `${yyyy}-${mm}-${dd}`;
         } else {
-            // clear if not applicable
             ngayKetThucInput.value = '';
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const thoiHanEl = document.getElementById('thoi_han');
-        const ngayBatDauEl = document.getElementById('ngay_bat_dau');
-        if (thoiHanEl) thoiHanEl.addEventListener('change', computeNgayKetThucCreate);
-        if (ngayBatDauEl) ngayBatDauEl.addEventListener('change', computeNgayKetThucCreate);
-        // run once on load
-        // populate thoi_han options according to current loai
-        const loaiSel = document.getElementById('loai_hop_dong');
-        if (loaiSel) {
+    const loaiSel = document.getElementById('loai_hop_dong');
+    if (loaiSel) {
+        handleLoaiHopDongChange();
+        populateThoiHanOptions(document.getElementById('thoi_han'), loaiSel.value);
+        
+        loaiSel.addEventListener('change', function() {
             populateThoiHanOptions(document.getElementById('thoi_han'), loaiSel.value);
-            loaiSel.addEventListener('change', function() {
-                populateThoiHanOptions(document.getElementById('thoi_han'), loaiSel.value);
-                handleLoaiHopDongChangeCreate();
-                computeNgayKetThucCreate();
+            handleLoaiHopDongChange();
+            computeNgayKetThuc();
+        });
+    }
+
+    const thoiHanEl = document.getElementById('thoi_han');
+    const ngayBatDauEl = document.getElementById('ngay_bat_dau');
+    if (thoiHanEl) thoiHanEl.addEventListener('change', computeNgayKetThuc);
+    if (ngayBatDauEl) ngayBatDauEl.addEventListener('change', computeNgayKetThuc);
+    computeNgayKetThuc();
+
+    // 5. XỬ LÝ CHECKBOX PHỤ CẤP - QUAN TRỌNG NHẤT
+    console.log('=== KHỞI TẠO CHECKBOX PHỤ CẤP ===');
+    
+    // Debug: Kiểm tra checkboxes
+    setTimeout(function() {
+        const checkboxes = document.querySelectorAll('.phu-cap-checkbox');
+        console.log('Tổng số checkbox:', checkboxes.length);
+        checkboxes.forEach(function(cb, index) {
+            console.log(`Checkbox ${index}: ID=${cb.id}, Value=${cb.value}, Checked=${cb.checked}`);
+        });
+    }, 500);
+
+    // 6. XỬ LÝ FORM SUBMIT - QUAN TRỌNG
+    const form = document.getElementById('hopDongForm');
+    if (form) {
+        console.log('Form tìm thấy, gắn event submit...');
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Tạm dừng để xử lý
+            
+            console.log('=== FORM SUBMIT - BẮT ĐẦU XỬ LÝ ===');
+            
+            // Bước 1: Thu thập phụ cấp đã chọn
+            const checkboxes = document.querySelectorAll('.phu-cap-checkbox:checked');
+            console.log('Số checkbox được chọn:', checkboxes.length);
+            
+            const selectedIds = [];
+            checkboxes.forEach(function(cb) {
+                console.log('Checkbox đã chọn:', cb.value, '-', cb.dataset.name);
+                selectedIds.push(cb.value);
             });
-        }
-        computeNgayKetThucCreate();
-    });
+            
+            console.log('Danh sách ID phụ cấp:', selectedIds);
+            
+            // Bước 2: Lưu vào hidden input
+            const hiddenInput = document.getElementById('phu_cap_ids');
+            if (hiddenInput) {
+                const jsonValue = JSON.stringify(selectedIds);
+                hiddenInput.value = jsonValue;
+                console.log('Hidden input đã được set:', jsonValue);
+                console.log('Verify giá trị hidden input:', hiddenInput.value);
+            } else {
+                console.error('KHÔNG TÌM THẤY HIDDEN INPUT #phu_cap_ids!');
+                alert('Lỗi: Không tìm thấy trường phụ cấp. Vui lòng liên hệ quản trị viên.');
+                return false;
+            }
+            
+            // Bước 3: Clean money inputs
+            const moneyInputs = form.querySelectorAll('.money-input');
+            moneyInputs.forEach(function(input) {
+                const oldValue = input.value;
+                input.value = input.value.replace(/\./g, '').replace(/,/g, '');
+                console.log('Money input cleaned:', oldValue, '->', input.value);
+            });
+            
+            // Bước 4: Hiển thị thông báo xác nhận nếu không chọn phụ cấp
+            if (selectedIds.length === 0) {
+                console.warn('Không có phụ cấp nào được chọn');
+                if (!confirm('Bạn chưa chọn phụ cấp nào. Tiếp tục lưu hợp đồng?')) {
+                    return false;
+                }
+            }
+            
+            console.log('=== SUBMIT FORM ===');
+            // Submit form
+            form.submit();
+        });
+        
+        console.log('Event submit đã được gắn thành công!');
+    } else {
+        console.error('KHÔNG TÌM THẤY FORM!');
+    }
+});
 </script>
 @endpush

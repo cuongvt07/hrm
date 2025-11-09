@@ -611,7 +611,7 @@
                                                 <div id="familyTableContainer">
                                                     @if($nhanVien->thongTinGiaDinh && $nhanVien->thongTinGiaDinh->count() > 0)
                                                         <div class="table-responsive">
-                                                            <table class="table">
+                                                            <table class="table table-striped">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Quan hệ</th>
@@ -620,20 +620,26 @@
                                                                         <th>Nghề nghiệp</th>
                                                                         <th>Điện thoại</th>
                                                                         <th>Địa chỉ liên hệ</th>
+                                                                        <th>Người phụ thuộc</th>
                                                                         <th>Ghi chú</th>
+                                                                        <th>Thao tác</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody id="familyTableBody">
-                                                                    @foreach($nhanVien->thongTinGiaDinh as $member)
-                                                                        <tr data-id="{{ $member->id }}">
+                                                                    @foreach($nhanVien->thongTinGiaDinh as $idx => $member)
+                                                                        <tr data-id="{{ $member->id }}" data-idx="{{ $idx }}">
                                                                             <td>{{ $member->quan_he }}</td>
                                                                             <td>{{ $member->ho_ten }}</td>
-                                                                            <td>{{ $member->ngay_sinh ? \Carbon\Carbon::parse($member->ngay_sinh)->format('d/m/Y') : '' }}
-                                                                            </td>
+                                                                            <td>{{ $member->ngay_sinh ? \Carbon\Carbon::parse($member->ngay_sinh)->format('d/m/Y') : '' }}</td>
                                                                             <td>{{ $member->nghe_nghiep }}</td>
                                                                             <td>{{ $member->dien_thoai }}</td>
                                                                             <td>{{ $member->dia_chi_lien_he }}</td>
+                                                                            <td><span class="badge {{ $member->la_nguoi_phu_thuoc ? 'bg-success' : 'bg-secondary' }}">{{ $member->la_nguoi_phu_thuoc ? 'Có' : 'Không' }}</span></td>
                                                                             <td>{{ $member->ghi_chu }}</td>
+                                                                            <td>
+                                                                                <button type="button" class="btn btn-sm btn-outline-primary edit-family" data-idx="{{ $idx }}" data-id="{{ $member->id }}">Sửa</button>
+                                                                                <button type="button" class="btn btn-sm btn-outline-danger delete-family" data-idx="{{ $idx }}" data-id="{{ $member->id }}">Xóa</button>
+                                                                            </td>
                                                                         </tr>
                                                                     @endforeach
                                                                 </tbody>
@@ -974,465 +980,498 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            // Xóa dòng quá trình công tác đã có trong DB (existing rows)
-            $('#congTacTableBody').on('click', '.delete-cong-tac', function () {
-                var $tr = $(this).closest('tr');
-                var id = $tr.find('input[name="cong_tac_existing[]"]').val();
-                // Xóa toàn bộ input/select trong dòng này để không submit lên backend
-                $tr.find('input, select, textarea').remove();
-                $tr.remove();
-                if (id) {
-                    $('<input>').attr({
-                        type: 'hidden',
-                        name: 'cong_tac_delete[]',
-                        value: id
-                    }).appendTo('#employeeForm');
-                }
-            });
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+$(document).ready(function () {
+    console.log('=== SCRIPT KHỞI TẠO ===');
 
-            let tempCongTac = [];
+    // ============================================================
+    // 1. XỬ LÝ QUÁ TRÌNH CÔNG TÁC
+    // ============================================================
+    
+    // Xóa dòng quá trình công tác đã có trong DB (existing rows)
+    $('#congTacTableBody').on('click', '.delete-cong-tac', function () {
+        var $tr = $(this).closest('tr');
+        var id = $tr.find('input[name="cong_tac_existing[]"]').val();
+        $tr.find('input, select, textarea').remove();
+        $tr.remove();
+        if (id) {
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'cong_tac_delete[]',
+                value: id
+            }).appendTo('#employeeForm');
+        }
+    });
 
-            // Hàm render lại bảng quá trình công tác mới
-                    function renderCongTacTable() {
-                const $tbody = $('#congTacTableBody');
-                $tbody.find('.temp-cong-tac-row').remove();
-                // Re-render all temp rows with correct data-idx
-                for (let i = 0; i < tempCongTac.length; i++) {
-                    const row = tempCongTac[i];
-                    const chucvuText = $('#new_chucvu_id option[value="' + row.chucvu_id + '"]').text();
-                    const phongbanText = $('#new_phongban_id option[value="' + row.phongban_id + '"]').text();
-                    // try to render mo_ta which is stored as JSON {vi_tri, luong}
-                    let moTaDisplay = '';
-                    try {
-                        if (row.mo_ta) {
-                            const parsed = typeof row.mo_ta === 'string' ? JSON.parse(row.mo_ta) : row.mo_ta;
-                            if (parsed) {
-                                moTaDisplay = (parsed.vi_tri || '') + (parsed.luong ? (' / ' + parsed.luong) : '');
-                            }
-                        }
-                    } catch (e) {
-                        moTaDisplay = row.mo_ta || '';
+    let tempCongTac = [];
+
+    // Hàm render lại bảng quá trình công tác mới
+    function renderCongTacTable() {
+        const $tbody = $('#congTacTableBody');
+        $tbody.find('.temp-cong-tac-row').remove();
+        
+        for (let i = 0; i < tempCongTac.length; i++) {
+            const row = tempCongTac[i];
+            const chucvuText = $('#new_chucvu_id option[value="' + row.chucvu_id + '"]').text();
+            const phongbanText = $('#new_phongban_id option[value="' + row.phongban_id + '"]').text();
+            
+            let moTaDisplay = '';
+            try {
+                if (row.mo_ta) {
+                    const parsed = typeof row.mo_ta === 'string' ? JSON.parse(row.mo_ta) : row.mo_ta;
+                    if (parsed) {
+                        moTaDisplay = (parsed.vi_tri || '') + (parsed.luong ? (' / ' + parsed.luong) : '');
                     }
-
-                    $tbody.append(`
-                        <tr class="temp-cong-tac-row">
-                            <td>${chucvuText}</td>
-                            <td>${phongbanText}</td>
-                            <td>${moTaDisplay}</td>
-                            <td>${row.ngay_bat_dau} / ${row.ngay_ket_thuc || '...'}</td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-danger delete-temp-cong-tac" data-idx="${i}">Xóa</button>
-                            </td>
-                        </tr>
-                    `);
                 }
+            } catch (e) {
+                moTaDisplay = row.mo_ta || '';
             }
 
-            // Thêm dòng mới
-            $('#addCongTacRow').click(function () {
-                const chucvu_id = $('#new_chucvu_id').val();
-                const phongban_id = $('#new_phongban_id').val();
-                const vi_tri = $('#new_vi_tri').val();
-                const luong = $('#new_luong').val();
-                const mo_ta = JSON.stringify({ vi_tri: vi_tri || '', luong: luong || '' });
-                const ngay_bat_dau = $('#new_ngay_bat_dau').val();
-                const ngay_ket_thuc = $('#new_ngay_ket_thuc').val();
-
-                if (!chucvu_id || !phongban_id || !ngay_bat_dau) {
-                    alert('Vui lòng chọn đầy đủ chức vụ, phòng ban, ngày bắt đầu');
-                    return;
-                }
-
-                tempCongTac.push({ chucvu_id, phongban_id, mo_ta, ngay_bat_dau, ngay_ket_thuc });
-                renderCongTacTable();
-                console.log("Sau khi thêm:", tempCongTac);
-
-                // reset input
-                $('#new_chucvu_id').val('');
-                $('#new_phongban_id').val('');
-                $('#new_vi_tri').val('');
-                $('#new_luong').val('');
-                $('#new_ngay_bat_dau').val('');
-                $('#new_ngay_ket_thuc').val('');
-            });
-
-            // Xóa dòng tạm
-            $('#congTacTableBody').on('click', '.delete-temp-cong-tac', function () {
-                const idx = $(this).data('idx');
-                tempCongTac.splice(idx, 1);
-                renderCongTacTable();
-                console.log("Sau khi xóa:", tempCongTac);
-            });
-
-            // Submit form
-            $('#employeeForm').submit(function (e) {
-                // Before submit: assemble existing mô tả fields into hidden JSON values
-// Trước khi submit: ghi lại mô tả đúng định dạng JSON
-$('.cong_tac_existing_mo_ta_hidden').each(function () {
-    const $hidden = $(this);
-    const $tr = $hidden.closest('tr');
-
-    const vi_tri = $tr.find('.existing_vi_tri').val()?.trim() || '';
-    const luong = $tr.find('.existing_luong').val()?.trim() || '';
-
-    // Ghi đè luôn, không parse linh tinh
-    $hidden.val(JSON.stringify({
-        vi_tri: vi_tri,
-        luong: luong
-    }));
-});
-
-
-
-                // Xóa input cũ
-                $('input[name^="cong_tac_temp"]').remove();
-
-                // Append input mới
-                tempCongTac.forEach(function (row, i) {
-                    $('<input>', {
-                        type: 'hidden',
-                        name: `cong_tac_temp[${i}][chucvu_id]`,
-                        value: row.chucvu_id
-                    }).appendTo(e.target);
-
-                    $('<input>', {
-                        type: 'hidden',
-                        name: `cong_tac_temp[${i}][phongban_id]`,
-                        value: row.phongban_id
-                    }).appendTo(e.target);
-
-                    $('<input>', {
-                        type: 'hidden',
-                        name: `cong_tac_temp[${i}][mo_ta]`,
-                        value: row.mo_ta
-                    }).appendTo(e.target);
-
-                    $('<input>', {
-                        type: 'hidden',
-                        name: `cong_tac_temp[${i}][ngay_bat_dau]`,
-                        value: row.ngay_bat_dau
-                    }).appendTo(e.target);
-
-                    $('<input>', {
-                        type: 'hidden',
-                        name: `cong_tac_temp[${i}][ngay_ket_thuc]`,
-                        value: row.ngay_ket_thuc
-                    }).appendTo(e.target);
-                });
-
-                // Log ra trước khi submit
-                console.log("tempCongTac trước submit:", tempCongTac);
-                console.log("Form data serialize:", $(this).serializeArray());
-
-                return true; // cho form gửi tiếp
-            });
-
-            let familyMembers = @json($nhanVien->thongTinGiaDinh ?? []);
-
- let idxCounter = $("#myFileTable tbody tr").length; // bắt đầu từ số row hiện có
-
-// Hiển thị form thêm
-$("#showAddMyFileForm").click(function () {
-    $("#addMyFileFormContainer").show();
-    $("#addMyFileFormContainer input, #addMyFileFormContainer textarea, #addMyFileFormContainer select").val("");
-});
-
-// Ẩn form thêm
-$("#cancelAddMyFile").click(function () {
-    $("#addMyFileFormContainer").hide();
-});
-
-// Thêm giấy tờ
-$("#addMyFile").click(function () {
-    const loai_giay_to = $("#loai_giay_to").val();
-    const so_giay_to   = $("#so_giay_to").val();
-    const ngay_cap     = $("#ngay_cap").val();
-    const ngay_het_han = $("#ngay_het_han").val();
-    const noi_cap      = $("#noi_cap").val();
-    const ghi_chu      = $("#ghi_chu").val();
-    const $fileInput   = $("#tep_tin");
-
-    if (!loai_giay_to || !so_giay_to) {
-        alert("Vui lòng nhập Loại giấy tờ và Số giấy tờ");
-        return;
+            $tbody.append(`
+                <tr class="temp-cong-tac-row">
+                    <td>${chucvuText}</td>
+                    <td>${phongbanText}</td>
+                    <td>${moTaDisplay}</td>
+                    <td>${row.ngay_bat_dau} / ${row.ngay_ket_thuc || '...'}</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-danger delete-temp-cong-tac" data-idx="${i}">Xóa</button>
+                    </td>
+                </tr>
+            `);
+        }
     }
 
-    const currentIdx = idxCounter++;
+    // Thêm dòng mới
+    $('#addCongTacRow').click(function () {
+        const chucvu_id = $('#new_chucvu_id').val();
+        const phongban_id = $('#new_phongban_id').val();
+        const vi_tri = $('#new_vi_tri').val();
+        const luong = $('#new_luong').val();
+        const mo_ta = JSON.stringify({ vi_tri: vi_tri || '', luong: luong || '' });
+        const ngay_bat_dau = $('#new_ngay_bat_dau').val();
+        const ngay_ket_thuc = $('#new_ngay_ket_thuc').val();
 
-    // Tạo 1 row mới
-    const $tr = $(`
-        <tr>
-            <td>${loai_giay_to}</td>
-            <td>${so_giay_to}</td>
-            <td>${ngay_cap}</td>
-            <td>${ngay_het_han}</td>
-            <td>${noi_cap}</td>
-            <td>${ghi_chu}</td>
-            <td class="file-cell"></td>
-            <td><button type="button" class="btn btn-sm btn-outline-danger delete-my-file">Xóa</button></td>
-        </tr>
-    `);
+        if (!chucvu_id || !phongban_id || !ngay_bat_dau) {
+            alert('Vui lòng chọn đầy đủ chức vụ, phòng ban, ngày bắt đầu');
+            return;
+        }
 
-    // Move input file thật vào trong row
-    $fileInput.attr("name", `giay_to[${currentIdx}][tep_tin]`);
-    $tr.find(".file-cell").append($fileInput);
+        tempCongTac.push({ chucvu_id, phongban_id, mo_ta, ngay_bat_dau, ngay_ket_thuc });
+        renderCongTacTable();
+        console.log("Sau khi thêm công tác:", tempCongTac);
 
-    // Thêm hidden input để submit metadata
-    $tr.append(`<input type="hidden" name="giay_to[${currentIdx}][loai_giay_to]" value="${loai_giay_to}">`);
-    $tr.append(`<input type="hidden" name="giay_to[${currentIdx}][so_giay_to]" value="${so_giay_to}">`);
-    $tr.append(`<input type="hidden" name="giay_to[${currentIdx}][ngay_cap]" value="${ngay_cap}">`);
-    $tr.append(`<input type="hidden" name="giay_to[${currentIdx}][ngay_het_han]" value="${ngay_het_han}">`);
-    $tr.append(`<input type="hidden" name="giay_to[${currentIdx}][noi_cap]" value="${noi_cap}">`);
-    $tr.append(`<input type="hidden" name="giay_to[${currentIdx}][ghi_chu]" value="${ghi_chu}">`);
+        // reset input
+        $('#new_chucvu_id').val('');
+        $('#new_phongban_id').val('');
+        $('#new_vi_tri').val('');
+        $('#new_luong').val('');
+        $('#new_ngay_bat_dau').val('');
+        $('#new_ngay_ket_thuc').val('');
+    });
 
-    $("#myFileTable tbody").append($tr);
+    // Xóa dòng tạm
+    $('#congTacTableBody').on('click', '.delete-temp-cong-tac', function () {
+        const idx = $(this).data('idx');
+        tempCongTac.splice(idx, 1);
+        renderCongTacTable();
+        console.log("Sau khi xóa công tác:", tempCongTac);
+    });
 
-    // Reset form và tạo lại input file mới
-    $("#addMyFileFormContainer input, #addMyFileFormContainer textarea, #addMyFileFormContainer select").val("");
-    $("#addMyFileFormContainer .mb-3:has(#tep_tin)").html(`
-        <label class="form-label">Tệp đính kèm (PDF, ảnh)</label>
-        <input type="file" class="form-control" id="tep_tin" accept=".pdf,image/*">
-    `);
+    // ============================================================
+    // 2. XỬ LÝ GIA ĐÌNH
+    // ============================================================
+    
+    let familyMembers = @json($nhanVien->thongTinGiaDinh ?? []);
+    console.log('familyMembers ban đầu:', familyMembers);
 
-    $("#addMyFileFormContainer").hide();
-});
+    // Function to render the family members table
+    function renderFamilyTable() {
+        console.log('=== RENDER FAMILY TABLE ===');
+        console.log('familyMembers hiện tại:', familyMembers);
+        
+        const $tableBody = $('#familyTableBody');
+        const $tableContainer = $('#familyTableContainer');
+        const $noFamilyMessage = $('#noFamilyMessage');
 
-// Xóa giấy tờ
-$(document).on("click", ".delete-my-file", function () {
-    $(this).closest("tr").remove();
-});
-            // Append my files to main form on submit
-            $('#employeeForm').submit(function () {
-                $('#addMyFileFormContainer').hide();
-                let $input = $('#tempMyFilesInput');
-                if ($input.length === 0) {
-                    $input = $('<input>').attr({
-                        type: 'hidden',
-                        name: 'temp_my_files',
-                        id: 'tempMyFilesInput'
-                    });
-                    $(this).append($input);
-                }
-                $input.val(JSON.stringify(myFiles));
-            });
-
-
-            // Function to render the my file table (preview newly added files)
-            function renderMyFileTable() {
-                // You can implement preview logic here if needed, or leave empty if not required
-                // For now, this is a stub to prevent JS error
+        if (familyMembers.length === 0) {
+            console.log('Không có thành viên nào');
+            if ($noFamilyMessage.length) {
+                $noFamilyMessage.show();
+            } else {
+                $tableContainer.html('<p class="text-muted" id="noFamilyMessage">Chưa có thông tin thành viên gia đình</p>');
             }
+            $tableBody.closest('.table-responsive').hide();
+            return;
+        }
 
-            // Initialize my file table on page load
-            renderMyFileTable();
+        console.log('Có', familyMembers.length, 'thành viên');
+        
+        let html = '';
+        familyMembers.forEach(function (member, idx) {
+            const ngaySinh = member.ngay_sinh ? new Date(member.ngay_sinh).toLocaleDateString('vi-VN') : '';
+            html += `<tr data-id="${member.id || ''}" data-idx="${idx}">
+                <td>${member.quan_he || ''}</td>
+                <td>${member.ho_ten || ''}</td>
+                <td>${ngaySinh}</td>
+                <td>${member.nghe_nghiep || ''}</td>
+                <td>${member.dien_thoai || ''}</td>
+                <td>${member.dia_chi_lien_he || ''}</td>
+                <td><span class="badge ${member.la_nguoi_phu_thuoc ? 'bg-success' : 'bg-secondary'}">${member.la_nguoi_phu_thuoc ? 'Có' : 'Không'}</span></td>
+                <td>${member.ghi_chu || ''}</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-outline-primary edit-family" data-idx="${idx}">Sửa</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger delete-family" data-idx="${idx}">Xóa</button>
+                </td>
+            </tr>`;
+        });
 
-            // Function to render the family members table
-            function renderFamilyTable() {
-                const $tableBody = $('#familyTableBody');
-                const $tableContainer = $('#familyTableContainer');
-                const $noFamilyMessage = $('#noFamilyMessage');
+        if ($tableBody.length) {
+            $tableBody.html(html);
+            $tableBody.closest('.table-responsive').show();
+            if ($noFamilyMessage.length) $noFamilyMessage.hide();
+        } else {
+            $tableContainer.html(`
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Quan hệ</th>
+                                <th>Họ tên</th>
+                                <th>Ngày sinh</th>
+                                <th>Nghề nghiệp</th>
+                                <th>Điện thoại</th>
+                                <th>Địa chỉ liên hệ</th>
+                                <th>Người phụ thuộc</th>
+                                <th>Ghi chú</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="familyTableBody">${html}</tbody>
+                    </table>
+                </div>
+            `);
+        }
+    }
 
-                if (familyMembers.length === 0) {
-                    if ($noFamilyMessage.length) {
-                        $noFamilyMessage.show();
-                    } else {
-                        $tableContainer.html('<p class="text-muted" id="noFamilyMessage">Chưa có thông tin thành viên gia đình</p>');
-                    }
-                    $tableBody.closest('.table-responsive').hide();
-                    return;
-                }
+    // Show add family member form
+    $('#showAddFamilyForm').click(function () {
+        console.log('=== HIỂN THỊ FORM THÊM GIA ĐÌNH ===');
+        $('#addFamilyFormContainer').show();
+        $('#family_quan_he').val('');
+        $('#family_ho_ten').val('');
+        $('#family_ngay_sinh').val('');
+        $('#family_nghe_nghiep').val('');
+        $('#family_dien_thoai').val('');
+        $('#family_dia_chi').val('');
+        $('#family_ghi_chu').val('');
+        $('#family_la_nguoi_phu_thuoc').prop('checked', false);
+        $('#family_id').val('');
+        $('#addFamilyMember').text('Lưu');
+        $('#addFamilyFormContainer').removeData('edit-idx');
+    });
 
-                let html = '';
-                familyMembers.forEach(function (member, idx) {
-                    html += `<tr data-id="${member.id || ''}" data-idx="${idx}">
-                        <td>${member.quan_he}</td>
-                        <td>${member.ho_ten}</td>
-                        <td>${member.ngay_sinh ? new Date(member.ngay_sinh).toLocaleDateString('vi-VN') : ''}</td>
-                        <td>${member.nghe_nghiep || ''}</td>
-                        <td>${member.dien_thoai || ''}</td>
-                        <td>${member.dia_chi_lien_he || ''}</td>
-                        <td><span class="badge ${member.la_nguoi_phu_thuoc ? 'bg-success' : 'bg-secondary'}">${member.la_nguoi_phu_thuoc ? 'Có' : 'Không'}</span></td>
-                        <td>${member.ghi_chu || ''}</td>
-                    </tr>`;
-                });
+    // Hide add family member form
+    $('#cancelAddFamily').click(function () {
+        $('#addFamilyFormContainer').hide();
+    });
 
-                if ($tableBody.length) {
-                    $tableBody.html(html);
-                    $tableBody.closest('.table-responsive').show();
-                    $noFamilyMessage.hide();
-                } else {
-                    $tableContainer.html(`
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Quan hệ</th>
-                                        <th>Họ tên</th>
-                                        <th>Ngày sinh</th>
-                                        <th>Nghề nghiệp</th>
-                                        <th>Điện thoại</th>
-                                        <th>Địa chỉ liên hệ</th>
-                                        <th>Người phụ thuộc</th>
-                                        <th>Ghi chú</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="familyTableBody">${html}</tbody>
-                            </table>
-                        </div>
-                    `);
-                }
-            }
+    // Add/Update family member
+    $('#addFamilyMember').click(function () {
+        console.log('=== CLICK LƯU THÀNH VIÊN GIA ĐÌNH ===');
+        
+        const quan_he = $('#family_quan_he').val();
+        const ho_ten = $('#family_ho_ten').val();
+        const family_id = $('#family_id').val();
+        const editIdx = $('#addFamilyFormContainer').data('edit-idx');
 
-            // Show/hide add family member form
-            $('#showAddFamilyForm').click(function () {
-                $('#addFamilyFormContainer').show();
-                $('#addFamilyFormContainer').find('input, select, textarea').val('');
-                $('#family_la_nguoi_phu_thuoc').prop('checked', false);
-                $('#family_id').val('');
-                $('#addFamilyMember').text('Lưu');
-            });
+        console.log('Quan hệ:', quan_he);
+        console.log('Họ tên:', ho_ten);
+        console.log('Family ID:', family_id);
+        console.log('Edit Index:', editIdx);
 
-            $('#cancelAddFamily').click(function () {
-                $('#addFamilyFormContainer').hide();
-            });
+        if (!quan_he || !ho_ten) {
+            alert('Vui lòng điền đầy đủ Quan hệ và Họ tên.');
+            return;
+        }
 
-            // Handle add/edit family member button click
-            $('#addFamilyMember').click(function () {
-                const $form = $('#addFamilyFormContainer');
-                const quan_he = $form.find('[name="quan_he"]').val();
-                const ho_ten = $form.find('[name="ho_ten"]').val();
-                const family_id = $form.find('[name="family_id"]').val();
+        const member = {
+            id: family_id || null,
+            quan_he: quan_he,
+            ho_ten: ho_ten,
+            ngay_sinh: $('#family_ngay_sinh').val() || null,
+            nghe_nghiep: $('#family_nghe_nghiep').val() || null,
+            dien_thoai: $('#family_dien_thoai').val() || null,
+            dia_chi_lien_he: $('#family_dia_chi').val() || null,
+            ghi_chu: $('#family_ghi_chu').val() || null,
+            la_nguoi_phu_thuoc: $('#family_la_nguoi_phu_thuoc').is(':checked'),
+            is_temp: !family_id // Nếu có ID từ DB thì is_temp = false, nếu mới thêm thì is_temp = true
+        };
 
-                // Basic validation
-                if (!quan_he || !ho_ten) {
-                    alert('Vui lòng điền đầy đủ Quan hệ và Họ tên.');
-                    return;
-                }
+        console.log('Member data:', member);
 
-                const member = {
-                    id: family_id || null,
-                    quan_he: quan_he,
-                    ho_ten: ho_ten,
-                    ngay_sinh: $form.find('[name="ngay_sinh"]').val() || null,
-                    nghe_nghiep: $form.find('[name="nghe_nghiep"]').val() || null,
-                    dien_thoai: $form.find('[name="dien_thoai"]').val() || null,
-                    dia_chi_lien_he: $form.find('[name="dia_chi_lien_he"]').val() || null,
-                    ghi_chu: $form.find('[name="ghi_chu"]').val() || null,
-                    la_nguoi_phu_thuoc: $form.find('[name="la_nguoi_phu_thuoc"]').is(':checked'),
-                    is_temp: !family_id // New members are marked as temporary
-                };
+        if (editIdx !== undefined && editIdx !== null) {
+            console.log('Đang update member tại index', editIdx);
+            familyMembers[editIdx] = member;
+        } else {
+            console.log('Đang thêm member mới');
+            familyMembers.push(member);
+        }
 
-                if (family_id) {
-                    // Update existing member in array
-                    const idx = familyMembers.findIndex(m => (m.id && m.id == family_id) || (m.is_temp && m === familyMembers[parseInt($form.data('edit-idx'))]));
-                    if (idx !== -1) {
-                        familyMembers[idx] = member;
-                    }
-                } else {
-                    // Add new member
-                    familyMembers.push(member);
-                }
+        console.log('familyMembers sau khi xử lý:', familyMembers);
+        
+        renderFamilyTable();
+        $('#addFamilyFormContainer').hide();
+        
+        // Reset form
+        $('#family_quan_he').val('');
+        $('#family_ho_ten').val('');
+        $('#family_ngay_sinh').val('');
+        $('#family_nghe_nghiep').val('');
+        $('#family_dien_thoai').val('');
+        $('#family_dia_chi').val('');
+        $('#family_ghi_chu').val('');
+        $('#family_la_nguoi_phu_thuoc').prop('checked', false);
+        $('#family_id').val('');
+        $('#addFamilyMember').text('Lưu');
+        $('#addFamilyFormContainer').removeData('edit-idx');
+    });
 
-                renderFamilyTable();
-                $('#addFamilyFormContainer').hide();
-                $form.find('input, select, textarea').val('');
-                $('#family_la_nguoi_phu_thuoc').prop('checked', false);
-                $('#family_id').val('');
-            });
+    // Edit family member
+    $(document).on('click', '.edit-family', function () {
+        console.log('=== CLICK SỬA GIA ĐÌNH ===');
+        const idx = $(this).data('idx');
+        console.log('Edit index:', idx);
+        
+        const member = familyMembers[idx];
+        console.log('Member data:', member);
 
-            // Handle edit family member
-            $(document).on('click', '.edit-family', function () {
-                const idx = $(this).data('idx');
-                const member = familyMembers[idx];
-                const $form = $('#addFamilyFormContainer');
+        $('#family_quan_he').val(member.quan_he || '');
+        $('#family_ho_ten').val(member.ho_ten || '');
+        $('#family_ngay_sinh').val(member.ngay_sinh || '');
+        $('#family_nghe_nghiep').val(member.nghe_nghiep || '');
+        $('#family_dien_thoai').val(member.dien_thoai || '');
+        $('#family_dia_chi').val(member.dia_chi_lien_he || '');
+        $('#family_ghi_chu').val(member.ghi_chu || '');
+        $('#family_la_nguoi_phu_thuoc').prop('checked', member.la_nguoi_phu_thuoc || false);
+        $('#family_id').val(member.id || '');
+        $('#addFamilyMember').text('Cập nhật');
+        $('#addFamilyFormContainer').data('edit-idx', idx);
 
-                $form.find('[name="quan_he"]').val(member.quan_he);
-                $form.find('[name="ho_ten"]').val(member.ho_ten);
-                $form.find('[name="ngay_sinh"]').val(member.ngay_sinh || '');
-                $form.find('[name="nghe_nghiep"]').val(member.nghe_nghiep || '');
-                $form.find('[name="dien_thoai"]').val(member.dien_thoai || '');
-                $form.find('[name="dia_chi_lien_he"]').val(member.dia_chi_lien_he || '');
-                $form.find('[name="ghi_chu"]').val(member.ghi_chu || '');
-                $form.find('[name="la_nguoi_phu_thuoc"]').prop('checked', member.la_nguoi_phu_thuoc);
-                $form.find('[name="family_id"]').val(member.id || '');
-                $form.data('edit-idx', idx); // Store index for editing temporary members
-                $('#addFamilyMember').text('Cập nhật');
+        $('#addFamilyFormContainer').show();
+    });
 
-                $('#addFamilyFormContainer').show();
-            });
+    // Delete family member
+    $(document).on('click', '.delete-family', function () {
+        console.log('=== CLICK XÓA GIA ĐÌNH ===');
+        const idx = $(this).data('idx');
+        const member = familyMembers[idx];
+        console.log('Delete index:', idx);
+        console.log('Member:', member);
 
-            // Handle delete family member (client-side for temporary, AJAX for database)
-            $(document).on('click', '.delete-family', function () {
-                const idx = $(this).data('idx');
-                const memberId = $(this).data('id');
+        if (!confirm('Bạn có chắc chắn muốn xóa thành viên gia đình này?')) {
+            return;
+        }
 
-                if (memberId && !familyMembers[idx].is_temp) {
-                    // Database member: use AJAX
-                    if (confirm('Bạn có chắc chắn muốn xóa thành viên gia đình này?')) {
-                        $.ajax({
-                            url: '{{ route("nhan-vien.deleteFamilyMember", [$nhanVien->id, ":memberId"]) }}'.replace(':memberId', memberId),
-                            method: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                                'X-Requested-With': 'XMLHttpRequest'
-                            },
-                            success: function (data) {
-                                if (data.success) {
-                                    familyMembers.splice(idx, 1);
-                                    renderFamilyTable();
-                                } else {
-                                    alert('Có lỗi xảy ra: ' + (data.message || 'Không thể xóa thành viên gia đình'));
-                                }
-                            },
-                            error: function (error) {
-                                console.error('Error:', error);
-                                alert('Có lỗi xảy ra khi xóa thành viên gia đình');
-                            }
-                        });
-                    }
-                } else {
-                    // Temporary member: remove from array
-                    if (confirm('Bạn có chắc chắn muốn xóa thành viên gia đình này?')) {
+        if (member.id) {
+            console.log('Xóa member từ DB, ID:', member.id);
+            $.ajax({
+                url: '{{ route("nhan-vien.deleteFamilyMember", [$nhanVien->id, ":memberId"]) }}'.replace(':memberId', member.id),
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                success: function (data) {
+                    console.log('AJAX success:', data);
+                    if (data.success) {
                         familyMembers.splice(idx, 1);
                         renderFamilyTable();
+                        console.log('Đã xóa thành công');
+                    } else {
+                        alert('Có lỗi xảy ra: ' + (data.message || 'Không thể xóa thành viên gia đình'));
                     }
+                },
+                error: function (error) {
+                    console.error('AJAX error:', error);
+                    alert('Có lỗi xảy ra khi xóa thành viên gia đình');
                 }
             });
-
-            // Append family members to main form on submit
-            $('#employeeForm').submit(function () {
-                $('#addFamilyFormContainer').hide();
-                let $input = $('#tempFamilyMembersInput');
-                if ($input.length === 0) {
-                    $input = $('<input>').attr({
-                        type: 'hidden',
-                        name: 'temp_family_members',
-                        id: 'tempFamilyMembersInput'
-                    });
-                    $(this).append($input);
-                }
-                $input.val(JSON.stringify(familyMembers));
-            });
-
-            // Avatar preview
-            window.previewAvatar = function (input) {
-                if (input.files && input.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        $('#avatarPreview').html(`<img src="${e.target.result}" alt="Avatar" class="rounded-circle shadow" width="120" height="120" style="object-fit: cover;">`);
-                    };
-                    reader.readAsDataURL(input.files[0]);
-                }
-            };
-
-            // Initialize table on page load
+        } else {
+            console.log('Xóa member tạm thời');
+            familyMembers.splice(idx, 1);
             renderFamilyTable();
+        }
+    });
 
-            // Quá trình công tác script
-            // ...existing code...
+    // ============================================================
+    // 3. XỬ LÝ GIẤY TỜ (MY FILE)
+    // ============================================================
+    
+    let idxCounter = $("#myFileTable tbody tr").length;
+
+    // Hiển thị form thêm
+    $("#showAddMyFileForm").click(function () {
+        $("#addMyFileFormContainer").show();
+        $("#addMyFileFormContainer input, #addMyFileFormContainer textarea, #addMyFileFormContainer select").val("");
+    });
+
+    // Ẩn form thêm
+    $("#cancelAddMyFile").click(function () {
+        $("#addMyFileFormContainer").hide();
+    });
+
+    // Thêm giấy tờ
+    $("#addMyFile").click(function () {
+        const loai_giay_to = $("#loai_giay_to").val();
+        const so_giay_to   = $("#so_giay_to").val();
+        const ngay_cap     = $("#ngay_cap").val();
+        const ngay_het_han = $("#ngay_het_han").val();
+        const noi_cap      = $("#noi_cap").val();
+        const ghi_chu      = $("#ghi_chu").val();
+        const $fileInput   = $("#tep_tin");
+
+        if (!loai_giay_to || !so_giay_to) {
+            alert("Vui lòng nhập Loại giấy tờ và Số giấy tờ");
+            return;
+        }
+
+        const currentIdx = idxCounter++;
+
+        const $tr = $(`
+            <tr>
+                <td>${loai_giay_to}</td>
+                <td>${ghi_chu}</td>
+                <td>${so_giay_to}</td>
+                <td>${ngay_cap}</td>
+                <td>${ngay_het_han}</td>
+                <td>${noi_cap}</td>
+                <td class="file-cell"></td>
+                <td><button type="button" class="btn btn-sm btn-outline-danger delete-my-file">Xóa</button></td>
+            </tr>
+        `);
+
+        $fileInput.attr("name", `giay_to[${currentIdx}][tep_tin]`);
+        $tr.find(".file-cell").append($fileInput);
+
+        $tr.append(`<input type="hidden" name="giay_to[${currentIdx}][loai_giay_to]" value="${loai_giay_to}">`);
+        $tr.append(`<input type="hidden" name="giay_to[${currentIdx}][so_giay_to]" value="${so_giay_to}">`);
+        $tr.append(`<input type="hidden" name="giay_to[${currentIdx}][ngay_cap]" value="${ngay_cap}">`);
+        $tr.append(`<input type="hidden" name="giay_to[${currentIdx}][ngay_het_han]" value="${ngay_het_han}">`);
+        $tr.append(`<input type="hidden" name="giay_to[${currentIdx}][noi_cap]" value="${noi_cap}">`);
+        $tr.append(`<input type="hidden" name="giay_to[${currentIdx}][ghi_chu]" value="${ghi_chu}">`);
+
+        $("#myFileTable tbody").append($tr);
+
+        $("#addMyFileFormContainer input, #addMyFileFormContainer textarea, #addMyFileFormContainer select").val("");
+        $("#addMyFileFormContainer .mb-3:has(#tep_tin)").html(`
+            <label class="form-label">Tệp đính kèm (PDF, ảnh)</label>
+            <input type="file" class="form-control" id="tep_tin" accept=".pdf,image/*">
+        `);
+
+        $("#addMyFileFormContainer").hide();
+    });
+
+    // Xóa giấy tờ
+    $(document).on("click", ".delete-my-file", function () {
+        $(this).closest("tr").remove();
+    });
+
+    // ============================================================
+    // 4. SUBMIT FORM - QUAN TRỌNG
+    // ============================================================
+    
+    $('#employeeForm').submit(function (e) {
+        console.log('=== FORM SUBMIT ===');
+        
+        // 1. Xử lý công tác existing
+        $('.cong_tac_existing_mo_ta_hidden').each(function () {
+            const $hidden = $(this);
+            const $tr = $hidden.closest('tr');
+            const vi_tri = $tr.find('.existing_vi_tri').val()?.trim() || '';
+            const luong = $tr.find('.existing_luong').val()?.trim() || '';
+            $hidden.val(JSON.stringify({ vi_tri: vi_tri, luong: luong }));
         });
-    </script>
+
+        // 2. Xử lý công tác temp
+        $('input[name^="cong_tac_temp"]').remove();
+        tempCongTac.forEach(function (row, i) {
+            $('<input>', { type: 'hidden', name: `cong_tac_temp[${i}][chucvu_id]`, value: row.chucvu_id }).appendTo(e.target);
+            $('<input>', { type: 'hidden', name: `cong_tac_temp[${i}][phongban_id]`, value: row.phongban_id }).appendTo(e.target);
+            $('<input>', { type: 'hidden', name: `cong_tac_temp[${i}][mo_ta]`, value: row.mo_ta }).appendTo(e.target);
+            $('<input>', { type: 'hidden', name: `cong_tac_temp[${i}][ngay_bat_dau]`, value: row.ngay_bat_dau }).appendTo(e.target);
+            $('<input>', { type: 'hidden', name: `cong_tac_temp[${i}][ngay_ket_thuc]`, value: row.ngay_ket_thuc }).appendTo(e.target);
+        });
+        console.log("tempCongTac trước submit:", tempCongTac);
+
+        // 3. Xử lý family members - QUAN TRỌNG
+        $('#addFamilyFormContainer').hide();
+        $('#tempFamilyMembersInput').remove();
+        
+        console.log('=== XỬ LÝ FAMILY MEMBERS ===');
+        console.log('familyMembers trước khi stringify:', familyMembers);
+        console.log('Số lượng members:', familyMembers.length);
+        
+        const familyJSON = JSON.stringify(familyMembers);
+        console.log('familyMembers khi submit:', familyMembers);
+        console.log('JSON đã stringify:', familyJSON);
+        console.log('JSON length:', familyJSON.length);
+        
+        const $hiddenInput = $('<input>')
+            .attr({
+                type: 'hidden',
+                name: 'temp_family_members',
+                id: 'tempFamilyMembersInput',
+                value: familyJSON
+            });
+        
+        $(this).append($hiddenInput);
+        
+        console.log('✅ Đã append hidden input temp_family_members');
+        console.log('Hidden input value:', $hiddenInput.val());
+        console.log('Hidden input trong form:', $('input[name="temp_family_members"]').length);
+
+        // 4. Log toàn bộ form data
+        const formData = new FormData(this);
+        console.log('=== FULL FORM DATA ===');
+        for (let [key, value] of formData.entries()) {
+            if (key === 'temp_family_members' || key.includes('cong_tac')) {
+                console.log(key + ':', value);
+            }
+        }
+
+        return true;
+    });
+
+    // ============================================================
+    // 5. AVATAR PREVIEW
+    // ============================================================
+    
+    window.previewAvatar = function (input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                $('#avatarPreview').html(`<img src="${e.target.result}" alt="Avatar" class="rounded-circle shadow" width="120" height="120" style="object-fit: cover;">`);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    };
+
+    // ============================================================
+    // 6. KHỞI TẠO
+    // ============================================================
+    
+    console.log('=== KHỞI TẠO TABLES ===');
+    renderFamilyTable();
+});
+
+// ============================================================
+// 7. HELPER FUNCTION - FILE NAME DISPLAY
+// ============================================================
+
+function showFileName(input, idx) {
+    const fileName = input.files[0]?.name || '';
+    $(`#file-name-${idx}`).text(fileName ? `Đã chọn: ${fileName}` : '');
+}
+</script>
 @endsection

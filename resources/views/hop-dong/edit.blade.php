@@ -25,9 +25,24 @@
             </ul>
         </div>
     @endif
-    <form action="{{ route('hop-dong.update', $hopDong->id) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('hop-dong.update', $hopDong->id) }}" method="POST" enctype="multipart/form-data" id="hopDongEditForm">
         @csrf
         @method('PUT')
+        
+        <!-- HIDDEN INPUT PHẢI Ở NGOÀI TAB CONTENT -->
+        @php
+            $phuCapIdsOld = old('phu_cap_ids', $hopDong->phu_cap_ids ?? '');
+            if (is_array($phuCapIdsOld)) {
+                $phuCapIdsArr = $phuCapIdsOld;
+                $phuCapIdsOld = json_encode($phuCapIdsOld);
+            } elseif (is_string($phuCapIdsOld) && $phuCapIdsOld !== '') {
+                $phuCapIdsArr = json_decode($phuCapIdsOld, true) ?? [];
+            } else {
+                $phuCapIdsArr = [];
+            }
+        @endphp
+        <input type="hidden" name="phu_cap_ids" id="phu_cap_ids" value="{{ $phuCapIdsOld }}">
+        
         <div class="card-body">
             <div class="tab-content" id="hopDongTabContent">
                 <div class="tab-pane fade show active" id="chitiet" role="tabpanel" aria-labelledby="tab-chitiet">
@@ -190,29 +205,18 @@
                     @endif
 
                     <h5 class="mb-3">Chọn phụ cấp áp dụng cho hợp đồng</h5>
-                    <div class="mb-3 d-none">
-                        @php
-                            $phuCapIdsOld = old('phu_cap_ids', $hopDong->phu_cap_ids ?? '');
-                            if (is_array($phuCapIdsOld)) {
-                                $phuCapIdsArr = $phuCapIdsOld;
-                                $phuCapIdsOld = json_encode($phuCapIdsOld);
-                            } elseif (is_string($phuCapIdsOld) && $phuCapIdsOld !== '') {
-                                $phuCapIdsArr = json_decode($phuCapIdsOld, true) ?? [];
-                            } else {
-                                $phuCapIdsArr = [];
-                            }
-                        @endphp
-                        <input type="hidden" name="phu_cap_ids" id="phu_cap_ids" value="{{ $phuCapIdsOld }}">
-                    </div>
                     @if(isset($phuCapItems) && $phuCapItems->count())
                         @php
-                            $selectedPhuCap = collect($phuCapIdsArr);
+                            // Cast tất cả về string để so sánh đúng với checkbox value
+                            $selectedPhuCap = collect($phuCapIdsArr)->map(function($id) {
+                                return (string)$id;
+                            });
                         @endphp
                         <div class="row">
                         @foreach($phuCapItems as $item)
                             <div class="col-md-4 mb-2">
                                 <div class="form-check">
-                                    <input class="form-check-input phu-cap-checkbox" type="checkbox" value="{{ $item->id }}" id="phuCap{{ $item->id }}" @if($selectedPhuCap->contains($item->id)) checked @endif>
+                                    <input class="form-check-input phu-cap-checkbox" type="checkbox" value="{{ $item->id }}" id="phuCap{{ $item->id }}" data-name="{{ $item->ten_item }}" @if($selectedPhuCap->contains((string)$item->id)) checked @endif>
                                     <label class="form-check-label" for="phuCap{{ $item->id }}">
                                         {{ $item->ten_item }}
                                         @if($item->mo_ta)
@@ -239,41 +243,22 @@
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.money-input').forEach(function(input) {
-            input.addEventListener('input', function(e) {
-                let value = input.value.replace(/\D/g, '');
-                if (value) {
-                    input.value = Number(value).toLocaleString('vi-VN');
-                } else {
-                    input.value = '';
-                }
-            });
-        });
-        // Khi submit form, loại bỏ dấu chấm
-        document.querySelectorAll('form').forEach(function(form) {
-            form.addEventListener('submit', function() {
-                form.querySelectorAll('.money-input').forEach(function(input) {
-                    input.value = input.value.replace(/\./g, '').replace(/,/g, '');
-                });
-            });
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== EDIT FORM SCRIPT KHỞI TẠO ===');
+    
+    // 1. Format money input
+    document.querySelectorAll('.money-input').forEach(function(input) {
+        input.addEventListener('input', function(e) {
+            let value = input.value.replace(/\D/g, '');
+            if (value) {
+                input.value = Number(value).toLocaleString('vi-VN');
+            } else {
+                input.value = '';
+            }
         });
     });
-</script>
-<script>
-// Khi submit form, lưu các phụ cấp đã chọn vào input hidden
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
-    if (form) {
-        form.addEventListener('submit', function() {
-            const checked = Array.from(document.querySelectorAll('.phu-cap-checkbox:checked')).map(cb => cb.value);
-            document.getElementById('phu_cap_ids').value = JSON.stringify(checked);
-        });
-    }
-});
-</script>
-<script>
-    // Handle loai hop dong change in edit form: hide/show ngay_ket_thuc and thoi_han and populate thoi_han options
+
+    // 2. Xử lý loại hợp đồng
     function populateThoiHanOptionsEdit(selectEl, loai) {
         if (!selectEl) return;
         const prev = selectEl.value;
@@ -369,23 +354,94 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const loaiSel = document.getElementById('loai_hop_dong');
-        const thoiHanEl = document.getElementById('thoi_han');
-        const ngayBatDauEl = document.getElementById('ngay_bat_dau');
-        if (loaiSel && thoiHanEl) {
+    const loaiSel = document.getElementById('loai_hop_dong');
+    const thoiHanEl = document.getElementById('thoi_han');
+    const ngayBatDauEl = document.getElementById('ngay_bat_dau');
+    
+    if (loaiSel && thoiHanEl) {
+        populateThoiHanOptionsEdit(thoiHanEl, loaiSel.value);
+        loaiSel.addEventListener('change', function() {
             populateThoiHanOptionsEdit(thoiHanEl, loaiSel.value);
-            loaiSel.addEventListener('change', function() {
-                populateThoiHanOptionsEdit(thoiHanEl, loaiSel.value);
-                handleLoaiHopDongChangeEdit();
-                computeNgayKetThucEdit();
+            handleLoaiHopDongChangeEdit();
+            computeNgayKetThucEdit();
+        });
+    }
+    if (thoiHanEl) thoiHanEl.addEventListener('change', computeNgayKetThucEdit);
+    if (ngayBatDauEl) ngayBatDauEl.addEventListener('change', computeNgayKetThucEdit);
+    
+    // Initialize
+    handleLoaiHopDongChangeEdit();
+    computeNgayKetThucEdit();
+
+    // 3. DEBUG CHECKBOX - Kiểm tra checkbox đã được load
+    setTimeout(function() {
+        const checkboxes = document.querySelectorAll('.phu-cap-checkbox');
+        console.log('=== KIỂM TRA CHECKBOX (EDIT) ===');
+        console.log('Tổng số checkbox:', checkboxes.length);
+        
+        const checkedBoxes = document.querySelectorAll('.phu-cap-checkbox:checked');
+        console.log('Số checkbox đã chọn:', checkedBoxes.length);
+        
+        checkedBoxes.forEach(function(cb) {
+            console.log('Checkbox đã tích:', cb.value, '-', cb.dataset.name);
+        });
+        
+        const hiddenInput = document.getElementById('phu_cap_ids');
+        console.log('Giá trị hidden input ban đầu:', hiddenInput ? hiddenInput.value : 'NOT FOUND');
+    }, 500);
+
+    // 4. XỬ LÝ FORM SUBMIT
+    const form = document.getElementById('hopDongEditForm');
+    if (form) {
+        console.log('Form edit tìm thấy, gắn event submit...');
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Tạm dừng để xử lý
+            
+            console.log('=== EDIT FORM SUBMIT - BẮT ĐẦU XỬ LÝ ===');
+            
+            // Bước 1: Thu thập phụ cấp đã chọn
+            const checkboxes = document.querySelectorAll('.phu-cap-checkbox:checked');
+            console.log('Số checkbox được chọn:', checkboxes.length);
+            
+            const selectedIds = [];
+            checkboxes.forEach(function(cb) {
+                console.log('Checkbox đã chọn:', cb.value, '-', cb.dataset.name);
+                selectedIds.push(cb.value);
             });
-        }
-        if (thoiHanEl) thoiHanEl.addEventListener('change', computeNgayKetThucEdit);
-        if (ngayBatDauEl) ngayBatDauEl.addEventListener('change', computeNgayKetThucEdit);
-        // initialize
-        handleLoaiHopDongChangeEdit();
-        computeNgayKetThucEdit();
-    });
+            
+            console.log('Danh sách ID phụ cấp:', selectedIds);
+            
+            // Bước 2: Lưu vào hidden input
+            const hiddenInput = document.getElementById('phu_cap_ids');
+            if (hiddenInput) {
+                const jsonValue = JSON.stringify(selectedIds);
+                hiddenInput.value = jsonValue;
+                console.log('Hidden input đã được set:', jsonValue);
+                console.log('Verify giá trị hidden input:', hiddenInput.value);
+            } else {
+                console.error('KHÔNG TÌM THẤY HIDDEN INPUT #phu_cap_ids!');
+                alert('Lỗi: Không tìm thấy trường phụ cấp. Vui lòng liên hệ quản trị viên.');
+                return false;
+            }
+            
+            // Bước 3: Clean money inputs
+            const moneyInputs = form.querySelectorAll('.money-input');
+            moneyInputs.forEach(function(input) {
+                const oldValue = input.value;
+                input.value = input.value.replace(/\./g, '').replace(/,/g, '');
+                console.log('Money input cleaned:', oldValue, '->', input.value);
+            });
+            
+            console.log('=== SUBMIT FORM (EDIT) ===');
+            // Submit form
+            form.submit();
+        });
+        
+        console.log('Event submit đã được gắn thành công (EDIT)!');
+    } else {
+        console.error('KHÔNG TÌM THẤY FORM EDIT!');
+    }
+});
 </script>
 @endpush

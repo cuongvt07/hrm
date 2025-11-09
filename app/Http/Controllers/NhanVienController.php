@@ -256,6 +256,14 @@ class NhanVienController extends Controller
     public function update(Request $request, NhanVien $nhanVien)
     {
         try {
+            // ===== DEBUG: Log toàn bộ request =====
+            \Log::info('=== NHAN VIEN UPDATE START ===');
+            \Log::info('Request all:', $request->all());
+            \Log::info('Has temp_family_members:', ['has' => $request->filled('temp_family_members')]);
+            if ($request->filled('temp_family_members')) {
+                \Log::info('temp_family_members value:', ['value' => $request->input('temp_family_members')]);
+            }
+            
             // Validate main employee data
             $validated = $request->validate([
                 'ma_nhanvien' => 'required|string|max:50|unique:nhanvien,ma_nhanvien,' . $nhanVien->id,
@@ -366,11 +374,43 @@ class NhanVienController extends Controller
                 );
             }
 
-            // Handle family members
+            // Handle family members - ĐỒNG BỘ HOÀN TOÀN
             if ($request->filled('temp_family_members')) {
+                \Log::info('=== FAMILY MEMBERS UPDATE ===');
+                \Log::info('temp_family_members raw:', ['data' => $request->input('temp_family_members')]);
+                
                 $familyMembers = json_decode($request->input('temp_family_members'), true);
+                \Log::info('temp_family_members decoded:', ['data' => $familyMembers, 'is_array' => is_array($familyMembers)]);
+                
                 if (is_array($familyMembers)) {
-                    foreach ($familyMembers as $member) {
+                    \Log::info('Processing ' . count($familyMembers) . ' family members');
+                    
+                    // Lấy danh sách ID hiện có trong DB
+                    $existingIds = ThongTinGiaDinh::where('nhan_vien_id', $nhanVien->id)
+                        ->pluck('id')
+                        ->toArray();
+                    \Log::info('Existing IDs in DB:', $existingIds);
+                    
+                    // Lấy danh sách ID được gửi lên (chỉ những cái có ID)
+                    $submittedIds = collect($familyMembers)
+                        ->filter(function($m) { return !empty($m['id']); })
+                        ->pluck('id')
+                        ->toArray();
+                    \Log::info('Submitted IDs:', $submittedIds);
+                    
+                    // Xóa những member không còn trong danh sách gửi lên
+                    $idsToDelete = array_diff($existingIds, $submittedIds);
+                    if (!empty($idsToDelete)) {
+                        \Log::info('Deleting members:', $idsToDelete);
+                        ThongTinGiaDinh::whereIn('id', $idsToDelete)
+                            ->where('nhan_vien_id', $nhanVien->id)
+                            ->delete();
+                    }
+                    
+                    // Xử lý từng member (update existing hoặc create new)
+                    foreach ($familyMembers as $idx => $member) {
+                        \Log::info("Processing member #{$idx}:", $member);
+                        
                         $familyData = [
                             'nhan_vien_id' => $nhanVien->id,
                             'quan_he' => $member['quan_he'] ?? null,
@@ -380,22 +420,32 @@ class NhanVienController extends Controller
                             'dien_thoai' => $member['dien_thoai'] ?? null,
                             'dia_chi_lien_he' => $member['dia_chi_lien_he'] ?? null,
                             'ghi_chu' => $member['ghi_chu'] ?? null,
-                            'la_nguoi_phu_thuoc' => $member['la_nguoi_phu_thuoc'] ?? false
+                            'la_nguoi_phu_thuoc' => isset($member['la_nguoi_phu_thuoc']) ? (bool)$member['la_nguoi_phu_thuoc'] : false
                         ];
 
                         if (empty($familyData['quan_he']) || empty($familyData['ho_ten'])) {
+                            \Log::warning("Skipping member #{$idx}: missing quan_he or ho_ten");
                             continue;
                         }
 
                         if (!empty($member['id'])) {
-                            ThongTinGiaDinh::where('id', $member['id'])
+                            \Log::info("Updating existing member ID: {$member['id']}");
+                            $updated = ThongTinGiaDinh::where('id', $member['id'])
                                 ->where('nhan_vien_id', $nhanVien->id)
                                 ->update($familyData);
+                            \Log::info("Update result:", ['affected_rows' => $updated]);
                         } else {
-                            ThongTinGiaDinh::create($familyData);
+                            \Log::info("Creating new member");
+                            $newMember = ThongTinGiaDinh::create($familyData);
+                            \Log::info("Created member with ID: {$newMember->id}");
                         }
                     }
+                    \Log::info('=== FAMILY MEMBERS UPDATE COMPLETE ===');
+                } else {
+                    \Log::warning('temp_family_members is not an array');
                 }
+            } else {
+                \Log::info('temp_family_members not filled in request - KHÔNG CẬP NHẬT GIA ĐÌNH');
             }
 
 // ====== Thêm mới các dòng công tác ======

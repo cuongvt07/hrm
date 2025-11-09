@@ -480,6 +480,21 @@ class HopDongController extends Controller
     public function store(Request $request)
     {
         try {
+            // Debug: Log toàn bộ request data
+            \Log::info('HopDong Store Request:', $request->all());
+            
+            // Clean money format: remove dots and commas from luong fields
+            if ($request->filled('luong_co_ban')) {
+                $request->merge([
+                    'luong_co_ban' => str_replace(['.', ','], '', $request->luong_co_ban)
+                ]);
+            }
+            if ($request->filled('luong_bao_hiem')) {
+                $request->merge([
+                    'luong_bao_hiem' => str_replace(['.', ','], '', $request->luong_bao_hiem)
+                ]);
+            }
+            
             $validated = $request->validate([
                 'nhan_vien_id' => 'nullable|exists:nhanvien,id',
                 'so_hop_dong' => 'nullable|string|max:100|unique:hop_dong_lao_dong',
@@ -532,11 +547,19 @@ class HopDongController extends Controller
                 ]);
             }
 
-            // Chuyển phu_cap_ids từ JSON string sang array nếu có
-            if (!empty($validated['phu_cap_ids'])) {
-                $validated['phu_cap_ids'] = json_decode($validated['phu_cap_ids'], true) ?? [];
-            }
+            // Model đã tự động cast phu_cap_ids từ JSON string sang array (xem HopDongLaoDong $casts)
+            // Không cần decode thủ công
+            \Log::info('Validated phu_cap_ids:', ['phu_cap_ids' => $validated['phu_cap_ids'] ?? 'NULL']);
+            
             $hopDong = HopDongLaoDong::create($validated);
+            
+            // Debug: Kiểm tra dữ liệu đã lưu
+            \Log::info('HopDong created:', [
+                'id' => $hopDong->id,
+                'phu_cap_ids' => $hopDong->phu_cap_ids,
+                'phu_cap_ids_raw' => $hopDong->getAttributes()['phu_cap_ids'] ?? 'NULL'
+            ]);
+            
             \App\Models\ThongTinLuong::updateOrCreate(
                 ['nhan_vien_id' => $hopDong->nhan_vien_id],
                 ['luong_co_ban' => $hopDong->luong_co_ban]
@@ -615,6 +638,18 @@ class HopDongController extends Controller
     public function update(Request $request, HopDongLaoDong $hopDong)
     {
         try {
+            // Clean money format: remove dots and commas from luong fields
+            if ($request->filled('luong_co_ban')) {
+                $request->merge([
+                    'luong_co_ban' => str_replace(['.', ','], '', $request->luong_co_ban)
+                ]);
+            }
+            if ($request->filled('luong_bao_hiem')) {
+                $request->merge([
+                    'luong_bao_hiem' => str_replace(['.', ','], '', $request->luong_bao_hiem)
+                ]);
+            }
+            
             $validated = $request->validate([
                 'nhan_vien_id' => 'nullable|exists:nhanvien,id',
                 'so_hop_dong' => 'nullable|string|max:100|unique:hop_dong_lao_dong,so_hop_dong,' . $hopDong->id,
@@ -640,32 +675,45 @@ class HopDongController extends Controller
                 ]);
             }
 
-            // Chuyển phu_cap_ids từ JSON string sang array nếu có
-            if (!empty($validated['phu_cap_ids'])) {
-                $validated['phu_cap_ids'] = json_decode($validated['phu_cap_ids'], true) ?? [];
-            }
+            // Debug: Log dữ liệu trước khi update
+            \Log::info('HopDong Update Request:', [
+                'id' => $hopDong->id,
+                'phu_cap_ids' => $validated['phu_cap_ids'] ?? 'NULL'
+            ]);
+
+            // Model đã tự động cast phu_cap_ids từ JSON string sang array (xem HopDongLaoDong $casts)
+            // Không cần decode thủ công
             $hopDong->update($validated);
+            
+            // Debug: Kiểm tra dữ liệu sau khi update
+            \Log::info('HopDong updated:', [
+                'id' => $hopDong->id,
+                'phu_cap_ids' => $hopDong->phu_cap_ids,
+                'phu_cap_ids_raw' => $hopDong->getAttributes()['phu_cap_ids'] ?? 'NULL'
+            ]);
+            
             \App\Models\ThongTinLuong::updateOrCreate(
                 ['nhan_vien_id' => $hopDong->nhan_vien_id],
                 ['luong_co_ban' => $hopDong->luong_co_ban]
             );
 
-                    // Thêm bản ghi vào quá trình công tác: lưu mức lương vào mô tả
-                    try {
-                        $nv = NhanVien::find($hopDong->nhan_vien_id);
-                        \App\Models\QuaTrinhCongTac::create([
-                            'nhanvien_id' => $hopDong->nhan_vien_id,
-                            'chucvu_id' => ($nv ? $nv->chuc_vu_id : null),
-                            'phongban_id' => ($nv ? $nv->phong_ban_id : null),
-                            'mo_ta' => json_encode([
-                                'vi_tri' => $hopDongMoi->vi_tri_cong_viec ?? '',
-                                'luong'  => $hopDongMoi->luong_co_ban ?? '',
-                            ]),                            'ngay_bat_dau' => $hopDong->ngay_bat_dau ?? null,
-                            'ngay_ket_thuc' => $hopDong->ngay_ket_thuc ?? null,
-                        ]);
-                    } catch (\Exception $e) {
-                        \Log::error('Error creating QuaTrinhCongTac on store: ' . $e->getMessage());
-                    }
+            // Thêm bản ghi vào quá trình công tác: lưu mức lương vào mô tả
+            try {
+                $nv = NhanVien::find($hopDong->nhan_vien_id);
+                \App\Models\QuaTrinhCongTac::create([
+                    'nhanvien_id' => $hopDong->nhan_vien_id,
+                    'chucvu_id' => ($nv ? $nv->chuc_vu_id : null),
+                    'phongban_id' => ($nv ? $nv->phong_ban_id : null),
+                    'mo_ta' => json_encode([
+                        'vi_tri' => $hopDong->vi_tri_cong_viec ?? '',
+                        'luong'  => $hopDong->luong_co_ban ?? '',
+                    ]),
+                    'ngay_bat_dau' => $hopDong->ngay_bat_dau ?? null,
+                    'ngay_ket_thuc' => $hopDong->ngay_ket_thuc ?? null,
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Error creating QuaTrinhCongTac on update: ' . $e->getMessage());
+            }
 
             // Xử lý upload file tài liệu hợp đồng
             if ($request->hasFile('tep_tin_hop_dong')) {
@@ -689,6 +737,7 @@ class HopDongController extends Controller
             return redirect()->route('hop-dong.index')
                 ->with('success', 'Cập nhật hợp đồng thành công!');
         } catch (\Exception $e) {
+            \Log::error('HopDong Update Error: ' . $e->getMessage());
             return back()->withInput()->with('error', 'Lỗi: ' . $e->getMessage());
         }
     }

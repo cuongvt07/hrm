@@ -85,7 +85,7 @@
             <label class="form-label">Vị trí công việc</label>
             <input type="text" class="form-control bg-light" value="{{ $hopDong->vi_tri_cong_viec }}" readonly>
         </div>
-        <div class="mb-3">
+        <div class="mb-3" style="display: none">
             <label class="form-label">Đơn vị ký hợp đồng</label>
             <input type="text" class="form-control bg-light" value="{{ $hopDong->don_vi_ky_hd }}" readonly>
         </div>
