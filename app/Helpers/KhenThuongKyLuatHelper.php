@@ -38,6 +38,16 @@ function getKhenThuongKyLuatForNhanVien(NhanVien $nhanVien) {
     $khenThuong = collect();
     $kyLuat = collect();
     foreach ($ktklCaNhan->merge($ktklTapThe) as $item) {
+        // Kiểm tra ngày vào làm của nhân viên
+        // Nếu nhân viên vào làm sau ngày quyết định thì không ghi nhận
+        $ngayVaoLam = $nhanVien->ngay_vao_lam;
+        $ngayQuyetDinh = $item->khenThuongKyLuat->ngay_quyet_dinh;
+
+        if ($ngayVaoLam && $ngayQuyetDinh && $ngayVaoLam > $ngayQuyetDinh) {
+            // Nhân viên vào làm sau ngày quyết định, bỏ qua
+            continue;
+        }
+
         if ($item->khenThuongKyLuat && $item->khenThuongKyLuat->loai === 'khen_thuong') {
             $khenThuong->push($item);
         } elseif ($item->khenThuongKyLuat && $item->khenThuongKyLuat->loai === 'ky_luat') {

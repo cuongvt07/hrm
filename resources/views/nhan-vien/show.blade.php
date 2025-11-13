@@ -11,6 +11,32 @@
         'nghi_viec' => ['class' => 'danger', 'text' => 'Đã nghỉ việc'],
         'khac' => ['class' => 'secondary', 'text' => 'Khác']
     ];
+
+    // Function to format quan he (relationship)
+    function formatQuanHe($quanHe) {
+        if (!$quanHe) return '';
+        
+        $quanHeMap = [
+            'cha' => 'Cha',
+            'me' => 'Mẹ',
+            'vo' => 'Vợ',
+            'chong' => 'Chồng',
+            'con_trai' => 'Con trai',
+            'con_gai' => 'Con gái',
+            'anh' => 'Anh',
+            'chi' => 'Chị',
+            'em_trai' => 'Em trai',
+            'em_gai' => 'Em gái',
+            'ong' => 'Ông',
+            'ba' => 'Bà',
+            'ong_noi' => 'Ông nội',
+            'ba_noi' => 'Bà nội',
+            'ong_ngoai' => 'Ông ngoại',
+            'ba_ngoai' => 'Bà ngoại'
+        ];
+        
+        return $quanHeMap[$quanHe] ?? ucfirst($quanHe);
+    }
 @endphp
 <div class="container-fluid">
     <!-- Page Header -->
@@ -869,7 +895,7 @@
                                                                     <div class="d-flex align-items-center">
                                                                         <!-- ...existing code... -->
                                                                         <div>
-                                                                            <h6 class="mb-0 fw-bold">{{ $member->quan_he }}</h6>
+                                                                            <h6 class="mb-0 fw-bold">{{ formatQuanHe($member->quan_he) }}</h6>
                                                                             <small class="text-muted">{{ $member->ho_ten }}</small>
                                                                         </div>
                                                                     </div>

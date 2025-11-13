@@ -3,6 +3,33 @@
 @section('title', 'Chỉnh sửa nhân viên - ' . $nhanVien->ho . ' ' . $nhanVien->ten)
 
 @section('content')
+@php
+    // Function to format quan he (relationship)
+    function formatQuanHe($quanHe) {
+        if (!$quanHe) return '';
+        
+        $quanHeMap = [
+            'cha' => 'Cha',
+            'me' => 'Mẹ',
+            'vo' => 'Vợ',
+            'chong' => 'Chồng',
+            'con_trai' => 'Con trai',
+            'con_gai' => 'Con gái',
+            'anh' => 'Anh',
+            'chi' => 'Chị',
+            'em_trai' => 'Em trai',
+            'em_gai' => 'Em gái',
+            'ong' => 'Ông',
+            'ba' => 'Bà',
+            'ong_noi' => 'Ông nội',
+            'ba_noi' => 'Bà nội',
+            'ong_ngoai' => 'Ông ngoại',
+            'ba_ngoai' => 'Bà ngoại'
+        ];
+        
+        return $quanHeMap[$quanHe] ?? ucfirst($quanHe);
+    }
+@endphp
     <div class="container-fluid">
         <!-- Page Header -->
         <div class="row mb-4">
@@ -628,7 +655,7 @@
                                                                 <tbody id="familyTableBody">
                                                                     @foreach($nhanVien->thongTinGiaDinh as $idx => $member)
                                                                         <tr data-id="{{ $member->id }}" data-idx="{{ $idx }}">
-                                                                            <td>{{ $member->quan_he }}</td>
+                                                                            <td>{{ formatQuanHe($member->quan_he) }}</td>
                                                                             <td>{{ $member->ho_ten }}</td>
                                                                             <td>{{ $member->ngay_sinh ? \Carbon\Carbon::parse($member->ngay_sinh)->format('d/m/Y') : '' }}</td>
                                                                             <td>{{ $member->nghe_nghiep }}</td>
@@ -1085,6 +1112,32 @@ $(document).ready(function () {
     let familyMembers = @json($nhanVien->thongTinGiaDinh ?? []);
     console.log('familyMembers ban đầu:', familyMembers);
 
+    // Function to format quan he (relationship)
+    function formatQuanHe(quanHe) {
+        if (!quanHe) return '';
+        
+        const quanHeMap = {
+            'cha': 'Cha',
+            'me': 'Mẹ',
+            'vo': 'Vợ',
+            'chong': 'Chồng',
+            'con_trai': 'Con trai',
+            'con_gai': 'Con gái',
+            'anh': 'Anh',
+            'chi': 'Chị',
+            'em_trai': 'Em trai',
+            'em_gai': 'Em gái',
+            'ong': 'Ông',
+            'ba': 'Bà',
+            'ong_noi': 'Ông nội',
+            'ba_noi': 'Bà nội',
+            'ong_ngoai': 'Ông ngoại',
+            'ba_ngoai': 'Bà ngoại'
+        };
+        
+        return quanHeMap[quanHe] || quanHe.charAt(0).toUpperCase() + quanHe.slice(1);
+    }
+
     // Function to render the family members table
     function renderFamilyTable() {
         console.log('=== RENDER FAMILY TABLE ===');
@@ -1111,7 +1164,7 @@ $(document).ready(function () {
         familyMembers.forEach(function (member, idx) {
             const ngaySinh = member.ngay_sinh ? new Date(member.ngay_sinh).toLocaleDateString('vi-VN') : '';
             html += `<tr data-id="${member.id || ''}" data-idx="${idx}">
-                <td>${member.quan_he || ''}</td>
+                <td>${formatQuanHe(member.quan_he) || ''}</td>
                 <td>${member.ho_ten || ''}</td>
                 <td>${ngaySinh}</td>
                 <td>${member.nghe_nghiep || ''}</td>

@@ -47,18 +47,41 @@
             });
         }
 
+        // Hàm lấy tham số filter hiện tại từ form
+        function getCurrentFilterParams() {
+            const formData = new FormData(form);
+            const params = new URLSearchParams();
+            for (let [key, value] of formData.entries()) {
+                if (value && value.trim() !== '') {
+                    params.append(key, value);
+                }
+            }
+            return params.toString();
+        }
+
         // Khi submit form
         form.addEventListener("submit", function(e) {
             e.preventDefault();
-            const url = "{{ route('nhan-vien.index') }}?" + new URLSearchParams(new FormData(form)).toString();
+            const url = "{{ route('nhan-vien.index') }}?" + getCurrentFilterParams();
             loadData(url);
         });
 
-        // Delegate click phân trang
+        // Delegate click phân trang - PRESERVE FILTER PARAMS
         document.body.addEventListener("click", function(e) {
             if (e.target.closest(".pagination a")) {
                 e.preventDefault();
-                loadData(e.target.closest("a").href);
+                const paginationUrl = e.target.closest("a").href;
+                const filterParams = getCurrentFilterParams();
+
+                // Append filter params to pagination URL
+                const separator = paginationUrl.includes('?') ? '&' : '?';
+                const finalUrl = paginationUrl + separator + filterParams;
+
+                console.log('Pagination URL:', paginationUrl);
+                console.log('Filter params:', filterParams);
+                console.log('Final URL:', finalUrl);
+
+                loadData(finalUrl);
             }
         });
     });
