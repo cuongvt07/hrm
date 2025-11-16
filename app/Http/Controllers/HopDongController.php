@@ -433,7 +433,7 @@ class HopDongController extends Controller
                   });
             });
 
-        $hopDongs = $query->orderBy('ngay_ket_thuc', 'desc')->paginate(20);
+        $hopDongs = $query->orderBy('created_at', 'desc')->paginate(perPage: 20);
         $nhanViens = NhanVien::dangLamViec()->get();
         $phongBans = \App\Models\PhongBan::with('phongBanCon')->whereNull('phong_ban_cha_id')->get();
 

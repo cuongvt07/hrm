@@ -305,7 +305,7 @@
                                                                             Thai sản</option>
                                                                         <option value="nghi_viec" {{ $nhanVien->trang_thai == 'nghi_viec' ? 'selected' : '' }}>
                                                                             Nghỉ việc</option>
-                                                                        <option value="khac" {{ $nhanVien->trang_thai == 'khac' ? 'selected' : '' }}>Khác</option>
+                                                                        <!-- <option value="khac" {{ $nhanVien->trang_thai == 'khac' ? 'selected' : '' }}>Khác</option> -->
                                                                     </select>
                                                                 </div>
                                                                 <div class="mb-3">
@@ -1427,7 +1427,47 @@ $(document).ready(function () {
 
     // Xóa giấy tờ
     $(document).on("click", ".delete-my-file", function () {
-        $(this).closest("tr").remove();
+        const $tr = $(this).closest("tr");
+        const giayToId = $tr.find('input[name*="[id]"]').val(); // Lấy ID từ hidden input
+
+        console.log('Delete button clicked');
+        console.log('Row:', $tr);
+        console.log('Found ID input:', $tr.find('input[name*="[id]"]'));
+        console.log('GiayTo ID:', giayToId);
+
+        if (giayToId) {
+            // Nếu có ID (tức là đã lưu trong DB), gọi AJAX xóa
+            if (confirm('Bạn có chắc chắn muốn xóa giấy tờ này?')) {
+                const url = '{{ route("giay-to-tuy-than.destroy", [$nhanVien->id, ":giayToId"]) }}'.replace(':giayToId', giayToId);
+                console.log('AJAX URL:', url);
+
+                $.ajax({
+                    url: url,
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    success: function (response) {
+                        console.log('AJAX Success:', response);
+                        if (response.success) {
+                            $tr.remove();
+                            alert(response.message);
+                        } else {
+                            alert('Lỗi: ' + response.message);
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error('AJAX Error:', xhr);
+                        alert('Có lỗi xảy ra khi xóa giấy tờ');
+                    }
+                });
+            }
+        } else {
+            // Nếu chưa có ID (tức là mới thêm tạm thời), chỉ remove DOM
+            console.log('No ID found, removing from DOM only');
+            $tr.remove();
+        }
     });
 
     // ============================================================

@@ -54,14 +54,34 @@ class GiayToTuyThanController extends Controller
     }
 
     // Xóa giấy tờ tùy thân
-    public function destroy(Request $request, NhanVien $nhanVien, GiayToTuyThan $giayTo)
+    public function destroy(Request $request, NhanVien $nhanVien, $giayToTuyThan)
     {
+        // Tự tìm model thay vì dùng route model binding
+        $giayTo = GiayToTuyThan::find($giayToTuyThan);
+
+        Log::info('Destroy GiayToTuyThan', [
+            'nhanVien_id' => $nhanVien->id,
+            'giayToTuyThan_param' => $giayToTuyThan,
+            'giayTo_found' => $giayTo ? 'yes' : 'no',
+            'giayTo_id' => $giayTo ? $giayTo->id : null,
+            'giayTo_exists' => $giayTo ? $giayTo->exists : null,
+            'request_params' => $request->all()
+        ]);
+
+        if (!$giayTo) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Giấy tờ không tồn tại!'
+            ], 404);
+        }
+
         if ($giayTo->nhan_vien_id !== $nhanVien->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Không có quyền xóa giấy tờ này!'
             ], 403);
         }
+
         $giayTo->delete();
         return response()->json([
             'success' => true,

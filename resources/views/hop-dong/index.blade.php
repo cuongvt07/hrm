@@ -39,7 +39,27 @@
         document.body.addEventListener("click", function(e) {
             if (e.target.closest(".pagination a")) {
                 e.preventDefault();
-                loadData(e.target.closest("a").href);
+                const paginationLink = e.target.closest("a");
+                const baseUrl = paginationLink.href.split('?')[0]; // Lấy URL không có query string
+                const currentFormData = new FormData(form);
+                const searchParams = new URLSearchParams();
+
+                // Thêm tất cả parameters từ form hiện tại
+                for (let [key, value] of currentFormData.entries()) {
+                    if (value) { // Chỉ thêm nếu có giá trị
+                        searchParams.append(key, value);
+                    }
+                }
+
+                // Thêm page parameter từ pagination link
+                const urlParams = new URLSearchParams(paginationLink.href.split('?')[1] || '');
+                const page = urlParams.get('page');
+                if (page) {
+                    searchParams.set('page', page);
+                }
+
+                const finalUrl = baseUrl + '?' + searchParams.toString();
+                loadData(finalUrl);
             }
         });
 

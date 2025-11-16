@@ -28,7 +28,7 @@ class DashboardController extends Controller
             ->sapHetHan(30)
             ->where('trang_thai', 'hieu_luc');
         $stats = [
-            'total_employees' => NhanVien::count(),
+            'total_employees' => NhanVien::whereIn('trang_thai', ['dang_lam_viec', 'thu_viec'])->count(),
             'active_employees' => NhanVien::dangLamViec()->count(),
             'resigned_employees' => NhanVien::where('trang_thai', 'nghi_viec')->count(),
             'probation_employees' => NhanVien::where('trang_thai', 'thu_viec')->count(),
@@ -41,9 +41,8 @@ class DashboardController extends Controller
         $departmentStats = PhongBan::withCount(['nhanViens', 'nhanViens as nhan_vien_active_count' => function ($query) {
                 $query->where('trang_thai', 'dang_lam_viec');
             }])
-            ->with(['nhanViens.chucVu'])
-            ->orderBy('nhan_viens_count', 'desc')
-            ->limit(5)
+            ->with(['nhanViens.chucVu', 'phongBanCon'])
+            ->orderBy('ten_phong_ban')
             ->get();
 
         // Hợp đồng sắp hết hạn

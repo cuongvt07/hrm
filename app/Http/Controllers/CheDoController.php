@@ -37,6 +37,12 @@ class CheDoController extends Controller
         }
         $khenThuongKyLuats = $query->orderBy('ngay_quyet_dinh', 'desc')->paginate(20);
         $loai = 'khen_thuong';
+
+        if ($request->ajax()) {
+            $tableHtml = view('che-do.khen-thuong-ky-luat.partials.table', compact('khenThuongKyLuats', 'loai'))->render();
+            return response()->json(['table' => $tableHtml]);
+        }
+
         return view('che-do.khen-thuong-ky-luat.index', compact('khenThuongKyLuats', 'loai'));
     }
 
@@ -59,6 +65,12 @@ class CheDoController extends Controller
         }
         $khenThuongKyLuats = $query->orderBy('ngay_quyet_dinh', 'desc')->paginate(20);
         $loai = 'ky_luat';
+
+        if ($request->ajax()) {
+            $tableHtml = view('che-do.khen-thuong-ky-luat.partials.table', compact('khenThuongKyLuats', 'loai'))->render();
+            return response()->json(['table' => $tableHtml]);
+        }
+
         return view('che-do.khen-thuong-ky-luat.index', compact('khenThuongKyLuats', 'loai'));
     }
 

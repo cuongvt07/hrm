@@ -9,8 +9,7 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h2 class="mb-0">Dashboard</h2>
-                    <p class="text-muted mb-0">Tổng quan hệ thống quản lý nhân sự</p>
+                    <h2 class="mb-0">Tổng quan tình hình nhân sự</h2>
                 </div>
             </div>
         </div>
@@ -215,27 +214,42 @@
 
 @push('scripts')
 <script>
+@php
+    // Lấy tất cả phòng ban cho biểu đồ (bao gồm cả phòng ban không có nhân viên)
+    $chartDepartments = $departmentStats ?? collect();
+@endphp
+
 // Department Chart
 const departmentCtx = document.getElementById('departmentChart').getContext('2d');
 new Chart(departmentCtx, {
     type: 'doughnut',
     data: {
-        labels: {!! json_encode(($departmentStats ?? collect())->pluck('ten_phong_ban')->toArray()) !!},
+        labels: {!! json_encode($chartDepartments->pluck('ten_phong_ban')->toArray()) !!},
         datasets: [{
-            data: {!! json_encode(($departmentStats ?? collect())->pluck('nhan_viens_count')->toArray()) !!},
+            data: {!! json_encode($chartDepartments->pluck('nhan_viens_count')->toArray()) !!},
             backgroundColor: [
                 '#4e73df',
                 '#1cc88a',
                 '#36b9cc',
                 '#f6c23e',
-                '#e74a3b'
+                '#e74a3b',
+                '#6f42c1',
+                '#fd7e14',
+                '#20c997',
+                '#dc3545',
+                '#ffc107'
             ],
             hoverBackgroundColor: [
                 '#2e59d9',
                 '#17a673',
                 '#2c9faf',
                 '#dda20e',
-                '#e02d1b'
+                '#e02d1b',
+                '#5a32a3',
+                '#e8680d',
+                '#1aa085',
+                '#c82333',
+                '#e0a800'
             ],
             hoverBorderColor: "rgba(234, 236, 244, 1)",
         }]

@@ -11,7 +11,7 @@
             <i class="fas fa-plus me-1"></i> Tạo quyết định {{ $loai === 'ky_luat' ? 'kỷ luật' : 'khen thưởng' }}
         </a>
     </div>
-    <form method="get" class="row g-2 mb-3 align-items-end">
+    <form method="get" id="filterForm" class="row g-2 mb-3 align-items-end">
         <div class="col-auto">
             <label class="form-label mb-0">Từ ngày</label>
             <input type="date" name="from" value="{{ request('from') }}" class="form-control form-control-sm">
@@ -33,69 +33,7 @@
     {{-- Bộ lọc (nếu có) --}}
     <div class="card">
         <div class="card-body p-0" id="tableContainer">
-            <table class="table table-bordered table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        {{-- <th>Loại</th> --}} 
-                        <th>Số quyết định</th>
-                        <th>Tiêu đề</th>
-                        <th>Ngày quyết định</th>
-                        <th>Người quyết định</th>
-                        <th>Trạng thái</th>
-                        <th>Đối tượng áp dụng</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($khenThuongKyLuats as $item)
-                        <tr>
-                                <td>{{ $loop->iteration }}</td>
-                            {{-- <td>
-                                @if($item->loai === 'khen_thuong')
-                                    <span class="badge bg-success">Khen thưởng</span>
-                                @else
-                                    <span class="badge bg-danger">Kỷ luật</span>
-                                @endif
-                            </td> --}}
-                            <td>{{ $item->so_quyet_dinh }}</td>
-                            <td>{{ $item->tieu_de }}</td>
-                            <td>{{ $item->ngay_quyet_dinh ? $item->ngay_quyet_dinh->format('d/m/Y') : '' }}</td>
-                            <td>{{ $item->nguoi_quyet_dinh }}</td>
-                            <td>
-                                @if($item->trang_thai === 'chua_thuc_hien')
-                                    <span class="badge bg-secondary">Chưa thực hiện</span>
-                                @elseif($item->trang_thai === 'dang_thuc_hien')
-                                    <span class="badge bg-warning text-dark">Đang thực hiện</span>
-                                @elseif($item->trang_thai === 'hoan_thanh')
-                                    <span class="badge bg-success">Hoàn thành</span>
-                                @endif
-                            </td>
-                            <td>
-                                @php
-                                    $nhanVienArr = $item->doiTuongApDung->where('loai_doi_tuong', 'nhan_vien')->pluck('nhanVien.ho_ten')->toArray();
-                                    $phongBanArr = $item->doiTuongApDung->where('loai_doi_tuong', 'phong_ban')->pluck('phongBan.ten_phong_ban')->toArray();
-                                @endphp
-                                @if($nhanVienArr)
-                                    <span class="text-primary">Nhân viên:</span> {{ implode(', ', $nhanVienArr) }}<br>
-                                @endif
-                                @if($phongBanArr)
-                                    <span class="text-success">Phòng ban:</span> {{ implode(', ', $phongBanArr) }}
-                                @endif
-                            </td>
-                            <td>
-                                <a href="{{ route('che-do.khen-thuong-ky-luat.show', $item->id) }}" class="btn btn-sm btn-info">Xem</a>
-                                <!-- Có thể bổ sung sửa/xóa nếu cần -->
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            <div class="mt-3 px-3 pb-3">
-                @if($khenThuongKyLuats->hasPages())
-                    <x-pagination :paginator="$khenThuongKyLuats" />
-                @endif
-            </div>
+            @include('che-do.khen-thuong-ky-luat.partials.table')
         </div>
     </div>
 </div>
@@ -103,6 +41,66 @@
 
 @push('scripts')
 <script>
-    // Nếu muốn ajax filter/phân trang thì tham khảo scripts của các màn hình khác
+    // Ajax filter + phân trang
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.querySelector("form[method='get']");
+        function loadData(url) {
+            fetch(url, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("tableContainer").innerHTML = data.table;
+            })
+            .catch(err => {
+                console.error('Error loading data:', err);
+                // Fallback: reload page
+                window.location.href = url;
+            });
+        }
+
+        // Xử lý form submit
+        form.addEventListener("submit", function(e) {
+            e.preventDefault();
+            const url = "{{ $loai === 'ky_luat' ? route('che-do.ky-luat.index') : route('che-do.khen-thuong.index') }}?" + new URLSearchParams(new FormData(form)).toString();
+            loadData(url);
+        });
+
+        // Xử lý phân trang với filter parameters
+        document.body.addEventListener("click", function(e) {
+            if (e.target.closest(".pagination a")) {
+                e.preventDefault();
+                const paginationLink = e.target.closest("a");
+                const baseUrl = paginationLink.href.split('?')[0]; // Lấy URL không có query string
+                const currentFormData = new FormData(form);
+                const searchParams = new URLSearchParams();
+
+                // Thêm tất cả parameters từ form hiện tại
+                for (let [key, value] of currentFormData.entries()) {
+                    if (value) { // Chỉ thêm nếu có giá trị
+                        searchParams.append(key, value);
+                    }
+                }
+
+                // Thêm page parameter từ pagination link
+                const urlParams = new URLSearchParams(paginationLink.href.split('?')[1] || '');
+                const page = urlParams.get('page');
+                if (page) {
+                    searchParams.set('page', page);
+                }
+
+                const finalUrl = baseUrl + '?' + searchParams.toString();
+                loadData(finalUrl);
+            }
+        });
+
+        // Nếu có alert thành công, tự động reload table
+        const alertSuccess = document.querySelector('.alert-success');
+        if (alertSuccess) {
+            setTimeout(function() {
+                if (form) form.dispatchEvent(new Event('submit', {cancelable: true, bubbles: true}));
+            }, 500);
+        }
+    });
 </script>
 @endpush
