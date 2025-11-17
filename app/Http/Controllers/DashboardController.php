@@ -28,7 +28,7 @@ class DashboardController extends Controller
             ->sapHetHan(30)
             ->where('trang_thai', 'hieu_luc');
         $stats = [
-            'total_employees' => NhanVien::whereIn('trang_thai', ['dang_lam_viec', 'thu_viec'])->count(),
+            'total_employees' => NhanVien::whereIn('trang_thai', ['nhan_vien_chinh_thuc', 'thu_viec', 'thai_san'])->count(),
             'active_employees' => NhanVien::dangLamViec()->count(),
             'resigned_employees' => NhanVien::where('trang_thai', 'nghi_viec')->count(),
             'probation_employees' => NhanVien::where('trang_thai', 'thu_viec')->count(),
