@@ -17,8 +17,22 @@ class HopDongNhanSuController extends Controller
         $toDate = $request->input('to_date') ? Carbon::parse($request->input('to_date')) : null;
         $trangThai = $request->input('trang_thai');
 
-        // Lấy toàn bộ phòng ban và nhân viên, không filter hợp đồng trong with
-        $phongBans = PhongBan::with(['nhanViens.hopDongLaoDong'])->get();
+        // Lấy toàn bộ phòng ban và nhân viên, áp dụng filter giống như index
+        $phongBans = PhongBan::with([
+            'nhanViens' => function ($query) use ($fromDate, $toDate) {
+                if ($fromDate && $toDate) {
+                    $query->whereBetween('ngay_vao_lam', [$fromDate, $toDate]);
+                }
+            },
+            'nhanViens.hopDongLaoDong' => function ($query) use ($fromDate, $toDate, $trangThai) {
+                if ($fromDate && $toDate) {
+                    $query->whereBetween('ngay_vao_lam', [$fromDate, $toDate]);
+                }
+                if ($trangThai) {
+                    $query->where('trang_thai', $trangThai);
+                }
+            }
+        ])->get();
 
         $loaiHopDong = [
             'Thử việc',

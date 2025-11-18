@@ -16,7 +16,7 @@ class NhanSuController extends Controller
         $phongBans = PhongBan::with([
             'nhanViens' => function ($query) use ($fromDate, $toDate) {
                 if ($fromDate && $toDate) {
-                    $query->whereBetween('created_at', [$fromDate, $toDate]);
+                    $query->whereBetween('ngay_vao_lam', [$fromDate, $toDate]);
                 }
             },
             'nhanViens.hopDongLaoDong'
