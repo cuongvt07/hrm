@@ -91,8 +91,8 @@ $departmentStats = PhongBan::whereNull('phong_ban_cha_id')
             $label = $month->format('m/Y');
             $months->push($label);
             // Nhân viên tăng: created_at trong tháng
-            $inc = NhanVien::whereYear('created_at', $month->year)
-                ->whereMonth('created_at', $month->month)
+            $inc = NhanVien::whereYear('ngay_thu_viec', $month->year)
+                ->whereMonth('ngay_thu_viec', $month->month)
                 ->count();
             $increase->push($inc);
             // Nhân viên giảm: trạng thái nghi_viec và updated_at trong tháng
