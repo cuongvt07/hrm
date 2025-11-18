@@ -64,6 +64,9 @@ Route::middleware('auth')->group(function () {
     });
 
     // Quản lý hợp đồng
+    // Quản lý hợp đồng
+    // Export contracts with current filters (must be before resource routes)
+    Route::get('hop-dong/export', [HopDongController::class, 'export'])->name('hop-dong.export');
     Route::resource('hop-dong', HopDongController::class);
     Route::get('hop-dong/{id}/view', [HopDongController::class, 'view'])->name('hop-dong.view');
     Route::get('hop-dong-sap-het-han', [HopDongController::class, 'sapHetHan'])->name('hop-dong.saphethan');

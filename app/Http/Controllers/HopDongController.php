@@ -7,6 +7,8 @@ use App\Models\NhanVien;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use App\Exports\HopDongExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class HopDongController extends Controller
 {
@@ -174,9 +176,9 @@ class HopDongController extends Controller
      */
     public function exportSapHetHan(Request $request)
     {
+        // Build query same as sapHetHan and then export as XLSX
         $query = HopDongLaoDong::with('nhanVien');
 
-        // Same filters as sapHetHan
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -209,7 +211,6 @@ class HopDongController extends Controller
             $query->where('trang_thai', $request->trang_thai);
         }
 
-        // conditions for expiring within a month (same as sapHetHan)
         $soHopDongGocDaTaiKi = HopDongLaoDong::whereRaw("so_hop_dong REGEXP '_.{6}$'")
             ->pluck('so_hop_dong')
             ->map(function($so){
@@ -217,110 +218,54 @@ class HopDongController extends Controller
             })
             ->unique()
             ->toArray();
-    // Áp dụng scope thống nhất: sắp hết hạn = ngay_ket_thuc <= now + 30 ngày
-    // Chỉ export những hợp đồng đang ở trạng thái 'hieu_luc'
-    $query = $query->sapHetHan(30)->where('trang_thai', 'hieu_luc');
-    $query = $query->whereNotIn('so_hop_dong', $soHopDongGocDaTaiKi)->orderBy('ngay_ket_thuc', 'desc');
+
+        $query = $query->sapHetHan(30)->where('trang_thai', 'hieu_luc');
+        $query = $query->whereNotIn('so_hop_dong', $soHopDongGocDaTaiKi)->orderBy('ngay_ket_thuc', 'desc');
 
         $rows = $query->get();
 
-        $filename = 'hop_dong_sap_het_han_' . now()->format('Ymd_His') . '.csv';
+        $columns = ['Số hợp đồng', 'Họ và tên', 'Mã nhân viên', 'Loại hợp đồng', 'Ngày ký', 'Ngày bắt đầu', 'Ngày kết thúc', 'Trạng thái', 'Thời hạn', 'Lương cơ bản', 'Ghi chú'];
 
-        $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
-        ];
-
-    $columns = ['Số hợp đồng', 'Họ và tên', 'Mã nhân viên', 'Loại hợp đồng', 'Ngày ký', 'Ngày bắt đầu', 'Ngày kết thúc', 'Trạng thái', 'Thời hạn', 'Lương cơ bản', 'Ghi chú'];
-
-        $callback = function() use ($rows, $columns, $request) {
-            $out = fopen('php://output', 'w');
-            // BOM for Excel (UTF-8)
-            fprintf($out, chr(0xEF).chr(0xBB).chr(0xBF));
-
-            // Title row
-            $title = 'DANH SÁCH HỢP ĐỒNG SẮP HẾT HẠN';
-            fputcsv($out, [$title]);
-
-            // If filters used, output key => value rows
-            $filterKeys = [
-                'search' => 'Tìm kiếm',
-                'loai_hop_dong' => 'Loại hợp đồng',
-                'ngay_bat_dau' => 'Ngày bắt đầu (từ)',
-                'ngay_ket_thuc' => 'Ngày kết thúc (đến)',
-                'thoi_han' => 'Thời hạn',
-                'trang_thai' => 'Trạng thái'
-            ];
-            $hasFilters = false;
-            foreach ($filterKeys as $key => $label) {
-                if ($request->filled($key)) {
-                    $hasFilters = true;
-                    $val = $request->get($key);
-                    fputcsv($out, [$label, $val]);
-                }
+        $rowsArr = $rows->map(function($r) {
+            $nhanVien = $r->nhanVien;
+            $name = $nhanVien ? trim(($nhanVien->ho ?? '') . ' ' . ($nhanVien->ten ?? '')) : '';
+            $so = $r->so_hop_dong;
+            $loai = $r->loai_hop_dong;
+            $maNV = $nhanVien ? ($nhanVien->ma_nhanvien ?? ($nhanVien->ma_nhan_vien ?? '')) : '';
+            try {
+                $ngayKy = $r->ngay_ky ? \Carbon\Carbon::parse($r->ngay_ky)->format('Y-m-d') : '';
+            } catch (\Exception $e) {
+                $ngayKy = (string) $r->ngay_ky;
             }
-
-            // Blank line before header
-            fputcsv($out, []);
-
-            // Header columns
-            fputcsv($out, $columns);
-
-            foreach ($rows as $r) {
-                $nhanVien = $r->nhanVien;
-                $name = $nhanVien ? trim(($nhanVien->ho ?? '') . ' ' . ($nhanVien->ten ?? '')) : '';
-                $so = $r->so_hop_dong;
-                $loai = $r->loai_hop_dong;
-                $maNV = '';
-                if ($nhanVien) {
-                    $maNV = $nhanVien->ma_nhanvien ?? ($nhanVien->ma_nhan_vien ?? '');
-                }
-                // Map trạng thái sang nhãn tiếng Việt
-                if (isset($r->trang_thai)) {
-                    if ($r->trang_thai === 'hieu_luc') {
-                        $r->trang_thai = 'Hiệu lực';
-                    } elseif ($r->trang_thai === 'het_hieu_luc') {
-                        $r->trang_thai = 'Hết hiệu lực';
-                    } else {
-                        $r->trang_thai = (string) $r->trang_thai;
-                    }
-                }
-                // Safely format dates via Carbon (handles string/null/Carbon)
-                try {
-                    $ngayKy = $r->ngay_ky ? \Carbon\Carbon::parse($r->ngay_ky)->format('Y-m-d') : '';
-                } catch (\Exception $e) {
-                    $ngayKy = (string) $r->ngay_ky;
-                }
-                try {
-                    $ngayBD = $r->ngay_bat_dau ? \Carbon\Carbon::parse($r->ngay_bat_dau)->format('Y-m-d') : '';
-                } catch (\Exception $e) {
-                    $ngayBD = (string) $r->ngay_bat_dau;
-                }
-                try {
-                    $ngayKT = $r->ngay_ket_thuc ? \Carbon\Carbon::parse($r->ngay_ket_thuc)->format('Y-m-d') : '';
-                } catch (\Exception $e) {
-                    $ngayKT = (string) $r->ngay_ket_thuc;
-                }
-                $trangThai = $r->trang_thai;
-                $thoiHan = $r->thoi_han;
-                // Display unit-aware thoi_han: months for 'Thử việc', years otherwise
-                if ($thoiHan) {
-                    if (isset($r->loai_hop_dong) && $r->loai_hop_dong === 'Thử việc') {
-                        $thoiHanLabel = $thoiHan . ' tháng';
-                    } else {
-                        $thoiHanLabel = $thoiHan . ' năm';
-                    }
+            try {
+                $ngayBD = $r->ngay_bat_dau ? \Carbon\Carbon::parse($r->ngay_bat_dau)->format('Y-m-d') : '';
+            } catch (\Exception $e) {
+                $ngayBD = (string) $r->ngay_bat_dau;
+            }
+            try {
+                $ngayKT = $r->ngay_ket_thuc ? \Carbon\Carbon::parse($r->ngay_ket_thuc)->format('Y-m-d') : '';
+            } catch (\Exception $e) {
+                $ngayKT = (string) $r->ngay_ket_thuc;
+            }
+            $trangThai = $r->trang_thai === 'hieu_luc' ? 'Hiệu lực' : ($r->trang_thai === 'het_hieu_luc' ? 'Hết hiệu lực' : (string) $r->trang_thai);
+            $thoiHan = $r->thoi_han;
+            if ($thoiHan) {
+                if (isset($r->loai_hop_dong) && $r->loai_hop_dong === 'Thử việc') {
+                    $thoiHanLabel = $thoiHan . ' tháng';
                 } else {
-                    $thoiHanLabel = '';
+                    $thoiHanLabel = $thoiHan . ' năm';
                 }
-                $luong = $r->luong_co_ban;
-                $ghiChu = $r->ghi_chu;
-                fputcsv($out, [$so, $name, $maNV, $loai, $ngayKy, $ngayBD, $ngayKT, $trangThai, $thoiHanLabel, $luong, $ghiChu]);
+            } else {
+                $thoiHanLabel = '';
             }
-            fclose($out);
-        };
+            $luong = $r->luong_co_ban;
+            $ghiChu = $r->ghi_chu;
 
-        return response()->stream($callback, 200, $headers);
+            return [$so, $name, $maNV, $loai, $ngayKy, $ngayBD, $ngayKT, $trangThai, $thoiHanLabel, $luong, $ghiChu];
+        })->toArray();
+
+        $filename = 'hop_dong_sap_het_han_' . now()->format('Ymd_His') . '.xlsx';
+        return Excel::download(new HopDongExport($rowsArr, $columns), $filename);
     }
 
     /**
@@ -591,7 +536,7 @@ class HopDongController extends Controller
                             'loai_tep'     => 'hop_dong',
                             'ten_tep'      => $file->getClientOriginalName(),
                             'duong_dan_tep' => $filePath,
-                            'nguoi_tai_len' => auth()->id(),
+                            'nguoi_tai_len' => optional(auth())->id(),
                         ]);
                     }
                 }
@@ -728,7 +673,7 @@ class HopDongController extends Controller
                             'loai_tep'     => 'hop_dong',
                             'ten_tep'      => $file->getClientOriginalName(),
                             'duong_dan_tep' => $filePath,
-                            'nguoi_tai_len' => auth()->id(),
+                            'nguoi_tai_len' => optional(auth())->id(),
                         ]);
                     }
                 }
@@ -777,5 +722,116 @@ class HopDongController extends Controller
             ->where('trang_thai', 'hieu_luc')
             ->update(['trang_thai' => 'het_hieu_luc']);
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Export contracts list (CSV) using the same filters as index
+     */
+    public function export(Request $request)
+    {
+        $query = HopDongLaoDong::with('nhanVien');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('so_hop_dong', 'like', "%{$search}%")
+                  ->orWhere('loai_hop_dong', 'like', "%{$search}%")
+                  ->orWhereHas('nhanVien', function($q) use ($search) {
+                      $q->where('ten', 'like', "%{$search}%")
+                        ->orWhere('ma_nhanvien', 'like', "%{$search}%")
+                        ->orWhereRaw("CONCAT(ho, ' ', ten) like ?", ["%{$search}%"]);
+                  });
+            });
+        }
+
+        if ($request->filled('phong_ban_id')) {
+            $phongBanId = $request->phong_ban_id;
+            $phongBanCon = \App\Models\PhongBan::where('phong_ban_cha_id', $phongBanId)->pluck('id')->toArray();
+            $allPhongBanIds = array_merge([$phongBanId], $phongBanCon);
+            $query->whereHas('nhanVien', function($q) use ($allPhongBanIds) {
+                $q->whereIn('phong_ban_id', $allPhongBanIds);
+            });
+        }
+
+        if ($request->filled('loai_hop_dong')) {
+            $query->where('loai_hop_dong', 'like', "%{$request->loai_hop_dong}%");
+        }
+
+        if ($request->filled('ngay_bat_dau')) {
+            $query->whereDate('ngay_bat_dau', '>=', $request->ngay_bat_dau);
+        }
+        if ($request->filled('ngay_ket_thuc')) {
+            $query->whereDate('ngay_ket_thuc', '<=', $request->ngay_ket_thuc);
+        }
+
+        if ($request->filled('thoi_han')) {
+            $query->where('thoi_han', $request->thoi_han);
+        }
+
+        if ($request->filled('trang_thai')) {
+            $query->where('trang_thai', $request->trang_thai);
+        }
+
+        $rows = $query->orderBy('created_at', 'desc')->get();
+
+        $filename = 'hop_dong_' . now()->format('Ymd_His') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $columns = ['Số hợp đồng', 'Họ và tên', 'Mã nhân viên', 'Loại hợp đồng', 'Ngày ký', 'Ngày bắt đầu', 'Ngày kết thúc', 'Trạng thái', 'Thời hạn', 'Lương cơ bản', 'Ghi chú'];
+
+        $callback = function() use ($rows, $columns, $request) {
+            $out = fopen('php://output', 'w');
+            // BOM for Excel (UTF-8)
+            fprintf($out, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            fputcsv($out, $columns);
+
+            foreach ($rows as $r) {
+                $nhanVien = $r->nhanVien;
+                $name = $nhanVien ? trim(($nhanVien->ho ?? '') . ' ' . ($nhanVien->ten ?? '')) : '';
+                $so = $r->so_hop_dong;
+                $loai = $r->loai_hop_dong;
+                $maNV = '';
+                if ($nhanVien) {
+                    $maNV = $nhanVien->ma_nhanvien ?? ($nhanVien->ma_nhan_vien ?? '');
+                }
+                try {
+                    $ngayKy = $r->ngay_ky ? \Carbon\Carbon::parse($r->ngay_ky)->format('Y-m-d') : '';
+                } catch (\Exception $e) {
+                    $ngayKy = (string) $r->ngay_ky;
+                }
+                try {
+                    $ngayBD = $r->ngay_bat_dau ? \Carbon\Carbon::parse($r->ngay_bat_dau)->format('Y-m-d') : '';
+                } catch (\Exception $e) {
+                    $ngayBD = (string) $r->ngay_bat_dau;
+                }
+                try {
+                    $ngayKT = $r->ngay_ket_thuc ? \Carbon\Carbon::parse($r->ngay_ket_thuc)->format('Y-m-d') : '';
+                } catch (\Exception $e) {
+                    $ngayKT = (string) $r->ngay_ket_thuc;
+                }
+                $trangThai = $r->trang_thai === 'hieu_luc' ? 'Hiệu lực' : ($r->trang_thai === 'het_hieu_luc' ? 'Hết hiệu lực' : (string) $r->trang_thai);
+                $thoiHan = $r->thoi_han;
+                if ($thoiHan) {
+                    if (isset($r->loai_hop_dong) && $r->loai_hop_dong === 'Thử việc') {
+                        $thoiHanLabel = $thoiHan . ' tháng';
+                    } else {
+                        $thoiHanLabel = $thoiHan . ' năm';
+                    }
+                } else {
+                    $thoiHanLabel = '';
+                }
+                $luong = $r->luong_co_ban;
+                $ghiChu = $r->ghi_chu;
+
+                fputcsv($out, [$so, $name, $maNV, $loai, $ngayKy, $ngayBD, $ngayKT, $trangThai, $thoiHanLabel, $luong, $ghiChu]);
+            }
+            fclose($out);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

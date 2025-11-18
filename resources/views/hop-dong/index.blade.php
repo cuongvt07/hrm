@@ -4,9 +4,14 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0">Danh sách hợp đồng lao động</h4>
-        <a href="{{ route('hop-dong.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus me-1"></i> Thêm hợp đồng
-        </a>
+        <div>
+            <a href="{{ route('hop-dong.create') }}" class="btn btn-primary me-2">
+                <i class="fas fa-plus me-1"></i> Thêm hợp đồng
+            </a>
+            <button id="exportContractsBtn" class="btn btn-outline-success">
+                <i class="fas fa-file-export me-1"></i> Xuất Excel
+            </button>
+        </div>
     </div>
     {{-- Bộ lọc --}}
     <x-filters.contract-filter :nhanViens="$nhanViens" :phongBans="$phongBans" />
@@ -22,6 +27,21 @@
     // Ajax filter + phân trang
     document.addEventListener("DOMContentLoaded", function() {
         const form = document.getElementById("contractFilterForm");
+            const exportBtn = document.getElementById('exportContractsBtn');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (!form) {
+                        // fallback to direct export link
+                        window.location = "{{ route('hop-dong.export') }}";
+                        return;
+                    }
+                    const params = new URLSearchParams(new FormData(form)).toString();
+                    const url = "{{ route('hop-dong.export') }}" + (params ? ('?' + params) : '');
+                    // navigate to url to trigger download
+                    window.location = url;
+                });
+            }
         function loadData(url) {
             fetch(url, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
