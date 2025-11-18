@@ -37,11 +37,15 @@ class DashboardController extends Controller
             'expiring_contracts' => $expiringContractsQuery->count(),
         ];
 
-        // Thống kê theo phòng ban
-        $departmentStats = PhongBan::withCount(['nhanViens', 'nhanViens as nhan_vien_active_count' => function ($query) {
-                $query->where('trang_thai', 'dang_lam_viec');
-            }])
-            ->with(['nhanViens.chucVu', 'phongBanCon'])
+        // Thống kê theo phòng ban (chỉ phòng ban cha, chỉ đếm nhân viên trực tiếp trong phòng)
+        $departmentStats = PhongBan::whereNull('phong_ban_cha_id')
+            ->withCount([
+                'nhanViens',
+                'nhanViens as nhan_vien_active_count' => function ($query) {
+                    $query->whereIn('trang_thai', ['nhan_vien_chinh_thuc', 'thu_viec', 'thai_san']);
+                }
+            ])
+            ->with(['phongBanCon'])
             ->orderBy('ten_phong_ban')
             ->get();
 

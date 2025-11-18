@@ -87,7 +87,7 @@ class HopDongNhanSuController extends Controller
             $row['Hợp đồng không xác định thời hạn'] = $so_khong_xac_dinh;
             $row['Tái ký'] = $so_tai_ki;
             $row['Không có hợp đồng'] = $so_khong_co_hop_dong;
-            $row['tong_cong'] = $so_thu_viec + $so_xac_dinh + $so_khong_xac_dinh + $so_tai_ki + $so_khong_co_hop_dong;
+            $row['tong_cong'] = $so_thu_viec + $so_xac_dinh + $so_khong_xac_dinh + $so_tai_ki;
             return $row;
         });
 

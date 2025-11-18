@@ -16,7 +16,7 @@ class NhanSuController extends Controller
         $phongBans = PhongBan::with([
             'nhanViens' => function ($query) use ($fromDate, $toDate) {
                 if ($fromDate && $toDate) {
-                    $query->whereBetween('ngay_vao_lam', [$fromDate, $toDate]);
+                    $query->whereBetween('ngay_thu_viec', [$fromDate, $toDate]);
                 }
             },
             'nhanViens.hopDongLaoDong'
@@ -35,35 +35,50 @@ class NhanSuController extends Controller
         });
 
         $tableData = $phongBans->map(function ($phongBan) {
-            $so_tai_ki = 0;
+            // Compute breakdown counts explicitly to avoid double-counting and improve clarity
+            $khongHopDongEmployees = $phongBan->nhanViens->filter(function ($nv) {
+                return $nv->hopDongLaoDong->isEmpty();
+            })->count();
+
+            $thuViecCount = $phongBan->nhanViens->sum(function ($nv) {
+                return $nv->hopDongLaoDong->where('loai_hop_dong', 'Thử việc')->count();
+            });
+
+            $xacDinhCount = $phongBan->nhanViens->sum(function ($nv) {
+                return $nv->hopDongLaoDong->where('loai_hop_dong', 'Hợp đồng xác định thời hạn')->count();
+            });
+
+            $khongXacDinhCount = $phongBan->nhanViens->sum(function ($nv) {
+                return $nv->hopDongLaoDong->where('loai_hop_dong', 'Hợp đồng không xác định thời hạn')->count();
+            });
+
+            // Tái ký: detected either by trang_thai_ky === 'tai_ki' OR by having '_' suffix in so_hop_dong
+            $taiKiCount = 0;
             foreach ($phongBan->nhanViens as $nv) {
                 if (!empty($nv->hopDongLaoDong)) {
                     foreach ($nv->hopDongLaoDong as $hd) {
-                        if (
-                            $hd->trang_thai_ky === 'tai_ki' ||
-                            str_contains($hd->so_hop_dong, '_')
-                        ) {
-                            $so_tai_ki++;
+                        if (($hd->trang_thai_ky ?? '') === 'tai_ki' || (isset($hd->so_hop_dong) && str_contains($hd->so_hop_dong, '_'))) {
+                            $taiKiCount++;
                         }
                     }
                 }
             }
+
+            // Some contracts may use a literal 'khong_hop_dong' type; include those as well
+            $khongHopDongContracts = $phongBan->nhanViens->sum(function ($nv) {
+                return $nv->hopDongLaoDong->where('loai_hop_dong', 'khong_hop_dong')->count();
+            });
+
+            $totalContracts = $khongHopDongEmployees + $thuViecCount + $xacDinhCount + $khongXacDinhCount + $taiKiCount + $khongHopDongContracts;
+
             return [
                 'phong_ban' => $phongBan->ten_phong_ban,
-                'khong_hop_dong' => $phongBan->nhanViens->filter(function ($nv) {
-                    return $nv->hopDongLaoDong->isEmpty();
-                })->count(),
-                'hop_dong_thu_viec' => $phongBan->nhanViens->sum(function ($nv) {
-                    return $nv->hopDongLaoDong->where('loai_hop_dong', 'Thử việc')->count();
-                }),
-                'hop_dong_xac_dinh' => $phongBan->nhanViens->sum(function ($nv) {
-                    return $nv->hopDongLaoDong->where('loai_hop_dong', 'Hợp đồng xác định thời hạn')->count();
-                }),
-                'hop_dong_khong_xac_dinh' => $phongBan->nhanViens->sum(function ($nv) {
-                    return $nv->hopDongLaoDong->where('loai_hop_dong', 'Hợp đồng không xác định thời hạn')->count();
-                }),
-                'hop_dong_tai_ki' => $so_tai_ki,
-                'tong_cong' => $phongBan->nhanViens->count(),
+                'khong_hop_dong' => $khongHopDongEmployees,
+                'hop_dong_thu_viec' => $thuViecCount,
+                'hop_dong_xac_dinh' => $xacDinhCount,
+                'hop_dong_khong_xac_dinh' => $khongXacDinhCount,
+                'hop_dong_tai_ki' => $taiKiCount,
+                'tong_cong' => $totalContracts,
             ];
         });
 
