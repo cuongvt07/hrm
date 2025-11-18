@@ -225,7 +225,7 @@ new Chart(departmentCtx, {
     type: 'doughnut',
     data: {
         labels: {!! json_encode($chartDepartments->pluck('ten_phong_ban')->toArray()) !!},
-        datasets: [{
+            datasets: [{
             data: {!! json_encode($chartDepartments->pluck('nhan_viens_count')->toArray()) !!},
             backgroundColor: [
                 '#4e73df',

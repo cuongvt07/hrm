@@ -38,16 +38,41 @@ class DashboardController extends Controller
         ];
 
         // Thống kê theo phòng ban (chỉ phòng ban cha, chỉ đếm nhân viên trực tiếp trong phòng)
-        $departmentStats = PhongBan::whereNull('phong_ban_cha_id')
-            ->withCount([
-                'nhanViens',
-                'nhanViens as nhan_vien_active_count' => function ($query) {
-                    $query->whereIn('trang_thai', ['nhan_vien_chinh_thuc', 'thu_viec', 'thai_san']);
-                }
-            ])
-            ->with(['phongBanCon'])
-            ->orderBy('ten_phong_ban')
-            ->get();
+$departmentStats = PhongBan::whereNull('phong_ban_cha_id')
+    ->select('phong_ban.*')
+
+    // Tổng nhân viên (cha + con)
+    ->selectSub(function ($q) {
+        $q->from('nhanvien') // hoặc 'nhan_viens' đúng tên table của bạn
+          ->selectRaw('COUNT(*)')
+          ->whereIn('phong_ban_id', function ($sub) {
+              $sub->from('phong_ban as pb')
+                  ->select('pb.id')
+                  ->whereColumn('pb.id', 'phong_ban.id')          // chính nó
+                  ->orWhereColumn('pb.phong_ban_cha_id', 'phong_ban.id'); // phòng con
+          });
+    }, 'nhan_viens_count')
+
+    // Tổng nhân viên active (cha + con)
+    ->selectSub(function ($q) {
+        $q->from('nhanvien') // hoặc 'nhan_viens'
+          ->selectRaw('COUNT(*)')
+          ->whereIn('trang_thai', [
+              'nhan_vien_chinh_thuc',
+              'thu_viec',
+              'thai_san',
+          ])
+          ->whereIn('phong_ban_id', function ($sub) {
+              $sub->from('phong_ban as pb')
+                  ->select('pb.id')
+                  ->whereColumn('pb.id', 'phong_ban.id')
+                  ->orWhereColumn('pb.phong_ban_cha_id', 'phong_ban.id');
+          });
+    }, 'nhan_viens_active_count')
+
+    ->with('phongBanCon')
+    ->orderBy('ten_phong_ban')
+    ->get();
 
         // Hợp đồng sắp hết hạn
         $expiringContracts = $expiringContractsQuery
