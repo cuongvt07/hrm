@@ -774,64 +774,47 @@ class HopDongController extends Controller
 
         $rows = $query->orderBy('created_at', 'desc')->get();
 
-        $filename = 'hop_dong_' . now()->format('Ymd_His') . '.csv';
-        $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
-        ];
-
         $columns = ['Số hợp đồng', 'Họ và tên', 'Mã nhân viên', 'Loại hợp đồng', 'Ngày ký', 'Ngày bắt đầu', 'Ngày kết thúc', 'Trạng thái', 'Thời hạn', 'Lương cơ bản', 'Ghi chú'];
 
-        $callback = function() use ($rows, $columns, $request) {
-            $out = fopen('php://output', 'w');
-            // BOM for Excel (UTF-8)
-            fprintf($out, chr(0xEF).chr(0xBB).chr(0xBF));
-
-            fputcsv($out, $columns);
-
-            foreach ($rows as $r) {
-                $nhanVien = $r->nhanVien;
-                $name = $nhanVien ? trim(($nhanVien->ho ?? '') . ' ' . ($nhanVien->ten ?? '')) : '';
-                $so = $r->so_hop_dong;
-                $loai = $r->loai_hop_dong;
-                $maNV = '';
-                if ($nhanVien) {
-                    $maNV = $nhanVien->ma_nhanvien ?? ($nhanVien->ma_nhan_vien ?? '');
-                }
-                try {
-                    $ngayKy = $r->ngay_ky ? \Carbon\Carbon::parse($r->ngay_ky)->format('Y-m-d') : '';
-                } catch (\Exception $e) {
-                    $ngayKy = (string) $r->ngay_ky;
-                }
-                try {
-                    $ngayBD = $r->ngay_bat_dau ? \Carbon\Carbon::parse($r->ngay_bat_dau)->format('Y-m-d') : '';
-                } catch (\Exception $e) {
-                    $ngayBD = (string) $r->ngay_bat_dau;
-                }
-                try {
-                    $ngayKT = $r->ngay_ket_thuc ? \Carbon\Carbon::parse($r->ngay_ket_thuc)->format('Y-m-d') : '';
-                } catch (\Exception $e) {
-                    $ngayKT = (string) $r->ngay_ket_thuc;
-                }
-                $trangThai = $r->trang_thai === 'hieu_luc' ? 'Hiệu lực' : ($r->trang_thai === 'het_hieu_luc' ? 'Hết hiệu lực' : (string) $r->trang_thai);
-                $thoiHan = $r->thoi_han;
-                if ($thoiHan) {
-                    if (isset($r->loai_hop_dong) && $r->loai_hop_dong === 'Thử việc') {
-                        $thoiHanLabel = $thoiHan . ' tháng';
-                    } else {
-                        $thoiHanLabel = $thoiHan . ' năm';
-                    }
-                } else {
-                    $thoiHanLabel = '';
-                }
-                $luong = $r->luong_co_ban;
-                $ghiChu = $r->ghi_chu;
-
-                fputcsv($out, [$so, $name, $maNV, $loai, $ngayKy, $ngayBD, $ngayKT, $trangThai, $thoiHanLabel, $luong, $ghiChu]);
+        $rowsArr = $rows->map(function($r) {
+            $nhanVien = $r->nhanVien;
+            $name = $nhanVien ? trim(($nhanVien->ho ?? '') . ' ' . ($nhanVien->ten ?? '')) : '';
+            $so = $r->so_hop_dong;
+            $loai = $r->loai_hop_dong;
+            $maNV = $nhanVien ? ($nhanVien->ma_nhanvien ?? ($nhanVien->ma_nhan_vien ?? '')) : '';
+            try {
+                $ngayKy = $r->ngay_ky ? \Carbon\Carbon::parse($r->ngay_ky)->format('Y-m-d') : '';
+            } catch (\Exception $e) {
+                $ngayKy = (string) $r->ngay_ky;
             }
-            fclose($out);
-        };
+            try {
+                $ngayBD = $r->ngay_bat_dau ? \Carbon\Carbon::parse($r->ngay_bat_dau)->format('Y-m-d') : '';
+            } catch (\Exception $e) {
+                $ngayBD = (string) $r->ngay_bat_dau;
+            }
+            try {
+                $ngayKT = $r->ngay_ket_thuc ? \Carbon\Carbon::parse($r->ngay_ket_thuc)->format('Y-m-d') : '';
+            } catch (\Exception $e) {
+                $ngayKT = (string) $r->ngay_ket_thuc;
+            }
+            $trangThai = $r->trang_thai === 'hieu_luc' ? 'Hiệu lực' : ($r->trang_thai === 'het_hieu_luc' ? 'Hết hiệu lực' : (string) $r->trang_thai);
+            $thoiHan = $r->thoi_han;
+            if ($thoiHan) {
+                if (isset($r->loai_hop_dong) && $r->loai_hop_dong === 'Thử việc') {
+                    $thoiHanLabel = $thoiHan . ' tháng';
+                } else {
+                    $thoiHanLabel = $thoiHan . ' năm';
+                }
+            } else {
+                $thoiHanLabel = '';
+            }
+            $luong = $r->luong_co_ban;
+            $ghiChu = $r->ghi_chu;
 
-        return response()->stream($callback, 200, $headers);
+            return [$so, $name, $maNV, $loai, $ngayKy, $ngayBD, $ngayKT, $trangThai, $thoiHanLabel, $luong, $ghiChu];
+        })->toArray();
+
+        $filename = 'hop_dong_' . now()->format('Ymd_His') . '.xlsx';
+        return Excel::download(new HopDongExport($rowsArr, $columns), $filename);
     }
 }
