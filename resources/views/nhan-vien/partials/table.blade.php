@@ -137,7 +137,9 @@
                         'showRoute' => 'nhan-vien.show',
                         'editRoute' => 'nhan-vien.edit',
                         'deleteRoute' => 'nhan-vien.destroy',
-                        'id' => $nhanVien->id
+                        'id' => $nhanVien->id,
+                        'showTerminate' => ($nhanVien->active_contracts_count ?? 0) > 0,
+                        'terminateId' => $nhanVien->latest_active_hopdong_id ?? null
                     ])@endcomponent
                 </tr>
             @empty

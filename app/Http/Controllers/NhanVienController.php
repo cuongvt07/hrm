@@ -56,8 +56,27 @@ class NhanVienController extends Controller
         }
 
         $nhanViens = $query
+            ->withCount(['hopDongLaoDong as active_contracts_count' => function($q) {
+                $q->where('trang_thai', 'hieu_luc');
+            }])
             ->orderBy('ma_nhanvien', 'desc')
             ->paginate(10);
+
+        // Attach latest active contract id for each employee in the current page
+        $nhanVienIds = $nhanViens->pluck('id')->toArray();
+        if (!empty($nhanVienIds)) {
+            $latestContracts = \App\Models\HopDongLaoDong::whereIn('nhan_vien_id', $nhanVienIds)
+                ->where('trang_thai', 'hieu_luc')
+                ->orderByDesc('ngay_bat_dau')
+                ->get()
+                ->unique('nhan_vien_id')
+                ->pluck('id', 'nhan_vien_id')
+                ->toArray();
+
+            foreach ($nhanViens as $nv) {
+                $nv->latest_active_hopdong_id = $latestContracts[$nv->id] ?? null;
+            }
+        }
 
         if ($request->ajax()) {
             return response()->json([
