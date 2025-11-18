@@ -21,12 +21,12 @@ class HopDongNhanSuController extends Controller
         $phongBans = PhongBan::with([
             'nhanViens' => function ($query) use ($fromDate, $toDate) {
                 if ($fromDate && $toDate) {
-                    $query->whereBetween('ngay_vao_lam', [$fromDate, $toDate]);
+                    $query->whereBetween('ngay_thu_viec', [$fromDate, $toDate]);
                 }
             },
             'nhanViens.hopDongLaoDong' => function ($query) use ($fromDate, $toDate, $trangThai) {
                 if ($fromDate && $toDate) {
-                    $query->whereBetween('ngay_vao_lam', [$fromDate, $toDate]);
+                    $query->whereBetween('ngay_thu_viec', [$fromDate, $toDate]);
                 }
                 if ($trangThai) {
                     $query->where('trang_thai', $trangThai);
