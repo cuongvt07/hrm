@@ -1,6 +1,7 @@
 <?php
 // Hiển thị danh sách khen thưởng/kỷ luật của nhân viên hoặc phòng ban chứa nhân viên
 // Sử dụng trong tab "Khen thưởng & Kỷ luật" của show nhân viên
+// Lưu ý: Khen thưởng/kỷ luật phòng ban chỉ hiển thị nếu nhân viên vào làm <= ngày quyết định
 
 use App\Models\KhenThuongKyLuat;
 use App\Models\KhenThuongKyLuatDoiTuong;
@@ -38,14 +39,16 @@ function getKhenThuongKyLuatForNhanVien(NhanVien $nhanVien) {
     $khenThuong = collect();
     $kyLuat = collect();
     foreach ($ktklCaNhan->merge($ktklTapThe) as $item) {
-        // Kiểm tra ngày vào làm của nhân viên
-        // Nếu nhân viên vào làm sau ngày quyết định thì không ghi nhận
-        $ngayVaoLam = $nhanVien->ngay_vao_lam;
-        $ngayQuyetDinh = $item->khenThuongKyLuat->ngay_quyet_dinh;
+        // Kiểm tra ngày vào làm của nhân viên CHỈ VỚI KHEN THƯỞNG/KỶ LUẬT PHÒNG BAN
+        // Nếu là phòng ban: nhân viên vào làm sau ngày quyết định thì không ghi nhận
+        if ($item->loai_doi_tuong === 'phong_ban') {
+            $ngayVaoLam = $nhanVien->ngay_vao_lam;
+            $ngayQuyetDinh = $item->khenThuongKyLuat->ngay_quyet_dinh;
 
-        if ($ngayVaoLam && $ngayQuyetDinh && $ngayVaoLam > $ngayQuyetDinh) {
-            // Nhân viên vào làm sau ngày quyết định, bỏ qua
-            continue;
+            if ($ngayVaoLam && $ngayQuyetDinh && $ngayVaoLam > $ngayQuyetDinh) {
+                // Nhân viên vào làm sau ngày quyết định khen thưởng phòng ban, bỏ qua
+                continue;
+            }
         }
 
         if ($item->khenThuongKyLuat && $item->khenThuongKyLuat->loai === 'khen_thuong') {
